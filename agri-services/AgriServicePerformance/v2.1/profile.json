@@ -1,0 +1,13 @@
+{
+  "id": "https://schema.beckn.io/AgriServicePerformance/v2.1",
+  "name": "AgriServicePerformance",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["AgriServicePerformance"],
+  "discovery_fields": ["livestockCount", "livestockType", "farmLocation.county"],
+  "indexable_paths": ["livestockType", "farmLocation.county", "farmLocation.country"],
+  "filterable_paths": ["livestockType", "farmLocation.county"],
+  "sortable_paths": ["livestockCount"],
+  "privacy_notes": ["farmLocation may identify specific farms by GPS or landmark", "livestockCount reveals farm size"]
+}

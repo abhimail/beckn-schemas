@@ -1,0 +1,39 @@
+openapi: 3.1.1
+info:
+  title: ServiceOffer Schema
+  version: "2.1.0"
+  description: Schema for representing service offers in the generalised Beckn Protocol model
+  x-beckn-container: offerAttributes
+
+components:
+  schemas:
+    ServiceOffer:
+      type: object
+      x-beckn-container: offerAttributes
+      x-jsonld:
+        "@context": "https://schema.beckn.io/ServiceOffer/v2.1/context.jsonld"
+        "@type": "sof:ServiceOffer"
+      properties:
+        minimumQuantity:
+          type: integer
+          minimum: 1
+          description: Minimum number of service units that must be ordered
+          x-jsonld-id: "sof:minimumQuantity"
+        maximumQuantity:
+          type: integer
+          minimum: 1
+          description: Maximum number of service units that can be ordered at once
+          x-jsonld-id: "sof:maximumQuantity"
+        requiresAdvanceBooking:
+          type: boolean
+          description: Whether advance booking is required for this offer
+          x-jsonld-id: "sof:requiresAdvanceBooking"
+        cancellationPolicyHours:
+          type: integer
+          minimum: 0
+          description: Hours before appointment when cancellation is allowed without penalty
+          x-jsonld-id: "sof:cancellationPolicyHours"
+        bulkDiscountAvailable:
+          type: boolean
+          description: Whether bulk discounts are available for large quantities
+          x-jsonld-id: "sof:bulkDiscountAvailable"

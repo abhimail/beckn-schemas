@@ -1,0 +1,16 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "scn": "https://schema.beckn.io/ServiceConsideration#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {"@id": "scn:PaymentMethod", "@type": "rdfs:Class", "rdfs:label": "PaymentMethod"},
+    {"@id": "scn:CASH", "@type": "scn:PaymentMethod", "rdfs:label": "Cash"},
+    {"@id": "scn:CARD", "@type": "scn:PaymentMethod", "rdfs:label": "Credit/Debit Card"},
+    {"@id": "scn:BANK_TRANSFER", "@type": "scn:PaymentMethod", "rdfs:label": "Bank Transfer"},
+    {"@id": "scn:MOBILE_MONEY", "@type": "scn:PaymentMethod", "rdfs:label": "Mobile Money"},
+    {"@id": "scn:DIGITAL_WALLET", "@type": "scn:PaymentMethod", "rdfs:label": "Digital Wallet"},
+    {"@id": "scn:OTHER", "@type": "scn:PaymentMethod", "rdfs:label": "Other"}
+  ]
+}

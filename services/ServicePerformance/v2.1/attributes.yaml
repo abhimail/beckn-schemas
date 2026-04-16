@@ -1,0 +1,95 @@
+openapi: 3.1.1
+info:
+  title: ServicePerformance Schema
+  version: "2.1.0"
+  description: Schema for representing service performance attributes in the generalised Beckn Protocol model
+  x-beckn-container: performanceAttributes
+
+components:
+  schemas:
+    ServicePerformance:
+      type: object
+      x-beckn-container: performanceAttributes
+      x-jsonld:
+        "@context": "https://schema.beckn.io/ServicePerformance/v2.1/context.jsonld"
+        "@type": "spm:ServicePerformance"
+      properties:
+        appointmentWindow:
+          $ref: "#/components/schemas/ServiceAppointmentWindow"
+          description: Scheduled appointment date range
+          x-jsonld-id: "spm:appointmentWindow"
+        confirmedAppointmentTime:
+          type: string
+          format: date-time
+          description: Confirmed appointment date and time
+          x-jsonld-id: "spm:confirmedAppointmentTime"
+        serviceLocation:
+          $ref: "#/components/schemas/ServiceLocation"
+          description: Location where service will be or was delivered
+          x-jsonld-id: "spm:serviceLocation"
+        providerConfirmedCompletion:
+          type: boolean
+          default: false
+          description: Whether the provider has confirmed service completion
+          x-jsonld-id: "spm:providerConfirmedCompletion"
+        clientConfirmedCompletion:
+          type: boolean
+          default: false
+          description: Whether the client has confirmed service completion
+          x-jsonld-id: "spm:clientConfirmedCompletion"
+        serviceNotes:
+          type: string
+          maxLength: 1000
+          description: Notes recorded by the provider during service delivery
+          x-jsonld-id: "spm:serviceNotes"
+        followUpRequired:
+          type: boolean
+          default: false
+          description: Whether a follow-up service is required
+          x-jsonld-id: "spm:followUpRequired"
+        followUpDate:
+          type: string
+          format: date
+          description: Suggested date for follow-up service if required
+          x-jsonld-id: "spm:followUpDate"
+
+    ServiceAppointmentWindow:
+      type: object
+      description: Time window for scheduled appointment
+      properties:
+        startDate:
+          type: string
+          format: date
+          description: Start date of appointment window (YYYY-MM-DD)
+          x-jsonld-id: "spm:startDate"
+        endDate:
+          type: string
+          format: date
+          description: End date of appointment window (YYYY-MM-DD)
+          x-jsonld-id: "spm:endDate"
+
+    ServiceLocation:
+      type: object
+      description: Geographic location where service is delivered
+      properties:
+        address:
+          type: string
+          description: Street address or location description
+          x-jsonld-id: "spm:address"
+        region:
+          type: string
+          description: Region or state name
+          x-jsonld-id: "spm:region"
+        country:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+          x-jsonld-id: "spm:country"
+        gpsCoordinates:
+          type: string
+          pattern: "^-?\\d+\\.\\d+,-?\\d+\\.\\d+$"
+          description: GPS coordinates in format "latitude,longitude"
+          x-jsonld-id: "spm:gpsCoordinates"
+        locationLandmark:
+          type: string
+          description: Landmark or notable location reference
+          x-jsonld-id: "spm:locationLandmark"

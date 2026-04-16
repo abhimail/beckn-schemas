@@ -1,0 +1,34 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "sr": "https://schema.beckn.io/ServiceResource#",
+    "asr": "https://schema.beckn.io/AgriServiceResource#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "AgriServiceResource": "asr:AgriServiceResource",
+    "AgriServiceAreaHierarchy": "asr:AgriServiceAreaHierarchy",
+    "AgriServiceCategory": "asr:AgriServiceCategory",
+    "AgriProviderType": "asr:AgriProviderType",
+    "AgriLivestockType": "asr:AgriLivestockType",
+
+    "serviceUnit": {"@id": "sr:serviceUnit"},
+    "coverageArea": {"@id": "sr:coverageArea"},
+    "capacityPerDay": {"@id": "sr:capacityPerDay"},
+    "capacityPerWeek": {"@id": "sr:capacityPerWeek"},
+    "availabilitySchedule": {"@id": "sr:availabilitySchedule"},
+    "minimumBookingAdvanceHours": {"@id": "sr:minimumBookingAdvanceHours"},
+    "languagesSupported": {"@id": "sr:languagesSupported"},
+
+    "serviceCategory": {"@id": "asr:serviceCategory"},
+    "providerType": {"@id": "asr:providerType"},
+    "livestockTypes": {"@id": "asr:livestockTypes"},
+    "serviceAreaHierarchy": {"@id": "asr:serviceAreaHierarchy"},
+    "village": {"@id": "asr:village"},
+    "ward": {"@id": "asr:ward"},
+    "county": {"@id": "asr:county"},
+    "country": {"@id": "asr:country"},
+    "coverageRadiusKm": {"@id": "asr:coverageRadiusKm"}
+  }
+}

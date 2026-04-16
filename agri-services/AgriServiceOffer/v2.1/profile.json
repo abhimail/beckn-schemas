@@ -1,0 +1,13 @@
+{
+  "id": "https://schema.beckn.io/AgriServiceOffer/v2.1",
+  "name": "AgriServiceOffer",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["AgriServiceOffer"],
+  "discovery_fields": ["inputBrandOrVariety"],
+  "indexable_paths": ["inputBrandOrVariety"],
+  "filterable_paths": ["inputBrandOrVariety"],
+  "sortable_paths": [],
+  "privacy_notes": []
+}

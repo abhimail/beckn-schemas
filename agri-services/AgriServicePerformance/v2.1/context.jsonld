@@ -1,0 +1,33 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "aspm": "https://schema.beckn.io/AgriServicePerformance#",
+    "spm": "https://schema.beckn.io/ServicePerformance#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "AgriServicePerformance": "aspm:AgriServicePerformance",
+
+    "appointmentWindow": {"@id": "spm:appointmentWindow"},
+    "confirmedAppointmentTime": {"@id": "spm:confirmedAppointmentTime"},
+    "serviceLocation": {"@id": "spm:serviceLocation"},
+    "providerConfirmedCompletion": {"@id": "spm:providerConfirmedCompletion"},
+    "clientConfirmedCompletion": {"@id": "spm:clientConfirmedCompletion"},
+    "serviceNotes": {"@id": "spm:serviceNotes"},
+    "followUpRequired": {"@id": "spm:followUpRequired"},
+    "followUpDate": {"@id": "spm:followUpDate"},
+    "AgriFarmLocation": "aspm:AgriFarmLocation",
+    "AgriLivestockType": "aspm:AgriLivestockType",
+
+    "farmLocation": {"@id": "aspm:farmLocation"},
+    "livestockCount": {"@id": "aspm:livestockCount"},
+    "livestockType": {"@id": "aspm:livestockType"},
+    "village": {"@id": "aspm:village"},
+    "ward": {"@id": "aspm:ward"},
+    "county": {"@id": "aspm:county"},
+    "country": {"@id": "aspm:country"},
+    "gpsCoordinates": {"@id": "aspm:gpsCoordinates"},
+    "locationLandmark": {"@id": "aspm:locationLandmark"}
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/ServiceContract/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-svc-001",
+      "beckn:status": {"code": "ACTIVE"},
+      "beckn:participants": [
+        {
+          "beckn:id": "prov-001",
+          "beckn:descriptor": {
+            "schema:name": "Dr. Priya Anand",
+            "schema:description": "Certified General Practitioner"
+          }
+        },
+        {
+          "beckn:id": "client-001",
+          "beckn:descriptor": {
+            "schema:name": "Ravi Kumar",
+            "schema:description": "Patient"
+          }
+        }
+      ],
+      "beckn:commitments": [{
+        "beckn:status": {"code": "COMMITTED"},
+        "beckn:resources": [{"beckn:id": "res-gp-001", "beckn:quantity": {"beckn:count": 1}}],
+        "beckn:offer": {"beckn:id": "offer-gp-001", "beckn:resourceIds": ["res-gp-001"]}
+      }],
+      "beckn:contractAttributes": {
+        "bookingChannel": "APP",
+        "clientNotes": "Please review my recent blood test results during the consultation"
+      }
+    }
+  }
+}

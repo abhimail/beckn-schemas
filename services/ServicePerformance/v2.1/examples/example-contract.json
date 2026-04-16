@@ -1,0 +1,56 @@
+{
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/ServicePerformance/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-svc-001",
+      "beckn:status": {"code": "ACTIVE"},
+      "beckn:participants": [
+        {
+          "beckn:id": "prov-001",
+          "beckn:descriptor": {
+            "schema:name": "Dr. Priya Anand",
+            "schema:description": "Certified General Practitioner"
+          }
+        },
+        {
+          "beckn:id": "client-001",
+          "beckn:descriptor": {
+            "schema:name": "Ravi Kumar",
+            "schema:description": "Patient"
+          }
+        }
+      ],
+      "beckn:commitments": [{
+        "beckn:id": "commitment-001",
+        "beckn:status": {"code": "COMMITTED"},
+        "beckn:resources": [{"beckn:id": "res-gp-001", "beckn:quantity": {"beckn:count": 1}}],
+        "beckn:offer": {"beckn:id": "offer-gp-001", "beckn:resourceIds": ["res-gp-001"]}
+      }],
+      "beckn:performance": [{
+        "@type": "beckn:Performance",
+        "beckn:id": "perf-001",
+        "beckn:status": {"code": "PLANNED"},
+        "beckn:commitmentIds": ["commitment-001"],
+        "beckn:performanceAttributes": {
+          "appointmentWindow": {
+            "startDate": "2026-04-15",
+            "endDate": "2026-04-15"
+          },
+          "confirmedAppointmentTime": "2026-04-15T10:30:00Z",
+          "serviceLocation": {
+            "address": "Online - Video Call",
+            "region": "Delhi",
+            "country": "IN"
+          },
+          "providerConfirmedCompletion": false,
+          "clientConfirmedCompletion": false,
+          "followUpRequired": false
+        }
+      }]
+    }
+  }
+}

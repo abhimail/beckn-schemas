@@ -1,0 +1,82 @@
+openapi: 3.1.1
+info:
+  title: AgriServiceResource Schema
+  version: "2.1.0"
+  description: Extension schema for agriculture-specific service resources in the generalised Beckn Protocol model
+  x-beckn-container: resourceAttributes
+
+components:
+  schemas:
+    AgriServiceResource:
+      allOf:
+        - $ref: "../../ServiceResource/v2.1/attributes.yaml#/components/schemas/ServiceResource"
+      type: object
+      x-beckn-container: resourceAttributes
+      x-jsonld:
+        "@context": "https://schema.beckn.io/AgriServiceResource/v2.1/context.jsonld"
+        "@type": "asr:AgriServiceResource"
+      properties:
+        serviceCategory:
+          type: string
+          enum:
+            - VACCINATION
+            - BROODING
+            - INCUBATION
+            - AGRI_INPUT
+            - ADVISORY
+            - SCREENING
+          description: Category of agricultural service provided
+          x-jsonld-id: "asr:serviceCategory"
+        providerType:
+          type: string
+          enum:
+            - VET
+            - AGROVET
+            - EXTENSION_OFFICER
+            - AGRI_INPUT_DEALER
+            - AGRI_TRAINER
+          description: Type of agricultural service provider
+          x-jsonld-id: "asr:providerType"
+        livestockTypes:
+          type: array
+          items:
+            type: string
+            enum:
+              - POULTRY
+              - CATTLE
+              - GOAT
+              - SHEEP
+              - PIG
+              - OTHER
+          description: Types of livestock that the service supports
+          x-jsonld-id: "asr:livestockTypes"
+        serviceAreaHierarchy:
+          $ref: "#/components/schemas/AgriServiceAreaHierarchy"
+          description: Hierarchical geographic coverage for the agricultural service
+          x-jsonld-id: "asr:serviceAreaHierarchy"
+
+    AgriServiceAreaHierarchy:
+      type: object
+      description: Hierarchical geographic coverage area for agricultural services
+      properties:
+        village:
+          type: string
+          description: Village name where service is provided
+          x-jsonld-id: "asr:village"
+        ward:
+          type: string
+          description: Ward or sub-county name
+          x-jsonld-id: "asr:ward"
+        county:
+          type: string
+          description: County or district name
+          x-jsonld-id: "asr:county"
+        country:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+          x-jsonld-id: "asr:country"
+        coverageRadiusKm:
+          type: number
+          minimum: 0
+          description: Coverage radius in kilometers
+          x-jsonld-id: "asr:coverageRadiusKm"

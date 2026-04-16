@@ -1,0 +1,16 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "aspm": "https://schema.beckn.io/AgriServicePerformance#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {"@id": "aspm:AgriLivestockType", "@type": "rdfs:Class", "rdfs:label": "AgriLivestockType"},
+    {"@id": "aspm:POULTRY", "@type": "aspm:AgriLivestockType", "rdfs:label": "Poultry"},
+    {"@id": "aspm:CATTLE", "@type": "aspm:AgriLivestockType", "rdfs:label": "Cattle"},
+    {"@id": "aspm:GOAT", "@type": "aspm:AgriLivestockType", "rdfs:label": "Goat"},
+    {"@id": "aspm:SHEEP", "@type": "aspm:AgriLivestockType", "rdfs:label": "Sheep"},
+    {"@id": "aspm:PIG", "@type": "aspm:AgriLivestockType", "rdfs:label": "Pig"},
+    {"@id": "aspm:OTHER", "@type": "aspm:AgriLivestockType", "rdfs:label": "Other"}
+  ]
+}

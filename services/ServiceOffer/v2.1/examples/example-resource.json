@@ -1,0 +1,84 @@
+{
+  "context": {
+    "action": "on_discover",
+    "schemaContext": ["https://schema.beckn.io/ServiceOffer/v2.1/context.jsonld"]
+  },
+  "message": {
+    "catalogs": [{
+      "@type": "beckn:Catalog",
+      "beckn:id": "cat-svc-001",
+      "beckn:descriptor": {
+        "schema:name": "Dr. Priya Anand - Teleconsultation Services",
+        "schema:description": "Professional medical consultation services via video call"
+      },
+      "beckn:provider": {
+        "beckn:id": "prov-001",
+        "beckn:descriptor": {
+          "schema:name": "Dr. Priya Anand",
+          "schema:description": "Certified General Practitioner"
+        }
+      },
+      "beckn:resources": [{
+        "@type": "beckn:Resource",
+        "beckn:id": "res-gp-001",
+        "beckn:descriptor": {
+          "schema:name": "General Practitioner Video Consultation",
+          "beckn:shortDesc": "30-min video consultation with a certified GP",
+          "schema:description": "Professional medical consultation over secure video call"
+        },
+        "beckn:isAvailable": true,
+        "beckn:resourceAttributes": {
+          "serviceUnit": "PER_SESSION",
+          "coverageArea": {
+            "region": "West Delhi",
+            "country": "IN",
+            "coverageRadiusKm": 0
+          },
+          "capacityPerDay": 16,
+          "capacityPerWeek": 80,
+          "availabilitySchedule": [
+            {
+              "dayOfWeek": "MONDAY",
+              "startTime": "09:00",
+              "endTime": "18:00"
+            },
+            {
+              "dayOfWeek": "TUESDAY",
+              "startTime": "09:00",
+              "endTime": "18:00"
+            },
+            {
+              "dayOfWeek": "WEDNESDAY",
+              "startTime": "09:00",
+              "endTime": "18:00"
+            },
+            {
+              "dayOfWeek": "THURSDAY",
+              "startTime": "09:00",
+              "endTime": "18:00"
+            },
+            {
+              "dayOfWeek": "FRIDAY",
+              "startTime": "09:00",
+              "endTime": "13:00"
+            }
+          ],
+          "minimumBookingAdvanceHours": 2,
+          "languagesSupported": ["en", "hi"]
+        }
+      }],
+      "beckn:offers": [{
+        "@type": "beckn:Offer",
+        "beckn:id": "offer-gp-001",
+        "beckn:resourceIds": ["res-gp-001"],
+        "beckn:offerAttributes": {
+          "minimumQuantity": 1,
+          "maximumQuantity": 5,
+          "requiresAdvanceBooking": true,
+          "cancellationPolicyHours": 2,
+          "bulkDiscountAvailable": false
+        }
+      }]
+    }]
+  }
+}

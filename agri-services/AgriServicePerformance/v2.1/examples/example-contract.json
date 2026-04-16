@@ -1,0 +1,67 @@
+{
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/AgriServicePerformance/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-agri-vac-001",
+      "beckn:status": {"code": "ACTIVE"},
+      "beckn:participants": [
+        {
+          "beckn:id": "prov-jm-001",
+          "beckn:descriptor": {
+            "schema:name": "Dr. James Mwangi",
+            "schema:description": "Licensed Veterinarian - Poultry Specialist"
+          }
+        },
+        {
+          "beckn:id": "client-gw-001",
+          "beckn:descriptor": {
+            "schema:name": "Grace Wanjiku",
+            "schema:description": "Poultry Farmer"
+          }
+        }
+      ],
+      "beckn:commitments": [{
+        "beckn:id": "commitment-001",
+        "beckn:status": {"code": "COMMITTED"},
+        "beckn:resources": [{"beckn:id": "res-poul-vac-001", "beckn:quantity": {"beckn:count": 1}}],
+        "beckn:offer": {"beckn:id": "offer-seed-maize-001", "beckn:resourceIds": ["res-poul-vac-001"]}
+      }],
+      "beckn:performance": [{
+        "@type": "beckn:Performance",
+        "beckn:id": "perf-001",
+        "beckn:status": {"code": "PLANNED"},
+        "beckn:commitmentIds": ["commitment-001"],
+        "beckn:performanceAttributes": {
+          "appointmentWindow": {
+            "startDate": "2026-04-20",
+            "endDate": "2026-04-20"
+          },
+          "confirmedAppointmentTime": "2026-04-20T09:00:00Z",
+          "serviceLocation": {
+            "address": "Grace Wanjiku's Poultry Farm",
+            "region": "Central Region",
+            "country": "KE"
+          },
+          "providerConfirmedCompletion": false,
+          "clientConfirmedCompletion": false,
+          "followUpRequired": true,
+          "followUpDate": "2026-05-04",
+          "farmLocation": {
+            "village": "Githunguri",
+            "ward": "Githunguri",
+            "county": "Kiambu",
+            "country": "KE",
+            "gpsCoordinates": "-1.2547,36.7461",
+            "locationLandmark": "Near Githunguri Market"
+          },
+          "livestockCount": 200,
+          "livestockType": "POULTRY"
+        }
+      }]
+    }
+  }
+}

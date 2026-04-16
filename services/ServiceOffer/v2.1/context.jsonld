@@ -1,0 +1,17 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "sof": "https://schema.beckn.io/ServiceOffer#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "ServiceOffer": "sof:ServiceOffer",
+
+    "minimumQuantity": {"@id": "sof:minimumQuantity"},
+    "maximumQuantity": {"@id": "sof:maximumQuantity"},
+    "requiresAdvanceBooking": {"@id": "sof:requiresAdvanceBooking"},
+    "cancellationPolicyHours": {"@id": "sof:cancellationPolicyHours"},
+    "bulkDiscountAvailable": {"@id": "sof:bulkDiscountAvailable"}
+  }
+}

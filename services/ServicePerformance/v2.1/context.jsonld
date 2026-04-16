@@ -1,0 +1,29 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "spm": "https://schema.beckn.io/ServicePerformance#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "ServicePerformance": "spm:ServicePerformance",
+    "ServiceAppointmentWindow": "spm:ServiceAppointmentWindow",
+    "ServiceLocation": "spm:ServiceLocation",
+
+    "appointmentWindow": {"@id": "spm:appointmentWindow"},
+    "confirmedAppointmentTime": {"@id": "spm:confirmedAppointmentTime"},
+    "serviceLocation": {"@id": "spm:serviceLocation"},
+    "providerConfirmedCompletion": {"@id": "spm:providerConfirmedCompletion"},
+    "clientConfirmedCompletion": {"@id": "spm:clientConfirmedCompletion"},
+    "serviceNotes": {"@id": "spm:serviceNotes"},
+    "followUpRequired": {"@id": "spm:followUpRequired"},
+    "followUpDate": {"@id": "spm:followUpDate"},
+    "startDate": {"@id": "spm:startDate"},
+    "endDate": {"@id": "spm:endDate"},
+    "address": {"@id": "spm:address"},
+    "region": {"@id": "spm:region"},
+    "country": {"@id": "spm:country"},
+    "gpsCoordinates": {"@id": "spm:gpsCoordinates"},
+    "locationLandmark": {"@id": "spm:locationLandmark"}
+  }
+}

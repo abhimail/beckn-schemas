@@ -1,0 +1,8 @@
+{
+  "schema": "AgriServiceOffer",
+  "version": "2.1.0",
+  "card_template": "{{inputBrandOrVariety}} | Min: {{minimumQuantity}} | Max: {{maximumQuantity}}",
+  "detail_template": "Brand/Variety: {{inputBrandOrVariety}}\nQuantity: {{minimumQuantity}} - {{maximumQuantity}}\nAdvance Booking: {{requiresAdvanceBooking}}\nCancellation: {{cancellationPolicyHours}} hours",
+  "html": "<div class=\"agri-service-offer-card\"><span class=\"product\">{{inputBrandOrVariety}}</span><span class=\"qty-range\">{{minimumQuantity}} - {{maximumQuantity}} units</span></div>",
+  "html_detail": "<div class=\"agri-service-offer-detail\"><h3>Agricultural Input Offer</h3><dl><dt>Brand/Variety</dt><dd>{{inputBrandOrVariety}}</dd><dt>Quantity Range</dt><dd>{{minimumQuantity}} - {{maximumQuantity}} units</dd><dt>Advance Booking</dt><dd>{{#if requiresAdvanceBooking}}Required{{else}}Not Required{{/if}}</dd><dt>Cancellation Policy</dt><dd>{{cancellationPolicyHours}} hours before appointment</dd><dt>Bulk Discount</dt><dd>{{#if bulkDiscountAvailable}}Available{{else}}Not Available{{/if}}</dd></dl></div>"
+}

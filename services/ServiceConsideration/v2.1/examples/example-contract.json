@@ -1,0 +1,48 @@
+{
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/ServiceConsideration/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-svc-001",
+      "beckn:status": {"code": "ACTIVE"},
+      "beckn:participants": [
+        {
+          "beckn:id": "prov-001",
+          "beckn:descriptor": {
+            "schema:name": "Dr. Priya Anand",
+            "schema:description": "Certified General Practitioner"
+          }
+        },
+        {
+          "beckn:id": "client-001",
+          "beckn:descriptor": {
+            "schema:name": "Ravi Kumar",
+            "schema:description": "Patient"
+          }
+        }
+      ],
+      "beckn:commitments": [{
+        "beckn:id": "commitment-001",
+        "beckn:status": {"code": "COMMITTED"},
+        "beckn:resources": [{"beckn:id": "res-gp-001", "beckn:quantity": {"beckn:count": 1}}],
+        "beckn:offer": {"beckn:id": "offer-gp-001", "beckn:resourceIds": ["res-gp-001"]}
+      }],
+      "beckn:consideration": [{
+        "@type": "beckn:Consideration",
+        "beckn:id": "cons-001",
+        "beckn:status": {"code": "AGREED"},
+        "beckn:considerationAttributes": {
+          "pricePerUnit": 500,
+          "currency": "INR",
+          "totalAmount": 500,
+          "paymentMethodsAccepted": ["CARD", "DIGITAL_WALLET"],
+          "selectedPaymentMethod": "CARD",
+          "transactionRef": "TXN-RAZORPAY-8821"
+        }
+      }]
+    }
+  }
+}

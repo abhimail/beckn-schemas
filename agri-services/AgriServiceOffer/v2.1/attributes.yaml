@@ -1,0 +1,22 @@
+openapi: 3.1.1
+info:
+  title: AgriServiceOffer Schema
+  version: "2.1.0"
+  description: Extension schema for agriculture-specific service offers in the generalised Beckn Protocol model
+  x-beckn-container: offerAttributes
+
+components:
+  schemas:
+    AgriServiceOffer:
+      allOf:
+        - $ref: "../../ServiceOffer/v2.1/attributes.yaml#/components/schemas/ServiceOffer"
+      type: object
+      x-beckn-container: offerAttributes
+      x-jsonld:
+        "@context": "https://schema.beckn.io/AgriServiceOffer/v2.1/context.jsonld"
+        "@type": "asof:AgriServiceOffer"
+      properties:
+        inputBrandOrVariety:
+          type: string
+          description: For AGRI_INPUT services, the specific brand or crop variety being supplied
+          x-jsonld-id: "asof:inputBrandOrVariety"

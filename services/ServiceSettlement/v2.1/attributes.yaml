@@ -1,0 +1,35 @@
+openapi: 3.1.1
+info:
+  title: ServiceSettlement Schema
+  version: "2.1.0"
+  description: Schema for representing service settlement attributes in the generalised Beckn Protocol model
+  x-beckn-container: settlementAttributes
+
+components:
+  schemas:
+    ServiceSettlement:
+      type: object
+      x-beckn-container: settlementAttributes
+      x-jsonld:
+        "@context": "https://schema.beckn.io/ServiceSettlement/v2.1/context.jsonld"
+        "@type": "ssl:ServiceSettlement"
+      properties:
+        paymentReceivedByProvider:
+          type: boolean
+          default: false
+          description: Whether the payment has been received by the service provider
+          x-jsonld-id: "ssl:paymentReceivedByProvider"
+        paymentRecordedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the payment was recorded in the system
+          x-jsonld-id: "ssl:paymentRecordedAt"
+        receiptRef:
+          type: string
+          description: Reference number or ID of the payment receipt
+          x-jsonld-id: "ssl:receiptRef"
+        paymentNotes:
+          type: string
+          maxLength: 300
+          description: Additional notes about the payment settlement
+          x-jsonld-id: "ssl:paymentNotes"

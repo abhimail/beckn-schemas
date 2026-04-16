@@ -1,0 +1,68 @@
+openapi: 3.1.1
+info:
+  title: AgriServicePerformance Schema
+  version: "2.1.0"
+  description: Extension schema for agriculture-specific service performance in the generalised Beckn Protocol model
+  x-beckn-container: performanceAttributes
+
+components:
+  schemas:
+    AgriServicePerformance:
+      allOf:
+        - $ref: "../../ServicePerformance/v2.1/attributes.yaml#/components/schemas/ServicePerformance"
+      type: object
+      x-beckn-container: performanceAttributes
+      x-jsonld:
+        "@context": "https://schema.beckn.io/AgriServicePerformance/v2.1/context.jsonld"
+        "@type": "aspm:AgriServicePerformance"
+      properties:
+        farmLocation:
+          $ref: "#/components/schemas/AgriFarmLocation"
+          description: Specific location of the farm where service was delivered
+          x-jsonld-id: "aspm:farmLocation"
+        livestockCount:
+          type: integer
+          minimum: 1
+          description: Number of livestock animals serviced
+          x-jsonld-id: "aspm:livestockCount"
+        livestockType:
+          type: string
+          enum:
+            - POULTRY
+            - CATTLE
+            - GOAT
+            - SHEEP
+            - PIG
+            - OTHER
+          description: Type of livestock serviced
+          x-jsonld-id: "aspm:livestockType"
+
+    AgriFarmLocation:
+      type: object
+      description: Farm location details for agricultural service delivery
+      properties:
+        village:
+          type: string
+          description: Village name where farm is located
+          x-jsonld-id: "aspm:village"
+        ward:
+          type: string
+          description: Ward or sub-county name
+          x-jsonld-id: "aspm:ward"
+        county:
+          type: string
+          description: County or district name
+          x-jsonld-id: "aspm:county"
+        country:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+          x-jsonld-id: "aspm:country"
+        gpsCoordinates:
+          type: string
+          pattern: "^-?\\d+\\.\\d+,-?\\d+\\.\\d+$"
+          description: GPS coordinates in format "latitude,longitude"
+          x-jsonld-id: "aspm:gpsCoordinates"
+        locationLandmark:
+          type: string
+          description: Landmark or notable location reference
+          x-jsonld-id: "aspm:locationLandmark"

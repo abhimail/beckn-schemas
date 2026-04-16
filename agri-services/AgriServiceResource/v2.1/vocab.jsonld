@@ -1,0 +1,29 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "asr": "https://schema.beckn.io/AgriServiceResource#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {"@id": "asr:AgriServiceCategory", "@type": "rdfs:Class", "rdfs:label": "AgriServiceCategory"},
+    {"@id": "asr:VACCINATION", "@type": "asr:AgriServiceCategory", "rdfs:label": "Vaccination"},
+    {"@id": "asr:BROODING", "@type": "asr:AgriServiceCategory", "rdfs:label": "Brooding"},
+    {"@id": "asr:INCUBATION", "@type": "asr:AgriServiceCategory", "rdfs:label": "Incubation"},
+    {"@id": "asr:AGRI_INPUT", "@type": "asr:AgriServiceCategory", "rdfs:label": "Agricultural Input"},
+    {"@id": "asr:ADVISORY", "@type": "asr:AgriServiceCategory", "rdfs:label": "Advisory"},
+    {"@id": "asr:SCREENING", "@type": "asr:AgriServiceCategory", "rdfs:label": "Screening"},
+    {"@id": "asr:AgriProviderType", "@type": "rdfs:Class", "rdfs:label": "AgriProviderType"},
+    {"@id": "asr:VET", "@type": "asr:AgriProviderType", "rdfs:label": "Veterinarian"},
+    {"@id": "asr:AGROVET", "@type": "asr:AgriProviderType", "rdfs:label": "Agrovet"},
+    {"@id": "asr:EXTENSION_OFFICER", "@type": "asr:AgriProviderType", "rdfs:label": "Extension Officer"},
+    {"@id": "asr:AGRI_INPUT_DEALER", "@type": "asr:AgriProviderType", "rdfs:label": "Agricultural Input Dealer"},
+    {"@id": "asr:AGRI_TRAINER", "@type": "asr:AgriProviderType", "rdfs:label": "Agricultural Trainer"},
+    {"@id": "asr:AgriLivestockType", "@type": "rdfs:Class", "rdfs:label": "AgriLivestockType"},
+    {"@id": "asr:POULTRY", "@type": "asr:AgriLivestockType", "rdfs:label": "Poultry"},
+    {"@id": "asr:CATTLE", "@type": "asr:AgriLivestockType", "rdfs:label": "Cattle"},
+    {"@id": "asr:GOAT", "@type": "asr:AgriLivestockType", "rdfs:label": "Goat"},
+    {"@id": "asr:SHEEP", "@type": "asr:AgriLivestockType", "rdfs:label": "Sheep"},
+    {"@id": "asr:PIG", "@type": "asr:AgriLivestockType", "rdfs:label": "Pig"},
+    {"@id": "asr:OTHER", "@type": "asr:AgriLivestockType", "rdfs:label": "Other"}
+  ]
+}

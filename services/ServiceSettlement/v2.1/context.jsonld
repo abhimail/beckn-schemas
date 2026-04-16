@@ -1,0 +1,16 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "ssl": "https://schema.beckn.io/ServiceSettlement#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "ServiceSettlement": "ssl:ServiceSettlement",
+
+    "paymentReceivedByProvider": {"@id": "ssl:paymentReceivedByProvider"},
+    "paymentRecordedAt": {"@id": "ssl:paymentRecordedAt"},
+    "receiptRef": {"@id": "ssl:receiptRef"},
+    "paymentNotes": {"@id": "ssl:paymentNotes"}
+  }
+}

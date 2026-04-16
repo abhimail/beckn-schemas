@@ -1,0 +1,105 @@
+openapi: 3.1.1
+info:
+  title: ServiceResource Schema
+  version: "2.1.0"
+  description: Schema for representing service resources in the generalised Beckn Protocol model
+  x-beckn-container: resourceAttributes
+
+components:
+  schemas:
+    ServiceResource:
+      type: object
+      x-beckn-container: resourceAttributes
+      x-jsonld:
+        "@context": "https://schema.beckn.io/ServiceResource/v2.1/context.jsonld"
+        "@type": "sr:ServiceResource"
+      properties:
+        serviceUnit:
+          type: string
+          enum:
+            - PER_HOUR
+            - PER_SESSION
+            - PER_VISIT
+            - PER_UNIT
+            - PER_KG
+            - PER_DAY
+            - PER_PIECE
+            - OTHER
+          description: Unit of service measurement
+          x-jsonld-id: "sr:serviceUnit"
+        coverageArea:
+          $ref: "#/components/schemas/ServiceCoverageArea"
+          description: Geographic coverage area for the service
+          x-jsonld-id: "sr:coverageArea"
+        capacityPerDay:
+          type: integer
+          minimum: 0
+          description: Maximum number of service units available per day
+          x-jsonld-id: "sr:capacityPerDay"
+        capacityPerWeek:
+          type: integer
+          minimum: 0
+          description: Maximum number of service units available per week
+          x-jsonld-id: "sr:capacityPerWeek"
+        availabilitySchedule:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceAvailabilitySlot"
+          description: Weekly availability schedule for the service
+          x-jsonld-id: "sr:availabilitySchedule"
+        minimumBookingAdvanceHours:
+          type: integer
+          minimum: 0
+          description: Minimum hours in advance required to book the service
+          x-jsonld-id: "sr:minimumBookingAdvanceHours"
+        languagesSupported:
+          type: array
+          items:
+            type: string
+          description: ISO 639-1 language codes supported by the service provider
+          x-jsonld-id: "sr:languagesSupported"
+
+    ServiceCoverageArea:
+      type: object
+      description: Geographic coverage area specifications
+      properties:
+        region:
+          type: string
+          description: Region or state name
+          x-jsonld-id: "sr:region"
+        country:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+          x-jsonld-id: "sr:country"
+        coverageRadiusKm:
+          type: number
+          minimum: 0
+          description: Coverage radius in kilometers (0 indicates online-only)
+          x-jsonld-id: "sr:coverageRadiusKm"
+
+    ServiceAvailabilitySlot:
+      type: object
+      description: Time slot for service availability on a specific day of week
+      properties:
+        dayOfWeek:
+          type: string
+          enum:
+            - MONDAY
+            - TUESDAY
+            - WEDNESDAY
+            - THURSDAY
+            - FRIDAY
+            - SATURDAY
+            - SUNDAY
+          description: Day of the week
+          x-jsonld-id: "sr:dayOfWeek"
+        startTime:
+          type: string
+          format: time
+          description: Start time in HH:MM format (24-hour)
+          x-jsonld-id: "sr:startTime"
+        endTime:
+          type: string
+          format: time
+          description: End time in HH:MM format (24-hour)
+          x-jsonld-id: "sr:endTime"

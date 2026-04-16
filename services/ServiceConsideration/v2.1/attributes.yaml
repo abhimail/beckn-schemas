@@ -1,0 +1,58 @@
+openapi: 3.1.1
+info:
+  title: ServiceConsideration Schema
+  version: "2.1.0"
+  description: Schema for representing service consideration (pricing) attributes in the generalised Beckn Protocol model
+  x-beckn-container: considerationAttributes
+
+components:
+  schemas:
+    ServiceConsideration:
+      type: object
+      x-beckn-container: considerationAttributes
+      x-jsonld:
+        "@context": "https://schema.beckn.io/ServiceConsideration/v2.1/context.jsonld"
+        "@type": "scn:ServiceConsideration"
+      properties:
+        pricePerUnit:
+          type: number
+          minimum: 0
+          description: Price per unit of service
+          x-jsonld-id: "scn:pricePerUnit"
+        currency:
+          type: string
+          description: ISO 4217 currency code (e.g., USD, INR, EUR)
+          x-jsonld-id: "scn:currency"
+        totalAmount:
+          type: number
+          minimum: 0
+          description: Total amount to be paid for the service
+          x-jsonld-id: "scn:totalAmount"
+        paymentMethodsAccepted:
+          type: array
+          items:
+            type: string
+            enum:
+              - CASH
+              - CARD
+              - BANK_TRANSFER
+              - MOBILE_MONEY
+              - DIGITAL_WALLET
+              - OTHER
+          description: List of payment methods accepted
+          x-jsonld-id: "scn:paymentMethodsAccepted"
+        selectedPaymentMethod:
+          type: string
+          enum:
+            - CASH
+            - CARD
+            - BANK_TRANSFER
+            - MOBILE_MONEY
+            - DIGITAL_WALLET
+            - OTHER
+          description: Payment method selected by the client
+          x-jsonld-id: "scn:selectedPaymentMethod"
+        transactionRef:
+          type: string
+          description: Reference number or ID of the payment transaction
+          x-jsonld-id: "scn:transactionRef"

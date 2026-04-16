@@ -1,0 +1,95 @@
+{
+  "context": {
+    "action": "on_discover",
+    "schemaContext": ["https://schema.beckn.io/AgriServiceOffer/v2.1/context.jsonld"]
+  },
+  "message": {
+    "catalogs": [{
+      "@type": "beckn:Catalog",
+      "beckn:id": "cat-agri-input-001",
+      "beckn:descriptor": {
+        "schema:name": "KCOOP Agri Supply - Certified Seeds",
+        "schema:description": "Certified agricultural seed supply service"
+      },
+      "beckn:provider": {
+        "beckn:id": "prov-kcoop-001",
+        "beckn:descriptor": {
+          "schema:name": "KCOOP Agri Supply Ltd",
+          "schema:description": "Agricultural input supplier"
+        }
+      },
+      "beckn:resources": [{
+        "@type": "beckn:Resource",
+        "beckn:id": "res-seed-maize-001",
+        "beckn:descriptor": {
+          "schema:name": "Certified Maize Seeds",
+          "beckn:shortDesc": "KCOOP-DH02 certified improved maize seeds",
+          "schema:description": "High-yielding, drought-resistant maize seeds"
+        },
+        "beckn:isAvailable": true,
+        "beckn:resourceAttributes": {
+          "serviceUnit": "PER_KG",
+          "coverageArea": {
+            "region": "Central Region",
+            "country": "KE",
+            "coverageRadiusKm": 50
+          },
+          "capacityPerDay": 100,
+          "capacityPerWeek": 500,
+          "availabilitySchedule": [
+            {
+              "dayOfWeek": "MONDAY",
+              "startTime": "08:00",
+              "endTime": "17:00"
+            },
+            {
+              "dayOfWeek": "TUESDAY",
+              "startTime": "08:00",
+              "endTime": "17:00"
+            },
+            {
+              "dayOfWeek": "WEDNESDAY",
+              "startTime": "08:00",
+              "endTime": "17:00"
+            },
+            {
+              "dayOfWeek": "THURSDAY",
+              "startTime": "08:00",
+              "endTime": "17:00"
+            },
+            {
+              "dayOfWeek": "FRIDAY",
+              "startTime": "08:00",
+              "endTime": "17:00"
+            }
+          ],
+          "minimumBookingAdvanceHours": 0,
+          "languagesSupported": ["en", "sw"],
+          "serviceCategory": "AGRI_INPUT",
+          "providerType": "AGRI_INPUT_DEALER",
+          "livestockTypes": [],
+          "serviceAreaHierarchy": {
+            "village": "Nairobi",
+            "ward": "Central",
+            "county": "Nairobi",
+            "country": "KE",
+            "coverageRadiusKm": 50
+          }
+        }
+      }],
+      "beckn:offers": [{
+        "@type": "beckn:Offer",
+        "beckn:id": "offer-seed-maize-001",
+        "beckn:resourceIds": ["res-seed-maize-001"],
+        "beckn:offerAttributes": {
+          "minimumQuantity": 5,
+          "maximumQuantity": 1000,
+          "requiresAdvanceBooking": false,
+          "cancellationPolicyHours": 0,
+          "bulkDiscountAvailable": true,
+          "inputBrandOrVariety": "KCOOP-DH02"
+        }
+      }]
+    }]
+  }
+}

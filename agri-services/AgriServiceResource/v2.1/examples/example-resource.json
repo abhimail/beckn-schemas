@@ -1,0 +1,87 @@
+{
+  "context": {
+    "action": "on_discover",
+    "schemaContext": ["https://schema.beckn.io/AgriServiceResource/v2.1/context.jsonld"]
+  },
+  "message": {
+    "catalogs": [{
+      "@type": "beckn:Catalog",
+      "beckn:id": "cat-agri-001",
+      "beckn:descriptor": {
+        "schema:name": "Dr. James Mwangi - Poultry Vaccination Services",
+        "schema:description": "Professional poultry vaccination and health advisory services"
+      },
+      "beckn:provider": {
+        "beckn:id": "prov-jm-001",
+        "beckn:descriptor": {
+          "schema:name": "Dr. James Mwangi",
+          "schema:description": "Licensed Veterinarian - Poultry Specialist"
+        }
+      },
+      "beckn:resources": [{
+        "@type": "beckn:Resource",
+        "beckn:id": "res-poul-vac-001",
+        "beckn:descriptor": {
+          "schema:name": "Poultry Vaccination Service",
+          "beckn:shortDesc": "Professional vaccination service for poultry flocks",
+          "schema:description": "On-farm poultry vaccination and health screening service"
+        },
+        "beckn:isAvailable": true,
+        "beckn:resourceAttributes": {
+          "serviceUnit": "PER_VISIT",
+          "coverageArea": {
+            "region": "Central Region",
+            "country": "KE",
+            "coverageRadiusKm": 25
+          },
+          "capacityPerDay": 10,
+          "capacityPerWeek": 60,
+          "availabilitySchedule": [
+            {
+              "dayOfWeek": "MONDAY",
+              "startTime": "07:00",
+              "endTime": "17:00"
+            },
+            {
+              "dayOfWeek": "TUESDAY",
+              "startTime": "07:00",
+              "endTime": "17:00"
+            },
+            {
+              "dayOfWeek": "WEDNESDAY",
+              "startTime": "07:00",
+              "endTime": "17:00"
+            },
+            {
+              "dayOfWeek": "THURSDAY",
+              "startTime": "07:00",
+              "endTime": "17:00"
+            },
+            {
+              "dayOfWeek": "FRIDAY",
+              "startTime": "07:00",
+              "endTime": "17:00"
+            },
+            {
+              "dayOfWeek": "SATURDAY",
+              "startTime": "08:00",
+              "endTime": "14:00"
+            }
+          ],
+          "minimumBookingAdvanceHours": 24,
+          "languagesSupported": ["en", "sw"],
+          "serviceCategory": "VACCINATION",
+          "providerType": "VET",
+          "livestockTypes": ["POULTRY"],
+          "serviceAreaHierarchy": {
+            "village": "Githunguri",
+            "ward": "Githunguri",
+            "county": "Kiambu",
+            "country": "KE",
+            "coverageRadiusKm": 25
+          }
+        }
+      }]
+    }]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "sr": "https://schema.beckn.io/ServiceResource#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "ServiceResource": "sr:ServiceResource",
+    "ServiceCoverageArea": "sr:ServiceCoverageArea",
+    "ServiceAvailabilitySlot": "sr:ServiceAvailabilitySlot",
+    "ServiceUnit": "sr:ServiceUnit",
+    "DayOfWeek": "sr:DayOfWeek",
+
+    "serviceUnit": {"@id": "sr:serviceUnit"},
+    "coverageArea": {"@id": "sr:coverageArea"},
+    "capacityPerDay": {"@id": "sr:capacityPerDay"},
+    "capacityPerWeek": {"@id": "sr:capacityPerWeek"},
+    "availabilitySchedule": {"@id": "sr:availabilitySchedule"},
+    "minimumBookingAdvanceHours": {"@id": "sr:minimumBookingAdvanceHours"},
+    "languagesSupported": {"@id": "sr:languagesSupported"},
+    "region": {"@id": "sr:region"},
+    "country": {"@id": "sr:country"},
+    "coverageRadiusKm": {"@id": "sr:coverageRadiusKm"},
+    "dayOfWeek": {"@id": "sr:dayOfWeek"},
+    "startTime": {"@id": "sr:startTime"},
+    "endTime": {"@id": "sr:endTime"}
+  }
+}

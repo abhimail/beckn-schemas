@@ -1,0 +1,19 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "scn": "https://schema.beckn.io/ServiceConsideration#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "ServiceConsideration": "scn:ServiceConsideration",
+    "PaymentMethod": "scn:PaymentMethod",
+
+    "pricePerUnit": {"@id": "scn:pricePerUnit"},
+    "currency": {"@id": "scn:currency"},
+    "totalAmount": {"@id": "scn:totalAmount"},
+    "paymentMethodsAccepted": {"@id": "scn:paymentMethodsAccepted"},
+    "selectedPaymentMethod": {"@id": "scn:selectedPaymentMethod"},
+    "transactionRef": {"@id": "scn:transactionRef"}
+  }
+}
