@@ -1,0 +1,8 @@
+{
+  "schema": "DriverJobResource",
+  "version": "2.1.0",
+  "card_template": "{{role_type}} | {{shift_type}} | {{vehicle_categories_required}}",
+  "detail_template": "Role: {{role_type}}\nShift: {{shift_type}}\nVehicles: {{vehicle_categories_required}}\nCredentials: {{required_credentials}}\nReputation: {{operator_reputation.rating_value}}/5",
+  "html": "<div class='driver-job-card'><h3>{{beckn:descriptor.schema:name}}</h3><span class='badge'>{{beckn:resourceAttributes.role_type}}</span><span class='badge'>{{beckn:resourceAttributes.shift_type}}</span><p>Vehicles: {{beckn:resourceAttributes.vehicle_categories_required}}</p></div>",
+  "html_detail": "<div class='driver-job-detail'><h2>{{beckn:descriptor.schema:name}}</h2><p>{{beckn:descriptor.beckn:shortDesc}}</p><h4>Role</h4><p>{{beckn:resourceAttributes.role_type}} | {{beckn:resourceAttributes.shift_type}}</p><h4>Vehicle Categories</h4><p>{{beckn:resourceAttributes.vehicle_categories_required}}</p><h4>Required Credentials</h4><p>{{beckn:resourceAttributes.required_credentials}}</p><h4>Operator Reputation</h4><p>\u2605 {{beckn:resourceAttributes.operator_reputation.rating_value}} ({{beckn:resourceAttributes.operator_reputation.rating_count}} ratings)</p></div>"
+}

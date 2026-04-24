@@ -1,0 +1,60 @@
+{
+  "context": {
+    "action": "on_discover",
+    "version": "2.0.0",
+    "schemaContext": [
+      "https://schema.beckn.io/CandidateProfileResource/v2.1/context.jsonld",
+      "https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "catalog": {
+      "beckn:resources": [
+        {
+          "beckn:id": "dcand-001",
+          "beckn:isAvailable": true,
+          "beckn:descriptor": {
+            "schema:name": "Driver Profile D-4821",
+            "beckn:shortDesc": "Heavy vehicle driver, 8 yrs exp, Bengaluru."
+          },
+          "beckn:resourceAttributes": {
+            "experience_level": "SENIOR",
+            "total_experience_years": 8,
+            "availability_status": "ACTIVELY_LOOKING",
+            "preferred_work_mode": "ONSITE",
+            "driver_role_types": [
+              "TRUCK_DRIVER",
+              "BUS_DRIVER"
+            ],
+            "vehicle_categories": [
+              "HEAVY_MOTOR_VEHICLE",
+              "BUS",
+              "TRANSPORT_VEHICLE"
+            ],
+            "home_location": {
+              "address_locality": "Yeshwanthpur",
+              "address_region": "Karnataka",
+              "address_country": "IN",
+              "postal_code": "560022"
+            },
+            "reputation_summary": {
+              "rating_value": 4.6,
+              "rating_count": 89,
+              "rating_agency": "DriverPassport-Network"
+            },
+            "credential_summary": [
+              "DRIVING_LICENCE",
+              "MEDICAL_FITNESS",
+              "POLICE_VERIFICATION"
+            ],
+            "training_summary": [
+              "Defensive Driving",
+              "Passenger Safety Protocol"
+            ],
+            "last_updated": "2026-04-01T10:30:00Z"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "djra": "https://schema.beckn.io/DriverJobResource#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "DriverJobResource": "djra:DriverJobResource",
+    "DriverRoleType": "djra:DriverRoleType",
+    "DriverVehicleCategory": "djra:DriverVehicleCategory",
+    "ShiftType": "djra:ShiftType",
+    "BUS_DRIVER": "djra:BUS_DRIVER",
+    "TRUCK_DRIVER": "djra:TRUCK_DRIVER",
+    "TAXI_DRIVER": "djra:TAXI_DRIVER",
+    "AUTO_DRIVER": "djra:AUTO_DRIVER",
+    "DELIVERY_DRIVER": "djra:DELIVERY_DRIVER",
+    "HEAVY_VEHICLE_DRIVER": "djra:HEAVY_VEHICLE_DRIVER",
+    "LIGHT_VEHICLE_DRIVER": "djra:LIGHT_VEHICLE_DRIVER",
+    "SCHOOL_BUS_DRIVER": "djra:SCHOOL_BUS_DRIVER",
+    "AMBULANCE_DRIVER": "djra:AMBULANCE_DRIVER",
+    "LIGHT_MOTOR_VEHICLE": "djra:LIGHT_MOTOR_VEHICLE",
+    "HEAVY_MOTOR_VEHICLE": "djra:HEAVY_MOTOR_VEHICLE",
+    "TRANSPORT_VEHICLE": "djra:TRANSPORT_VEHICLE",
+    "MOTORCYCLE": "djra:MOTORCYCLE",
+    "AUTO_RICKSHAW": "djra:AUTO_RICKSHAW",
+    "BUS": "djra:BUS",
+    "TRUCK": "djra:TRUCK",
+    "AMBULANCE": "djra:AMBULANCE",
+    "DAY": "djra:DAY",
+    "NIGHT": "djra:NIGHT",
+    "ROTATIONAL": "djra:ROTATIONAL",
+    "FLEXIBLE": "djra:FLEXIBLE"
+  },
+  "@graph": [
+    {
+      "@id": "djra:DriverJobResource",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Driver Job Resource",
+      "rdfs:comment": "Extension attributes for a driver job vacancy resource."
+    },
+    {
+      "@id": "djra:DriverRoleType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Driver Role Type",
+      "rdfs:comment": "Classification of driver roles."
+    },
+    {
+      "@id": "djra:BUS_DRIVER",
+      "@type": "djra:DriverRoleType",
+      "rdfs:label": "Bus Driver"
+    },
+    {
+      "@id": "djra:TRUCK_DRIVER",
+      "@type": "djra:DriverRoleType",
+      "rdfs:label": "Truck Driver"
+    },
+    {
+      "@id": "djra:TAXI_DRIVER",
+      "@type": "djra:DriverRoleType",
+      "rdfs:label": "Taxi Driver"
+    },
+    {
+      "@id": "djra:AUTO_DRIVER",
+      "@type": "djra:DriverRoleType",
+      "rdfs:label": "Auto Driver"
+    },
+    {
+      "@id": "djra:DELIVERY_DRIVER",
+      "@type": "djra:DriverRoleType",
+      "rdfs:label": "Delivery Driver"
+    },
+    {
+      "@id": "djra:HEAVY_VEHICLE_DRIVER",
+      "@type": "djra:DriverRoleType",
+      "rdfs:label": "Heavy Vehicle Driver"
+    },
+    {
+      "@id": "djra:LIGHT_VEHICLE_DRIVER",
+      "@type": "djra:DriverRoleType",
+      "rdfs:label": "Light Vehicle Driver"
+    },
+    {
+      "@id": "djra:SCHOOL_BUS_DRIVER",
+      "@type": "djra:DriverRoleType",
+      "rdfs:label": "School Bus Driver"
+    },
+    {
+      "@id": "djra:AMBULANCE_DRIVER",
+      "@type": "djra:DriverRoleType",
+      "rdfs:label": "Ambulance Driver"
+    },
+    {
+      "@id": "djra:DriverVehicleCategory",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Driver Vehicle Category",
+      "rdfs:comment": "Vehicle categories for licensing."
+    },
+    {
+      "@id": "djra:LIGHT_MOTOR_VEHICLE",
+      "@type": "djra:DriverVehicleCategory",
+      "rdfs:label": "Light Motor Vehicle"
+    },
+    {
+      "@id": "djra:HEAVY_MOTOR_VEHICLE",
+      "@type": "djra:DriverVehicleCategory",
+      "rdfs:label": "Heavy Motor Vehicle"
+    },
+    {
+      "@id": "djra:TRANSPORT_VEHICLE",
+      "@type": "djra:DriverVehicleCategory",
+      "rdfs:label": "Transport Vehicle"
+    },
+    {
+      "@id": "djra:MOTORCYCLE",
+      "@type": "djra:DriverVehicleCategory",
+      "rdfs:label": "Motorcycle"
+    },
+    {
+      "@id": "djra:AUTO_RICKSHAW",
+      "@type": "djra:DriverVehicleCategory",
+      "rdfs:label": "Auto Rickshaw"
+    },
+    {
+      "@id": "djra:BUS",
+      "@type": "djra:DriverVehicleCategory",
+      "rdfs:label": "Bus"
+    },
+    {
+      "@id": "djra:TRUCK",
+      "@type": "djra:DriverVehicleCategory",
+      "rdfs:label": "Truck"
+    },
+    {
+      "@id": "djra:AMBULANCE",
+      "@type": "djra:DriverVehicleCategory",
+      "rdfs:label": "Ambulance"
+    },
+    {
+      "@id": "djra:ShiftType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Shift Type",
+      "rdfs:comment": "Shift pattern for a driver role."
+    },
+    {
+      "@id": "djra:DAY",
+      "@type": "djra:ShiftType",
+      "rdfs:label": "Day Shift"
+    },
+    {
+      "@id": "djra:NIGHT",
+      "@type": "djra:ShiftType",
+      "rdfs:label": "Night Shift"
+    },
+    {
+      "@id": "djra:ROTATIONAL",
+      "@type": "djra:ShiftType",
+      "rdfs:label": "Rotational Shift"
+    },
+    {
+      "@id": "djra:FLEXIBLE",
+      "@type": "djra:ShiftType",
+      "rdfs:label": "Flexible Shift"
+    }
+  ]
+}

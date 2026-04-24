@@ -1,0 +1,62 @@
+openapi: 3.1.1
+info:
+  title: DriverJobResource
+  version: "2.1.0"
+  description: >
+    Driver-domain extension attributes for a job vacancy Resource.
+    Extends HiringJobResource with driver-specific role, vehicle, and
+    credential fields. shift_type, working_hours, contract_duration, and
+    application_instructions are intentionally absent here — they are now
+    generalised fields on HiringJobResource (base) and apply equally across
+    all hiring verticals, not just driver roles.
+
+components:
+  schemas:
+    DriverJobResource:
+      allOf:
+        - $ref: "https://schema.beckn.io/HiringJobResource/v2.1/attributes.yaml#/components/schemas/HiringJobResource"
+      type: object
+      x-beckn-container: resourceAttributes
+      x-jsonld-context: "./context.jsonld"
+      description: >
+        Driver-specific extension of HiringJobResource. Adds role type, required
+        vehicle categories, credential requirements, and training requirements.
+        Inherits all generic job fields (job_title, job_type, work_mode, location,
+        shift_type, working_hours, contract_duration, experience_level, etc.)
+        from HiringJobResource — only driver-domain delta properties are defined here.
+      properties:
+        role_type:
+          type: string
+          enum: [BUS_DRIVER, TRUCK_DRIVER, TAXI_DRIVER, AUTO_DRIVER, DELIVERY_DRIVER,
+                 HEAVY_VEHICLE_DRIVER, LIGHT_VEHICLE_DRIVER, SCHOOL_BUS_DRIVER, AMBULANCE_DRIVER]
+          description: Driver role classification.
+          x-jsonld-id: "djra:role_type"
+        vehicle_categories_required:
+          type: array
+          items:
+            type: string
+            enum: [LIGHT_MOTOR_VEHICLE, HEAVY_MOTOR_VEHICLE, TRANSPORT_VEHICLE,
+                   MOTORCYCLE, AUTO_RICKSHAW, BUS, TRUCK, AMBULANCE]
+          description: Vehicle categories the driver must be licensed for.
+          x-jsonld-id: "djra:vehicle_categories_required"
+        required_credentials:
+          type: array
+          items:
+            type: string
+            enum: [DRIVING_LICENCE, POLICE_VERIFICATION, MEDICAL_FITNESS,
+                   BACKGROUND_CHECK, DEFENSIVE_DRIVING, FIRST_AID,
+                   HAZMAT, PASSENGER_VEHICLE_AUTHORISATION]
+          description: Credential types required for this role.
+          x-jsonld-id: "djra:required_credentials"
+        required_training:
+          type: array
+          items:
+            type: string
+          description: Training programmes required (free-text labels).
+          x-jsonld-id: "djra:required_training"
+        benefits_summary:
+          type: array
+          items:
+            type: string
+          description: High-level benefit labels visible at discovery stage.
+          x-jsonld-id: "djra:benefits_summary"

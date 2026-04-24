@@ -1,0 +1,36 @@
+{
+  "id": "https://schema.beckn.io/DriverCandidateProfileResource/v1",
+  "name": "DriverCandidateProfileResource",
+  "version": "2.1.0",
+  "protocol_version": "2.1",
+  "semantic_model": "generalised",
+  "included_schemas": [
+    "DriverCandidateProfileResource",
+    "NetworkLocation"
+  ],
+  "extends": "https://schema.beckn.io/CandidateProfileResource/v2.1/attributes.yaml#/components/schemas/CandidateProfileResource",
+  "discovery_fields": [
+    "driver_role_types",
+    "vehicle_categories",
+    "home_location",
+    "credential_summary"
+  ],
+  "indexable_paths": [
+    "driver_role_types",
+    "vehicle_categories"
+  ],
+  "filterable_paths": [
+    "driver_role_types",
+    "vehicle_categories",
+    "credential_summary",
+    "home_location.address_region"
+  ],
+  "sortable_paths": [
+    "reputation_summary.rating_value",
+    "last_updated"
+  ],
+  "privacy_notes": [
+    "passport_reference: PII \u2014 disclosed at init and later only",
+    "home_location.gps: locality-level only at on_discover"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "context": {
+    "action": "on_discover",
+    "version": "2.0.0",
+    "schemaContext": [
+      "https://schema.beckn.io/HiringJobResource/v2.1/context.jsonld",
+      "https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "catalog": {
+      "beckn:resources": [
+        {
+          "beckn:id": "djob-001",
+          "beckn:descriptor": {
+            "schema:name": "Bus Driver \u2014 BMTC City Routes",
+            "beckn:shortDesc": "Full-time city bus driver, DAY shift, Bengaluru."
+          },
+          "beckn:resourceAttributes": {
+            "job_title": "Bus Driver \u2014 BMTC City Routes",
+            "job_type": "FULL_TIME",
+            "work_mode": "ONSITE",
+            "role_type": "BUS_DRIVER",
+            "vehicle_categories_required": [
+              "BUS",
+              "HEAVY_MOTOR_VEHICLE"
+            ],
+            "shift_type": "MORNING",
+            "working_hours": "6am\u20132pm, Mon\u2013Sat",
+            "min_experience_years": 3,
+            "required_credentials": [
+              "DRIVING_LICENCE",
+              "MEDICAL_FITNESS",
+              "POLICE_VERIFICATION"
+            ],
+            "required_training": [
+              "Defensive Driving",
+              "Passenger Safety"
+            ],
+            "benefits_summary": [
+              "PF",
+              "ESI",
+              "Uniform Allowance"
+            ],
+            "operator_reputation": {
+              "rating_value": 4.2,
+              "rating_count": 340,
+              "rating_agency": "DriverPassport-Network"
+            },
+            "vacancy_count": 12,
+            "is_urgent": false,
+            "application_deadline": "2026-05-31T23:59:59Z"
+          }
+        }
+      ]
+    }
+  }
+}

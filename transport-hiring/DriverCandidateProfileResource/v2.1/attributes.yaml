@@ -1,0 +1,80 @@
+openapi: 3.1.1
+info:
+  title: DriverCandidateProfileResource
+  version: "2.1.0"
+  description: >
+    Driver-domain extension attributes for a candidate profile Resource.
+    Extends CandidateProfileResource with driver-specific role types, vehicle
+    categories, home location, reputation summary, credential summary,
+    training summary, and stage-gated passport reference. The inline
+    NetworkLocation sub-schema has been replaced by a $ref to
+    hiring-common/JobLocation, which provides the same GPS + postal address
+    combination with consistent field naming across all hiring verticals.
+
+components:
+  schemas:
+    DriverCandidateProfileResource:
+      allOf:
+        - $ref: "https://schema.beckn.io/CandidateProfileResource/v2.1/attributes.yaml#/components/schemas/CandidateProfileResource"
+      type: object
+      x-beckn-container: resourceAttributes
+      x-jsonld-context: "./context.jsonld"
+      description: >
+        Driver-specific extension of CandidateProfileResource. Adds driver role types,
+        vehicle categories, home location (using shared JobLocation), reputation summary,
+        credential summary, training summary, and stage-gated passport reference.
+        Inherits all generic candidate profile fields from CandidateProfileResource.
+        Contains zero PII — identity managed at beckn:parties level.
+      properties:
+        driver_role_types:
+          type: array
+          items:
+            type: string
+            enum: [BUS_DRIVER, TRUCK_DRIVER, TAXI_DRIVER, AUTO_DRIVER, DELIVERY_DRIVER,
+                   HEAVY_VEHICLE_DRIVER, LIGHT_VEHICLE_DRIVER, SCHOOL_BUS_DRIVER, AMBULANCE_DRIVER]
+          description: Driver roles the candidate can perform.
+          x-jsonld-id: "dcpra:driver_role_types"
+        vehicle_categories:
+          type: array
+          items:
+            type: string
+            enum: [LIGHT_MOTOR_VEHICLE, HEAVY_MOTOR_VEHICLE, TRANSPORT_VEHICLE,
+                   MOTORCYCLE, AUTO_RICKSHAW, BUS, TRUCK, AMBULANCE]
+          description: Vehicle categories the candidate is licensed for.
+          x-jsonld-id: "dcpra:vehicle_categories"
+        home_location:
+          $ref: "https://schema.beckn.io/JobLocation/v2.1/attributes.yaml#/components/schemas/JobLocation"
+          description: >
+            Candidate's home location at locality level only at discovery stage.
+            Uses hiring-common JobLocation (GPS + address fields, anyOf constraint).
+            Precise GPS MUST NOT be disclosed at on_discover — use address_locality
+            and address_region only at that stage.
+          x-jsonld-id: "dcpra:home_location"
+        credential_summary:
+          type: array
+          items:
+            type: string
+            enum: [DRIVING_LICENCE, POLICE_VERIFICATION, MEDICAL_FITNESS,
+                   BACKGROUND_CHECK, DEFENSIVE_DRIVING, FIRST_AID,
+                   HAZMAT, PASSENGER_VEHICLE_AUTHORISATION]
+          description: >
+            CredentialType labels only (no documents). Safe for discovery stage.
+          x-jsonld-id: "dcpra:credential_summary"
+        training_summary:
+          type: array
+          items:
+            type: string
+          description: Completed training programme labels (no certificates).
+          x-jsonld-id: "dcpra:training_summary"
+        passport_reference:
+          type: string
+          description: >
+            Driver Passport reference (network identity pointer). PII —
+            MUST NOT appear in on_discover responses. Disclosed at init and later.
+          x-pii-disclosure-stage: init
+          x-jsonld-id: "dcpra:passport_reference"
+        last_updated:
+          type: string
+          format: date-time
+          description: Timestamp when the candidate profile was last updated.
+          x-jsonld-id: "dcpra:last_updated"

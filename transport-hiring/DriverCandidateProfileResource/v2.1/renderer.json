@@ -1,0 +1,8 @@
+{
+  "schema": "DriverCandidateProfileResource",
+  "version": "2.1.0",
+  "card_template": "{{driver_role_types}} | {{vehicle_categories}} | {{home_location.address_locality}}, {{home_location.address_region}}",
+  "detail_template": "Roles: {{driver_role_types}}\nVehicles: {{vehicle_categories}}\nLocation: {{home_location.address_locality}}, {{home_location.address_region}}\nCredentials: {{credential_summary}}\nReputation: {{reputation_summary.rating_value}}/5",
+  "html": "<div class='driver-candidate-card'><h3>{{beckn:descriptor.schema:name}}</h3><p>{{driver_role_types}} | \u2605 {{reputation_summary.rating_value}}</p><p>{{home_location.address_locality}}, {{home_location.address_region}}</p></div>",
+  "html_detail": "<div class='driver-candidate-detail'><h2>{{beckn:descriptor.schema:name}}</h2><h4>Roles</h4><p>{{beckn:resourceAttributes.driver_role_types}}</p><h4>Vehicle Categories</h4><p>{{beckn:resourceAttributes.vehicle_categories}}</p><h4>Location</h4><p>{{beckn:resourceAttributes.home_location.address_locality}}, {{beckn:resourceAttributes.home_location.address_region}}</p><h4>Credentials</h4><p>{{beckn:resourceAttributes.credential_summary}}</p><h4>Reputation</h4><p>\u2605 {{beckn:resourceAttributes.reputation_summary.rating_value}} ({{beckn:resourceAttributes.reputation_summary.rating_count}} ratings)</p></div>"
+}

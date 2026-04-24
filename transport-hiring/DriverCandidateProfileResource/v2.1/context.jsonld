@@ -1,0 +1,114 @@
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "dcpra": "https://schema.beckn.io/DriverCandidateProfileResource#",
+    "cpra": "https://schema.beckn.io/CandidateProfileResource#",
+    "jloc": "https://schema.beckn.io/JobLocation#",
+    "salspec": "https://schema.beckn.io/SalarySpecification#",
+    "DriverCandidateProfileResource": "dcpra:DriverCandidateProfileResource",
+    "DriverRoleType": "dcpra:DriverRoleType",
+    "DriverVehicleCategory": "dcpra:DriverVehicleCategory",
+    "driver_role_types": {
+      "@id": "dcpra:driver_role_types"
+    },
+    "vehicle_categories": {
+      "@id": "dcpra:vehicle_categories"
+    },
+    "home_location": {
+      "@id": "dcpra:home_location"
+    },
+    "credential_summary": {
+      "@id": "dcpra:credential_summary"
+    },
+    "training_summary": {
+      "@id": "dcpra:training_summary"
+    },
+    "passport_reference": {
+      "@id": "dcpra:passport_reference"
+    },
+    "last_updated": {
+      "@id": "dcpra:last_updated"
+    },
+    "experience_level": {
+      "@id": "cpra:experienceLevel"
+    },
+    "total_experience_years": {
+      "@id": "cpra:totalExperienceYears"
+    },
+    "availability_status": {
+      "@id": "cpra:availabilityStatus"
+    },
+    "notice_period": {
+      "@id": "cpra:noticePeriod"
+    },
+    "preferred_work_mode": {
+      "@id": "cpra:preferredWorkMode"
+    },
+    "preferred_location": {
+      "@id": "cpra:preferredLocation"
+    },
+    "current_location": {
+      "@id": "cpra:currentLocation"
+    },
+    "relocation_willing": {
+      "@id": "cpra:relocationWilling"
+    },
+    "skills": {
+      "@id": "cpra:skills"
+    },
+    "education": {
+      "@id": "cpra:education"
+    },
+    "industry_preference": {
+      "@id": "cpra:industryPreference"
+    },
+    "functional_area_preference": {
+      "@id": "cpra:functionalAreaPreference"
+    },
+    "expected_salary": {
+      "@id": "cpra:expectedSalary"
+    },
+    "languages": {
+      "@id": "cpra:languages"
+    },
+    "open_to_job_types": {
+      "@id": "cpra:openToJobTypes"
+    },
+    "reputation_summary": {
+      "@id": "cpra:reputationSummary"
+    },
+    "JobLocation": "jloc:JobLocation",
+    "geo": {
+      "@id": "jloc:geo"
+    },
+    "address_locality": {
+      "@id": "jloc:address_locality"
+    },
+    "address_region": {
+      "@id": "jloc:address_region"
+    },
+    "postal_code": {
+      "@id": "jloc:postal_code"
+    },
+    "address_country": {
+      "@id": "jloc:address_country"
+    },
+    "SalarySpecification": "salspec:SalarySpecification",
+    "salary_min": {
+      "@id": "salspec:salary_min"
+    },
+    "salary_max": {
+      "@id": "salspec:salary_max"
+    },
+    "salary_currency": {
+      "@id": "salspec:salary_currency"
+    },
+    "salary_period": {
+      "@id": "salspec:salary_period"
+    },
+    "WorkMode": "cpra:WorkMode",
+    "ExperienceLevel": "cpra:ExperienceLevel",
+    "AvailabilityStatus": "cpra:AvailabilityStatus"
+  }
+}
