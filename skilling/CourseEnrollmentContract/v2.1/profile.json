@@ -1,0 +1,22 @@
+{
+  "schema_name": "CourseEnrollmentContract",
+  "pack": "skilling",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "version": "2.1.0",
+  "beckn_container": "contractAttributes",
+  "namespace_prefix": "ceca",
+  "namespace_iri": "https://schema.beckn.io/CourseEnrollmentContract#",
+  "topology": "standard",
+  "bap_role": "Skill Seeker App",
+  "bpp_role": "Course Provider / Training Platform",
+  "description": "Contract attributes for a course enrollment: stage, progress, completion, credential issuance reference, and prerequisite verification outcome.",
+  "shared_types": ["VerificationSummary"],
+  "files": {
+    "attributes": "attributes.yaml",
+    "jsonld_context": "context.jsonld",
+    "vocab": "vocab.jsonld",
+    "renderer": "renderer.json",
+    "examples": "examples/"
+  }
+}

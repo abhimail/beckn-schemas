@@ -1,0 +1,135 @@
+{
+  "_comment": "on_confirm \u2014 consideration attributes inside an enrollment contract (installment plan)",
+  "context": {
+    "domain": "skilling:courses",
+    "action": "on_confirm",
+    "version": "2.0.0",
+    "bap_id": "skill-seeker-app.example.com",
+    "bap_uri": "https://skill-seeker-app.example.com/beckn",
+    "bpp_id": "training-platform.example.com",
+    "bpp_uri": "https://training-platform.example.com/beckn",
+    "transaction_id": "txn-course-conf-002",
+    "message_id": "msg-course-conf-002",
+    "timestamp": "2026-04-16T10:30:00Z",
+    "schemaContext": [
+      {
+        "schema": "CourseEnrollmentContractAttributes",
+        "version": "2.1.0",
+        "namespace": "ceca"
+      },
+      {
+        "schema": "CourseConsideration",
+        "version": "2.1.0",
+        "namespace": "ccoa"
+      },
+      {
+        "schema": "CourseDeliveryPerformanceAttributes",
+        "version": "2.1.0",
+        "namespace": "cdpa"
+      }
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-enroll-002",
+      "beckn:status": {
+        "code": "ACTIVE"
+      },
+      "beckn:participants": [
+        {
+          "beckn:id": "learner-session-002",
+          "beckn:descriptor": {
+            "name": "Learner"
+          },
+          "beckn:role": "BAP"
+        },
+        {
+          "beckn:id": "training-platform.example.com",
+          "beckn:descriptor": {
+            "name": "SkillUp Training Platform"
+          },
+          "beckn:role": "BPP"
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-enroll-002",
+          "beckn:status": {
+            "descriptor": {
+              "code": "ACTIVE"
+            }
+          },
+          "beckn:refType": "RESOURCE",
+          "beckn:ref": "course-data-science-001",
+          "beckn:quantity": {
+            "count": 1
+          }
+        }
+      ],
+      "beckn:consideration": [
+        {
+          "beckn:id": "consid-installment-001",
+          "beckn:type": "MONETARY",
+          "beckn:status": {
+            "code": "AGREED"
+          },
+          "beckn:amount": {
+            "currency": "INR",
+            "value": "14999"
+          },
+          "beckn:considerationAttributes": {
+            "@context": "https://schema.beckn.io/CourseConsideration#",
+            "payment_mode": "INSTALLMENT",
+            "total_amount": 14999,
+            "currency": "INR",
+            "tax_amount": 2699.82,
+            "tax_code": "GST18",
+            "installment_plan": [
+              {
+                "installment_number": 1,
+                "amount": 5000,
+                "due_date": "2026-04-20",
+                "status": "PENDING"
+              },
+              {
+                "installment_number": 2,
+                "amount": 5000,
+                "due_date": "2026-05-20",
+                "status": "PENDING"
+              },
+              {
+                "installment_number": 3,
+                "amount": 4999,
+                "due_date": "2026-06-20",
+                "status": "PENDING"
+              }
+            ]
+          }
+        }
+      ],
+      "beckn:performance": [
+        {
+          "beckn:id": "perf-access-001",
+          "beckn:status": {
+            "code": "PLANNED"
+          },
+          "beckn:commitmentIds": [
+            "commit-enroll-002"
+          ],
+          "beckn:performanceAttributes": {
+            "@context": "https://schema.beckn.io/CourseDeliveryPerformanceAttributes#",
+            "delivery_url": "https://training-platform.example.com/courses/data-science-001/learn",
+            "access_expires_at": "2026-10-16T23:59:59Z",
+            "completion_percentage": 0
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "@context": "https://schema.beckn.io/CourseEnrollmentContractAttributes#",
+        "enrollment_date": "2026-04-16",
+        "stage": "ENROLLED",
+        "completion_deadline": "2026-10-16"
+      }
+    }
+  }
+}

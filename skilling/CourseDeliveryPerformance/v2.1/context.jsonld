@@ -1,0 +1,143 @@
+{
+  "@context": {
+    "cdpa": "https://schema.beckn.io/CourseDeliveryPerformance#",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "deliveryUrl": {
+      "@id": "cdpa:deliveryUrl",
+      "@type": "@id"
+    },
+    "accessExpiresAt": {
+      "@id": "cdpa:accessExpiresAt",
+      "@type": "xsd:dateTime"
+    },
+    "completionPercentage": {
+      "@id": "cdpa:completionPercentage",
+      "@type": "xsd:decimal"
+    },
+    "timeSpentHours": {
+      "@id": "cdpa:timeSpentHours",
+      "@type": "xsd:decimal"
+    },
+    "lastAccessedAt": {
+      "@id": "cdpa:lastAccessedAt",
+      "@type": "xsd:dateTime"
+    },
+    "sessionSchedule": {
+      "@id": "cdpa:sessionSchedule",
+      "@container": "@list"
+    },
+    "sessionsAttended": {
+      "@id": "cdpa:sessionsAttended",
+      "@type": "xsd:integer"
+    },
+    "sessionsTotal": {
+      "@id": "cdpa:sessionsTotal",
+      "@type": "xsd:integer"
+    },
+    "assessmentAttempts": {
+      "@id": "cdpa:assessmentAttempts",
+      "@type": "xsd:integer"
+    },
+    "currentScore": {
+      "@id": "cdpa:currentScore",
+      "@type": "xsd:decimal"
+    },
+    "certificateDownloadUrl": {
+      "@id": "cdpa:certificateDownloadUrl",
+      "@type": "@id"
+    },
+    "sessionId": {
+      "@id": "cdpa:sessionId"
+    },
+    "sessionNumber": {
+      "@id": "cdpa:sessionNumber",
+      "@type": "xsd:integer"
+    },
+    "title": {
+      "@id": "cdpa:title"
+    },
+    "scheduledAt": {
+      "@id": "cdpa:scheduledAt",
+      "@type": "xsd:dateTime"
+    },
+    "conductedAt": {
+      "@id": "cdpa:conductedAt",
+      "@type": "xsd:dateTime"
+    },
+    "durationMinutes": {
+      "@id": "cdpa:durationMinutes",
+      "@type": "xsd:integer"
+    },
+    "joinUrl": {
+      "@id": "cdpa:joinUrl",
+      "@type": "@id"
+    },
+    "recordingUrl": {
+      "@id": "cdpa:recordingUrl",
+      "@type": "@id"
+    },
+    "attendanceStatus": {
+      "@id": "cdpa:attendanceStatus"
+    },
+    "AttendanceStatus": "cdpa:AttendanceStatus",
+    "session_id": {
+      "@id": "cdpa:sessionId"
+    },
+    "session_number": {
+      "@id": "cdpa:sessionNumber"
+    },
+    "scheduled_at": {
+      "@id": "cdpa:scheduledAt"
+    },
+    "conducted_at": {
+      "@id": "cdpa:conductedAt"
+    },
+    "duration_minutes": {
+      "@id": "cdpa:durationMinutes"
+    },
+    "join_url": {
+      "@id": "cdpa:joinUrl"
+    },
+    "recording_url": {
+      "@id": "cdpa:recordingUrl"
+    },
+    "attendance_status": {
+      "@id": "cdpa:attendanceStatus"
+    },
+    "delivery_url": {
+      "@id": "cdpa:deliveryUrl"
+    },
+    "access_expires_at": {
+      "@id": "cdpa:accessExpiresAt"
+    },
+    "completion_percentage": {
+      "@id": "cdpa:completionPercentage"
+    },
+    "time_spent_hours": {
+      "@id": "cdpa:timeSpentHours"
+    },
+    "last_accessed_at": {
+      "@id": "cdpa:lastAccessedAt"
+    },
+    "session_schedule": {
+      "@id": "cdpa:sessionSchedule"
+    },
+    "sessions_attended": {
+      "@id": "cdpa:sessionsAttended"
+    },
+    "sessions_total": {
+      "@id": "cdpa:sessionsTotal"
+    },
+    "assessment_attempts": {
+      "@id": "cdpa:assessmentAttempts"
+    },
+    "current_score": {
+      "@id": "cdpa:currentScore"
+    },
+    "certificate_download_url": {
+      "@id": "cdpa:certificateDownloadUrl"
+    }
+  }
+}

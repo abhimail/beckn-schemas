@@ -1,0 +1,117 @@
+openapi: 3.1.1
+info:
+  title: CourseConsideration
+  version: 2.1.0
+  description: >
+    Extension attributes for a course enrollment consideration in a Beckn v2.1
+    skilling network. Describes the payment terms and financing options agreed
+    for a course enrollment contract — installment plans, scholarships, and
+    voucher redemptions.
+  contact:
+    name: Beckn Protocol
+    url: https://becknprotocol.io
+
+x-beckn-pack: skilling
+x-beckn-container: considerationAttributes
+x-beckn-schema-version: "2.1.0"
+x-beckn-protocol-version: "2.0"
+
+components:
+  schemas:
+
+    InstallmentPlan:
+      type: object
+      description: A single installment in a multi-payment plan
+      properties:
+        installment_number:
+          type: integer
+          description: Sequence number of this installment (1-based)
+          x-jsonld-id: "ccoa:installmentNumber"
+        amount:
+          type: number
+          description: Amount due for this installment
+          x-jsonld-id: "ccoa:amount"
+        due_date:
+          type: string
+          format: date
+          description: Due date for this installment (ISO 8601)
+          x-jsonld-id: "ccoa:dueDate"
+        status:
+          type: string
+          enum: [PENDING, PAID, OVERDUE, WAIVED]
+          description: Payment status of this installment
+          x-jsonld-id: "ccoa:status"
+
+    CourseConsideration:
+      type: object
+      description: >
+        Domain-specific extension attributes for a course enrollment consideration.
+        Captures payment structure, financing options, scholarship details, and
+        voucher redemption for the value-exchange agreed in a course contract.
+      x-jsonld-context: "./context.jsonld"
+      x-beckn-container: considerationAttributes
+      required: [payment_mode]
+      properties:
+        payment_mode:
+          type: string
+          enum: [ONE_TIME, INSTALLMENT, SCHOLARSHIP, VOUCHER, EMPLOYER_SPONSORED, FREE]
+          description: How the course fee is being paid
+          x-jsonld-id: "ccoa:paymentMode"
+        total_amount:
+          type: number
+          description: Total consideration amount (all installments combined)
+          x-jsonld-id: "ccoa:totalAmount"
+        currency:
+          type: string
+          description: ISO 4217 currency code
+          x-jsonld-id: "ccoa:currency"
+        installment_plan:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstallmentPlan"
+          description: >
+            Installment schedule for INSTALLMENT payment mode.
+            Not applicable for ONE_TIME or FREE modes.
+          x-jsonld-id: "ccoa:installmentPlan"
+        scholarship_id:
+          type: string
+          description: >
+            Reference ID of the scholarship applied. Opaque identifier —
+            no PII about the scholarship holder.
+          x-jsonld-id: "ccoa:scholarshipId"
+        scholarship_amount:
+          type: number
+          description: Amount covered by the scholarship
+          x-jsonld-id: "ccoa:scholarshipAmount"
+        voucher_code_hash:
+          type: string
+          description: >
+            SHA-256 hash of the voucher code applied (not the code itself).
+            Integrity reference only.
+          x-jsonld-id: "ccoa:voucherCodeHash"
+        voucher_discount_amount:
+          type: number
+          description: Amount discounted via voucher
+          x-jsonld-id: "ccoa:voucherDiscountAmount"
+        employer_sponsor_id:
+          type: string
+          description: >
+            Opaque reference ID of the employer sponsoring the enrollment.
+            No PII.
+          x-jsonld-id: "ccoa:employerSponsorId"
+        tax_amount:
+          type: number
+          description: Tax component of the total consideration
+          x-jsonld-id: "ccoa:taxAmount"
+        tax_code:
+          type: string
+          description: Tax code applied (e.g. "GST18", "VAT20")
+          x-jsonld-id: "ccoa:taxCode"
+        refund_amount:
+          type: number
+          description: Amount refunded (if applicable — for cancellation flow)
+          x-jsonld-id: "ccoa:refundAmount"
+        refund_reason:
+          type: string
+          description: Reason for refund (if applicable)
+          x-jsonld-id: "ccoa:refundReason"

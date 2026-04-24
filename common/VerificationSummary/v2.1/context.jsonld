@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "vs": "https://schema.beckn.io/VerificationSummary#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "VerificationSummary": { "@id": "vs:VerificationSummary" },
+    "overallResult": { "@id": "vs:overallResult" },
+    "checkedAt": { "@id": "vs:checkedAt", "@type": "xsd:dateTime" },
+    "verifierId": { "@id": "vs:verifierId" },
+    "credentialCount": { "@id": "vs:credentialCount", "@type": "xsd:integer" },
+    "passedCount": { "@id": "vs:passedCount", "@type": "xsd:integer" },
+    "failedCount": { "@id": "vs:failedCount", "@type": "xsd:integer" },
+    "notes": { "@id": "vs:notes" }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "schema_name": "CourseOffer",
+  "version": "2.1.0",
+  "card_template": {
+    "title": "{{coa:currency}} {{coa:price}}",
+    "subtitle": "Enroll by {{coa:enrollmentOpenUntil}}",
+    "tags": ["{{coa:seatsAvailable}} seats left", "{{coa:accessPeriodDays}} days access"]
+  },
+  "detail_template": {
+    "sections": [
+      {
+        "heading": "Pricing",
+        "fields": [
+          { "label": "Price", "value": "{{coa:currency}} {{coa:price}}" },
+          { "label": "Original Price", "value": "{{coa:currency}} {{coa:originalPrice}}" },
+          { "label": "Discount", "value": "{{coa:discountPercent}}%" },
+          { "label": "Refund Policy", "value": "{{coa:refundPolicy}}" }
+        ]
+      },
+      {
+        "heading": "Enrollment",
+        "fields": [
+          { "label": "Open Until", "value": "{{coa:enrollmentOpenUntil}}" },
+          { "label": "Cohort Start", "value": "{{coa:cohortStartDate}}" },
+          { "label": "Cohort End", "value": "{{coa:cohortEndDate}}" },
+          { "label": "Seats Available", "value": "{{coa:seatsAvailable}} / {{coa:maxCohortSize}}" },
+          { "label": "Access Period", "value": "{{coa:accessPeriodDays}} days" }
+        ]
+      },
+      {
+        "heading": "Includes",
+        "fields": [
+          { "label": "Certification Voucher", "value": "{{coa:includesCertificationVoucher}}" },
+          { "label": "Mentor Support", "value": "{{coa:includesMentorSupport}}" },
+          { "label": "Job Placement", "value": "{{coa:includesJobPlacement}}" }
+        ]
+      }
+    ]
+  },
+  "html": "<div class='offer-card'><p class='price'>{{coa:currency}} {{coa:price}}{{#if coa:discountPercent}} <s>{{coa:originalPrice}}</s> ({{coa:discountPercent}}% off){{/if}}</p><p>Enroll by {{coa:enrollmentOpenUntil}}</p><p>{{coa:seatsAvailable}} seats available</p></div>",
+  "html_detail": "<div class='offer-detail'><h3>Course Offer</h3><section><h4>Pricing</h4><p>{{coa:currency}} {{coa:price}}{{#if coa:discountPercent}} ({{coa:discountPercent}}% off {{coa:originalPrice}}){{/if}}</p><p>Refund: {{coa:refundPolicy}}</p></section><section><h4>Enrollment</h4><p>Open until: {{coa:enrollmentOpenUntil}}</p>{{#if coa:cohortStartDate}}<p>Cohort: {{coa:cohortStartDate}} – {{coa:cohortEndDate}}</p>{{/if}}<p>Seats: {{coa:seatsAvailable}} / {{coa:maxCohortSize}}</p><p>Access: {{coa:accessPeriodDays}} days</p></section><section><h4>Includes</h4>{{#if coa:includesCertificationVoucher}}<p>✓ Certification voucher</p>{{/if}}{{#if coa:includesMentorSupport}}<p>✓ Mentor support</p>{{/if}}{{#if coa:includesJobPlacement}}<p>✓ Job placement assistance</p>{{/if}}</section></div>"
+}

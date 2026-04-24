@@ -1,0 +1,118 @@
+{
+  "_comment": "on_confirm \u2014 employer BAP confirms hiring agreement with candidate BPP",
+  "context": {
+    "domain": "hiring:candidates",
+    "action": "on_confirm",
+    "version": "2.0.0",
+    "bap_id": "employer-app.example.com",
+    "bap_uri": "https://employer-app.example.com/beckn",
+    "bpp_id": "candidate-platform.example.com",
+    "bpp_uri": "https://candidate-platform.example.com/beckn",
+    "transaction_id": "txn-cand-conf-001",
+    "message_id": "msg-cand-conf-001",
+    "timestamp": "2026-04-16T11:00:00Z",
+    "schemaContext": [
+      {
+        "schema": "EmployerHiringContract",
+        "version": "2.1.0",
+        "namespace": "ehca"
+      },
+      {
+        "schema": "HiringProcessPerformanceAttributes",
+        "version": "2.1.0",
+        "namespace": "hppa"
+      }
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-hire-001",
+      "beckn:status": {
+        "code": "ACTIVE"
+      },
+      "beckn:participants": [
+        {
+          "beckn:id": "employer-org-001",
+          "beckn:descriptor": {
+            "name": "Employer Organisation"
+          },
+          "beckn:role": "BAP"
+        },
+        {
+          "beckn:id": "candidate-profile-001",
+          "beckn:descriptor": {
+            "name": "Candidate"
+          },
+          "beckn:role": "BPP"
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-hire-001",
+          "beckn:status": {
+            "descriptor": {
+              "code": "ACTIVE"
+            }
+          },
+          "beckn:refType": "RESOURCE",
+          "beckn:ref": "candidate-profile-001",
+          "beckn:quantity": {
+            "count": 1
+          }
+        }
+      ],
+      "beckn:consideration": [
+        {
+          "beckn:id": "consid-salary-001",
+          "beckn:type": "MONETARY",
+          "beckn:status": {
+            "code": "AGREED"
+          },
+          "beckn:amount": {
+            "currency": "INR",
+            "value": "2400000"
+          }
+        }
+      ],
+      "beckn:performance": [
+        {
+          "beckn:id": "perf-interview-001",
+          "beckn:status": {
+            "code": "COMPLETED"
+          },
+          "beckn:commitmentIds": [
+            "commit-hire-001"
+          ],
+          "beckn:performanceAttributes": {
+            "@context": "https://schema.beckn.io/HiringProcessPerformanceAttributes#",
+            "process_step": "VIDEO",
+            "scheduled_at": "2026-04-10T14:00:00Z",
+            "conducted_at": "2026-04-10T14:45:00Z",
+            "result": "PASS",
+            "next_step": "OFFER_EXTENDED"
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "@context": "https://schema.beckn.io/EmployerHiringContract#",
+        "hiring_stage": "OFFER_ACCEPTED",
+        "engagement_type": "FULL_TIME",
+        "agreed_start_date": "2026-06-01",
+        "agreed_salary": 2400000,
+        "agreed_salary_currency": "INR",
+        "agreed_salary_period": "ANNUAL",
+        "agreed_work_mode": "HYBRID",
+        "agreed_location_city": "Bengaluru",
+        "probation_period_days": 90,
+        "notice_period_days": 60,
+        "offer_expiry_date": "2026-04-20T23:59:59Z",
+        "offer_reference": "OFFER-2026-00142",
+        "prerequisite_verification_summary": {
+          "overall_result": "PASS",
+          "checked_at": "2026-04-09T10:00:00Z",
+          "notes": "React and AWS credentials verified via DeDi"
+        }
+      }
+    }
+  }
+}

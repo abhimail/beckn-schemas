@@ -1,0 +1,46 @@
+{
+  "schema_name": "CourseResource",
+  "version": "2.1.0",
+  "card_template": {
+    "title": "{{descriptor.name}}",
+    "subtitle": "{{cra:courseLevel}} · {{cra:deliveryMode}} · {{cra:durationHours}}h",
+    "tags": ["{{cra:language}}", "{{cra:outcomeCredential.category}}"],
+    "badge": "{{cra:courseLevel}}"
+  },
+  "detail_template": {
+    "sections": [
+      {
+        "heading": "Course Details",
+        "fields": [
+          { "label": "Level", "value": "{{cra:courseLevel}}" },
+          { "label": "Delivery", "value": "{{cra:deliveryMode}}" },
+          { "label": "Duration", "value": "{{cra:durationHours}} hours" },
+          { "label": "Language", "value": "{{cra:language}}" },
+          { "label": "Self-Paced", "value": "{{cra:isSelfPaced}}" }
+        ]
+      },
+      {
+        "heading": "Classification",
+        "fields": [
+          { "label": "Domain (ISCED)", "value": "{{cra:courseDomain.name}} ({{cra:courseDomain.code}})" },
+          { "label": "Industry (ISIC)", "value": "{{cra:industryType.name}}" }
+        ]
+      },
+      {
+        "heading": "Prerequisites",
+        "list": "{{cra:prerequisites}}",
+        "item_template": "{{credentialName}} ({{credentialType}}){{#if attested}} — VC required{{/if}}"
+      },
+      {
+        "heading": "Outcome Credential",
+        "fields": [
+          { "label": "Category", "value": "{{cra:outcomeCredential.category}}" },
+          { "label": "Name", "value": "{{cra:outcomeCredential.name}}" },
+          { "label": "Accreditation", "value": "{{cra:accreditationBody}}" }
+        ]
+      }
+    ]
+  },
+  "html": "<div class='course-card'><h3>{{descriptor.name}}</h3><p class='level'>{{cra:courseLevel}} · {{cra:deliveryMode}}</p><p>{{cra:durationHours}}h · {{cra:language}}</p><span class='badge'>{{cra:outcomeCredential.category}}: {{cra:outcomeCredential.name}}</span></div>",
+  "html_detail": "<div class='course-detail'><h2>{{descriptor.name}}</h2><section><h4>Details</h4><p>Level: {{cra:courseLevel}}</p><p>Delivery: {{cra:deliveryMode}}</p><p>Duration: {{cra:durationHours}}h</p><p>Language: {{cra:language}}</p></section><section><h4>Domain</h4><p>{{cra:courseDomain.name}} (ISCED {{cra:courseDomain.code}})</p></section><section><h4>Prerequisites</h4>{{#each cra:prerequisites}}<p>{{credentialName}}{{#if attested}} ✓ VC required{{/if}}</p>{{/each}}</section><section><h4>Outcome</h4><p>{{cra:outcomeCredential.category}}: {{cra:outcomeCredential.name}}</p>{{#if cra:accreditationBody}}<p>Accredited by: {{cra:accreditationBody}}</p>{{/if}}</section></div>"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_name": "CredentialRequirement",
+  "pack": "hiring-common",
+  "type": "shared",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "version": "2.1.0",
+  "namespace_prefix": "cr",
+  "namespace_iri": "https://schema.beckn.io/CredentialRequirement#",
+  "description": "Shared type for credential-gated access prerequisites. Supports self-declared (attested=false) and VC-backed (attested=true) verification with graceful degradation.",
+  "used_by": [
+    "skilling/CourseResourceAttributes",
+    "hiring-jobs/HiringJobResourceAttributes"
+  ],
+  "upstream_core_candidate": true,
+  "files": {
+    "attributes": "attributes.yaml",
+    "jsonld_context": "context.jsonld"
+  }
+}

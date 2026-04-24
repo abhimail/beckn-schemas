@@ -1,0 +1,89 @@
+{
+  "@context": {
+    "ceca": "https://schema.beckn.io/CourseEnrollmentContract#",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "enrollmentDate": {
+      "@id": "ceca:enrollmentDate",
+      "@type": "xsd:date"
+    },
+    "stage": {
+      "@id": "ceca:stage"
+    },
+    "completionDeadline": {
+      "@id": "ceca:completionDeadline",
+      "@type": "xsd:date"
+    },
+    "completionDate": {
+      "@id": "ceca:completionDate",
+      "@type": "xsd:date"
+    },
+    "finalScore": {
+      "@id": "ceca:finalScore",
+      "@type": "xsd:decimal"
+    },
+    "passThreshold": {
+      "@id": "ceca:passThreshold",
+      "@type": "xsd:decimal"
+    },
+    "credentialIssuanceStatus": {
+      "@id": "ceca:credentialIssuanceStatus"
+    },
+    "credentialIssuanceReference": {
+      "@id": "ceca:credentialIssuanceReference"
+    },
+    "proofMetadataHash": {
+      "@id": "ceca:proofMetadataHash"
+    },
+    "prerequisiteVerificationSummary": {
+      "@id": "ceca:prerequisiteVerificationSummary",
+      "@type": "@id"
+    },
+    "overallResult": {
+      "@id": "ceca:overallResult"
+    },
+    "checkedAt": {
+      "@id": "ceca:checkedAt",
+      "@type": "xsd:dateTime"
+    },
+    "notes": {
+      "@id": "ceca:notes"
+    },
+    "withdrawalReason": {
+      "@id": "ceca:withdrawalReason"
+    },
+    "EnrollmentStage": "ceca:EnrollmentStage",
+    "CredentialIssuanceStatus": "ceca:CredentialIssuanceStatus",
+    "enrollment_date": {
+      "@id": "ceca:enrollmentDate"
+    },
+    "completion_deadline": {
+      "@id": "ceca:completionDeadline"
+    },
+    "completion_date": {
+      "@id": "ceca:completionDate"
+    },
+    "final_score": {
+      "@id": "ceca:finalScore"
+    },
+    "pass_threshold": {
+      "@id": "ceca:passThreshold"
+    },
+    "credential_issuance_status": {
+      "@id": "ceca:credentialIssuanceStatus"
+    },
+    "credential_issuance_reference": {
+      "@id": "ceca:credentialIssuanceReference"
+    },
+    "proof_metadata_hash": {
+      "@id": "ceca:proofMetadataHash"
+    },
+    "prerequisite_verification_summary": {
+      "@id": "ceca:prerequisiteVerificationSummary"
+    },
+    "withdrawal_reason": {
+      "@id": "ceca:withdrawalReason"
+    }
+  }
+}

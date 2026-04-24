@@ -1,0 +1,22 @@
+{
+  "schema_name": "CourseResource",
+  "pack": "skilling",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "version": "2.1.0",
+  "beckn_container": "resourceAttributes",
+  "namespace_prefix": "cra",
+  "namespace_iri": "https://schema.beckn.io/CourseResource#",
+  "topology": "standard",
+  "bap_role": "Skill Seeker App",
+  "bpp_role": "Course Provider / Training Platform",
+  "description": "Attributes describing a course resource: delivery mode, level, duration, prerequisites, and outcome credentials. Available at discovery time.",
+  "shared_types": ["CredentialRequirement", "CodedValue"],
+  "files": {
+    "attributes": "attributes.yaml",
+    "jsonld_context": "context.jsonld",
+    "vocab": "vocab.jsonld",
+    "renderer": "renderer.json",
+    "examples": "examples/"
+  }
+}

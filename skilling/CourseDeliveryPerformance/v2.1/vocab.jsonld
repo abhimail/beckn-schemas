@@ -1,0 +1,33 @@
+{
+  "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+  "@context": {
+    "cdpa": "https://schema.beckn.io/CourseDeliveryPerformance#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#"
+  },
+  "@graph": [
+    {
+      "@id": "cdpa:AttendanceStatus",
+      "@type": "skos:ConceptScheme",
+      "rdfs:label": "Session Attendance Status",
+      "skos:hasTopConcept": [
+        {
+          "@id": "cdpa:REGISTERED",
+          "skos:prefLabel": "Registered \u2014 session not yet occurred"
+        },
+        {
+          "@id": "cdpa:ATTENDED",
+          "skos:prefLabel": "Attended \u2014 learner was present"
+        },
+        {
+          "@id": "cdpa:ABSENT",
+          "skos:prefLabel": "Absent \u2014 learner did not attend"
+        },
+        {
+          "@id": "cdpa:EXCUSED",
+          "skos:prefLabel": "Excused \u2014 absence pre-approved"
+        }
+      ]
+    }
+  ]
+}

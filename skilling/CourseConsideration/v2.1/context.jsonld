@@ -1,0 +1,112 @@
+{
+  "@context": {
+    "ccoa": "https://schema.beckn.io/CourseConsideration#",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "paymentMode": {
+      "@id": "ccoa:paymentMode"
+    },
+    "totalAmount": {
+      "@id": "ccoa:totalAmount",
+      "@type": "xsd:decimal"
+    },
+    "currency": {
+      "@id": "ccoa:currency"
+    },
+    "installmentPlan": {
+      "@id": "ccoa:installmentPlan",
+      "@container": "@list"
+    },
+    "scholarshipId": {
+      "@id": "ccoa:scholarshipId"
+    },
+    "scholarshipAmount": {
+      "@id": "ccoa:scholarshipAmount",
+      "@type": "xsd:decimal"
+    },
+    "voucherCodeHash": {
+      "@id": "ccoa:voucherCodeHash"
+    },
+    "voucherDiscountAmount": {
+      "@id": "ccoa:voucherDiscountAmount",
+      "@type": "xsd:decimal"
+    },
+    "employerSponsorId": {
+      "@id": "ccoa:employerSponsorId"
+    },
+    "taxAmount": {
+      "@id": "ccoa:taxAmount",
+      "@type": "xsd:decimal"
+    },
+    "taxCode": {
+      "@id": "ccoa:taxCode"
+    },
+    "refundAmount": {
+      "@id": "ccoa:refundAmount",
+      "@type": "xsd:decimal"
+    },
+    "refundReason": {
+      "@id": "ccoa:refundReason"
+    },
+    "installmentNumber": {
+      "@id": "ccoa:installmentNumber",
+      "@type": "xsd:integer"
+    },
+    "amount": {
+      "@id": "ccoa:amount",
+      "@type": "xsd:decimal"
+    },
+    "dueDate": {
+      "@id": "ccoa:dueDate",
+      "@type": "xsd:date"
+    },
+    "status": {
+      "@id": "ccoa:status"
+    },
+    "PaymentMode": "ccoa:PaymentMode",
+    "InstallmentStatus": "ccoa:InstallmentStatus",
+    "installment_number": {
+      "@id": "ccoa:installmentNumber"
+    },
+    "due_date": {
+      "@id": "ccoa:dueDate"
+    },
+    "payment_mode": {
+      "@id": "ccoa:paymentMode"
+    },
+    "total_amount": {
+      "@id": "ccoa:totalAmount"
+    },
+    "installment_plan": {
+      "@id": "ccoa:installmentPlan"
+    },
+    "scholarship_id": {
+      "@id": "ccoa:scholarshipId"
+    },
+    "scholarship_amount": {
+      "@id": "ccoa:scholarshipAmount"
+    },
+    "voucher_code_hash": {
+      "@id": "ccoa:voucherCodeHash"
+    },
+    "voucher_discount_amount": {
+      "@id": "ccoa:voucherDiscountAmount"
+    },
+    "employer_sponsor_id": {
+      "@id": "ccoa:employerSponsorId"
+    },
+    "tax_amount": {
+      "@id": "ccoa:taxAmount"
+    },
+    "tax_code": {
+      "@id": "ccoa:taxCode"
+    },
+    "refund_amount": {
+      "@id": "ccoa:refundAmount"
+    },
+    "refund_reason": {
+      "@id": "ccoa:refundReason"
+    }
+  }
+}

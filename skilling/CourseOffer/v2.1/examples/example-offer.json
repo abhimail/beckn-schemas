@@ -1,0 +1,107 @@
+{
+  "_comment": "on_select \u2014 learner BAP selects a course and receives detailed offer",
+  "context": {
+    "domain": "skilling:courses",
+    "action": "on_select",
+    "version": "2.0.0",
+    "bap_id": "skill-seeker-app.example.com",
+    "bap_uri": "https://skill-seeker-app.example.com/beckn",
+    "bpp_id": "training-platform.example.com",
+    "bpp_uri": "https://training-platform.example.com/beckn",
+    "transaction_id": "txn-course-sel-001",
+    "message_id": "msg-course-sel-001",
+    "timestamp": "2026-04-16T09:30:00Z",
+    "schemaContext": [
+      {
+        "schema": "CourseResourceAttributes",
+        "version": "2.1.0",
+        "namespace": "cra"
+      },
+      {
+        "schema": "CourseOffer",
+        "version": "2.1.0",
+        "namespace": "coa"
+      },
+      {
+        "schema": "CourseConsiderationAttributes",
+        "version": "2.1.0",
+        "namespace": "ccoa"
+      }
+    ]
+  },
+  "message": {
+    "catalog": {
+      "id": "catalog-courses-001",
+      "descriptor": {
+        "name": "Selected Course"
+      },
+      "provider": {
+        "id": "training-platform.example.com",
+        "descriptor": {
+          "name": "SkillUp Training Platform"
+        }
+      },
+      "beckn:resources": [
+        {
+          "beckn:id": "course-aws-saa-001",
+          "beckn:descriptor": {
+            "name": "AWS Solutions Architect Associate",
+            "description": "40-hour self-paced course with AWS certification voucher included"
+          },
+          "beckn:isAvailable": true,
+          "beckn:resourceAttributes": {
+            "@context": "https://schema.beckn.io/CourseResourceAttributes#",
+            "delivery_mode": "ONLINE",
+            "course_level": "INTERMEDIATE",
+            "duration_hours": 40,
+            "is_self_paced": true,
+            "language": "en",
+            "outcome_credential": {
+              "category": "CERTIFICATE",
+              "name": "AWS Certified Solutions Architect \u2013 Associate"
+            }
+          }
+        }
+      ],
+      "beckn:offers": [
+        {
+          "beckn:id": "offer-aws-saa-001",
+          "beckn:status": {
+            "code": "ACTIVE"
+          },
+          "beckn:resourceIds": [
+            "course-aws-saa-001"
+          ],
+          "beckn:considerations": [
+            {
+              "beckn:id": "consid-course-001",
+              "beckn:type": "MONETARY",
+              "beckn:status": {
+                "code": "PROPOSED"
+              },
+              "beckn:amount": {
+                "currency": "INR",
+                "value": "4999"
+              }
+            }
+          ],
+          "beckn:offerAttributes": {
+            "@context": "https://schema.beckn.io/CourseOffer#",
+            "price": 4999,
+            "currency": "INR",
+            "original_price": 7999,
+            "discount_percent": 37.5,
+            "enrollment_open_until": "2026-12-31",
+            "access_period_days": 180,
+            "seats_available": 247,
+            "includes_certification_voucher": true,
+            "includes_mentor_support": false,
+            "includes_job_placement": false,
+            "refund_policy": "FULL_REFUND_BEFORE_START",
+            "offer_validity_days": 30
+          }
+        }
+      ]
+    }
+  }
+}

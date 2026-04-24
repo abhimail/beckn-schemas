@@ -1,0 +1,81 @@
+openapi: 3.1.1
+info:
+  title: CredentialRequirement
+  version: 2.1.0
+  description: >
+    Shared type for credential-gated access requirements. Used wherever
+    a credential must be held (or verified) before access is granted to
+    a resource — course enrollment, job application, healthcare service, etc.
+
+    Supports graceful degradation:
+    - attested: false → soft prerequisite, no VC infrastructure required
+    - attested: true + proof_request_url → VC-backed, verified via DeDi endpoint
+
+    This is a shared library type in the hiring-common pack, applicable to:
+    - hiring-jobs: job application requirements
+    - skilling: course enrollment prerequisites
+    - healthcare (license gating)
+    - logistics (driver license)
+    - Any domain requiring credential-gated access
+
+    Upstream Beckn core candidate.
+  contact:
+    name: Beckn Protocol
+    url: https://becknprotocol.io
+
+x-beckn-pack: hiring-common
+x-beckn-type: shared
+x-beckn-schema-version: "2.1.0"
+x-beckn-protocol-version: "2.0"
+
+components:
+  schemas:
+    CredentialRequirement:
+      type: object
+      description: >
+        A prerequisite credential required for access. Supports self-declared
+        (attested=false) and VC-backed (attested=true) verification modes.
+      required: [credential_type, attested]
+      properties:
+        credential_type:
+          type: string
+          description: >
+            Machine-readable type or code for the required credential.
+            E.g. "driving_license_lmv", "aws_cloud_practitioner", "nursing_registration"
+          x-jsonld-id: "cr:credentialType"
+          example: "aws_cloud_practitioner"
+        credential_name:
+          type: string
+          description: Human-readable name of the required credential
+          x-jsonld-id: "cr:credentialName"
+          example: "AWS Cloud Practitioner"
+        issuer_type:
+          type: string
+          description: >
+            Type of issuing authority.
+            E.g. "Government", "University", "Platform", "Professional Body"
+          x-jsonld-id: "cr:issuerType"
+          example: "Platform"
+        attested:
+          type: boolean
+          description: >
+            Whether VC-backed attestation is required.
+            false = soft prerequisite (self-declared acceptable)
+            true = VC-backed verification required via proof_request_url
+          x-jsonld-id: "cr:attested"
+          example: false
+        proof_request_url:
+          type: string
+          format: uri
+          description: >
+            URI to a DeDi endpoint for VC attestation request.
+            Required when attested=true.
+          x-jsonld-id: "cr:proofRequestUrl"
+          example: "https://dedi.example.com/verify/cred/aws-cp"
+        is_mandatory:
+          type: boolean
+          description: >
+            Whether this prerequisite is mandatory (true) or recommended (false).
+            Defaults to true if not specified.
+          x-jsonld-id: "cr:isMandatory"
+          default: true

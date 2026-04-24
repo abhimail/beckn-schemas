@@ -1,0 +1,33 @@
+{
+  "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+  "@context": {
+    "coa": "https://schema.beckn.io/CourseOffer#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#"
+  },
+  "@graph": [
+    {
+      "@id": "coa:RefundPolicy",
+      "@type": "skos:ConceptScheme",
+      "rdfs:label": "Course Offer Refund Policy",
+      "skos:hasTopConcept": [
+        {
+          "@id": "coa:NO_REFUND",
+          "skos:prefLabel": "No Refund"
+        },
+        {
+          "@id": "coa:PARTIAL_REFUND",
+          "skos:prefLabel": "Partial Refund"
+        },
+        {
+          "@id": "coa:FULL_REFUND_BEFORE_START",
+          "skos:prefLabel": "Full Refund Before Course Start"
+        },
+        {
+          "@id": "coa:FULL_REFUND_ANY_TIME",
+          "skos:prefLabel": "Full Refund Any Time"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+  "@context": {
+    "cra": "https://schema.beckn.io/CourseResource#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#"
+  },
+  "@graph": [
+    {
+      "@id": "cra:DeliveryMode",
+      "@type": "skos:ConceptScheme",
+      "rdfs:label": "Course Delivery Mode",
+      "skos:hasTopConcept": [
+        {
+          "@id": "cra:ONLINE",
+          "skos:prefLabel": "Online \u2014 fully digital delivery"
+        },
+        {
+          "@id": "cra:OFFLINE",
+          "skos:prefLabel": "Offline \u2014 in-person / classroom delivery"
+        },
+        {
+          "@id": "cra:HYBRID",
+          "skos:prefLabel": "Hybrid \u2014 mix of online and in-person"
+        }
+      ]
+    },
+    {
+      "@id": "cra:CourseLevel",
+      "@type": "skos:ConceptScheme",
+      "rdfs:label": "Course Difficulty Level",
+      "skos:hasTopConcept": [
+        {
+          "@id": "cra:BEGINNER",
+          "skos:prefLabel": "Beginner \u2014 no prior knowledge required"
+        },
+        {
+          "@id": "cra:INTERMEDIATE",
+          "skos:prefLabel": "Intermediate \u2014 some experience required"
+        },
+        {
+          "@id": "cra:ADVANCED",
+          "skos:prefLabel": "Advanced \u2014 significant experience required"
+        },
+        {
+          "@id": "cra:EXPERT",
+          "skos:prefLabel": "Expert \u2014 deep specialisation required"
+        }
+      ]
+    },
+    {
+      "@id": "cra:OutcomeCredentialCategory",
+      "@type": "skos:ConceptScheme",
+      "rdfs:label": "Outcome Credential Category",
+      "skos:hasTopConcept": [
+        {
+          "@id": "cra:CERTIFICATE",
+          "skos:prefLabel": "Certificate of Completion"
+        },
+        {
+          "@id": "cra:DIPLOMA",
+          "skos:prefLabel": "Diploma"
+        },
+        {
+          "@id": "cra:DEGREE",
+          "skos:prefLabel": "Degree"
+        },
+        {
+          "@id": "cra:BADGE",
+          "skos:prefLabel": "Digital Badge"
+        },
+        {
+          "@id": "cra:MARK",
+          "skos:prefLabel": "Mark / Score"
+        },
+        {
+          "@id": "cra:LICENSE",
+          "skos:prefLabel": "Professional License"
+        },
+        {
+          "@id": "cra:OTHER",
+          "skos:prefLabel": "Other"
+        }
+      ]
+    }
+  ]
+}

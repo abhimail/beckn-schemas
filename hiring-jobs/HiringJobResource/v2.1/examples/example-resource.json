@@ -1,0 +1,103 @@
+{
+  "context": {
+    "action": "on_discover",
+    "version": "2.0.0",
+    "schemaContext": [
+      "https://schema.beckn.io/HiringJobResource/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "catalogs": [
+      {
+        "beckn:id": "cat-001",
+        "beckn:descriptor": {
+          "schema:name": "TechCorp Job Listings"
+        },
+        "beckn:provider": {
+          "beckn:id": "employer-techcorp",
+          "beckn:descriptor": {
+            "schema:name": "TechCorp India Pvt Ltd"
+          }
+        },
+        "beckn:resources": [
+          {
+            "beckn:id": "job-001",
+            "beckn:descriptor": {
+              "schema:name": "Senior Software Engineer — Backend",
+              "beckn:shortDesc": "Go/Python backend role, hybrid, 5+ years."
+            },
+            "beckn:resourceAttributes": {
+              "job_title": "Senior Software Engineer — Backend",
+              "job_type": "FULL_TIME",
+              "work_mode": "HYBRID",
+              "location": {
+                "address_locality": "Bengaluru",
+                "address_region": "Karnataka",
+                "address_country": "IN",
+                "postal_code": "560001"
+              },
+              "shift_type": "NO_SHIFT",
+              "experience_level": "SENIOR",
+              "min_experience_years": 5,
+              "max_experience_years": 10,
+              "skills_required": [
+                "Go",
+                "Python",
+                "PostgreSQL",
+                "Kubernetes"
+              ],
+              "requirements": [],
+              "industry_type": {
+                "@context": "https://unstats.un.org/unsd/classifications/Econ/isic",
+                "@type": "ISIC4",
+                "code": "6201"
+              },
+              "functional_area": "Engineering",
+              "vacancy_count": 3,
+              "is_urgent": false,
+              "application_deadline": "2026-05-31T23:59:59Z",
+              "operator_reputation": {
+                "rating_value": 4.5,
+                "rating_count": 128,
+                "rating_agency": "HiringNetwork-Attestation"
+              }
+            }
+          }
+        ],
+        "beckn:offers": [
+          {
+            "beckn:id": "offer-001",
+            "beckn:resourceIds": [
+              "job-001"
+            ],
+            "beckn:considerations": [
+              {
+                "beckn:id": "consid-001",
+                "beckn:status": {
+                  "code": "PROPOSED"
+                }
+              }
+            ],
+            "beckn:offerAttributes": {
+              "salary_specification": {
+                "salary_min": 2000000,
+                "salary_max": 3500000,
+                "salary_currency": "INR",
+                "salary_period": "ANNUAL"
+              },
+              "benefits": [
+                "Health Insurance",
+                "ESOPs"
+              ],
+              "equity_offered": true,
+              "probation_period": "P3M",
+              "notice_period": "P2M",
+              "offer_validity": "P7D",
+              "insurance_provided": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

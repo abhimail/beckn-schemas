@@ -1,0 +1,38 @@
+{
+  "schema_name": "CourseEnrollmentContract",
+  "version": "2.1.0",
+  "card_template": {
+    "title": "Enrollment — {{ceca:stage}}",
+    "subtitle": "Enrolled: {{ceca:enrollmentDate}}",
+    "tags": ["Due: {{ceca:completionDeadline}}", "{{ceca:credentialIssuanceStatus}}"]
+  },
+  "detail_template": {
+    "sections": [
+      {
+        "heading": "Enrollment",
+        "fields": [
+          { "label": "Stage", "value": "{{ceca:stage}}" },
+          { "label": "Enrolled On", "value": "{{ceca:enrollmentDate}}" },
+          { "label": "Completion Deadline", "value": "{{ceca:completionDeadline}}" },
+          { "label": "Completed On", "value": "{{ceca:completionDate}}" }
+        ]
+      },
+      {
+        "heading": "Assessment",
+        "fields": [
+          { "label": "Final Score", "value": "{{ceca:finalScore}}%" },
+          { "label": "Pass Threshold", "value": "{{ceca:passThreshold}}%" }
+        ]
+      },
+      {
+        "heading": "Credential",
+        "fields": [
+          { "label": "Issuance Status", "value": "{{ceca:credentialIssuanceStatus}}" },
+          { "label": "Reference", "value": "{{ceca:credentialIssuanceReference}}" }
+        ]
+      }
+    ]
+  },
+  "html": "<div class='contract-card'><h3>{{ceca:stage}}</h3><p>Enrolled: {{ceca:enrollmentDate}}</p><p>Deadline: {{ceca:completionDeadline}}</p><p>Credential: {{ceca:credentialIssuanceStatus}}</p></div>",
+  "html_detail": "<div class='contract-detail'><h2>Course Enrollment</h2><section><h4>Status</h4><p>Stage: {{ceca:stage}}</p><p>Enrolled: {{ceca:enrollmentDate}}</p><p>Deadline: {{ceca:completionDeadline}}</p>{{#if ceca:completionDate}}<p>Completed: {{ceca:completionDate}}</p>{{/if}}</section>{{#if ceca:finalScore}}<section><h4>Assessment</h4><p>Score: {{ceca:finalScore}}% (pass: {{ceca:passThreshold}}%)</p></section>{{/if}}<section><h4>Credential</h4><p>Status: {{ceca:credentialIssuanceStatus}}</p>{{#if ceca:credentialIssuanceReference}}<p>Ref: {{ceca:credentialIssuanceReference}}</p>{{/if}}</section></div>"
+}

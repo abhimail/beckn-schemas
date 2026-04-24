@@ -1,0 +1,21 @@
+{
+  "schema_name": "CourseConsideration",
+  "pack": "skilling",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "version": "2.1.0",
+  "beckn_container": "considerationAttributes",
+  "namespace_prefix": "ccoa",
+  "namespace_iri": "https://schema.beckn.io/CourseConsideration#",
+  "topology": "standard",
+  "bap_role": "Skill Seeker App",
+  "bpp_role": "Course Provider / Training Platform",
+  "description": "Consideration attributes for course enrollment: payment mode, installment plan, scholarships, voucher redemptions, and employer sponsorship.",
+  "files": {
+    "attributes": "attributes.yaml",
+    "jsonld_context": "context.jsonld",
+    "vocab": "vocab.jsonld",
+    "renderer": "renderer.json",
+    "examples": "examples/"
+  }
+}

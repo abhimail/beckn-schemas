@@ -1,0 +1,64 @@
+{
+  "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+  "@context": {
+    "ccoa": "https://schema.beckn.io/CourseConsideration#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#"
+  },
+  "@graph": [
+    {
+      "@id": "ccoa:PaymentMode",
+      "@type": "skos:ConceptScheme",
+      "rdfs:label": "Course Payment Mode",
+      "skos:hasTopConcept": [
+        {
+          "@id": "ccoa:ONE_TIME",
+          "skos:prefLabel": "One-time full payment"
+        },
+        {
+          "@id": "ccoa:INSTALLMENT",
+          "skos:prefLabel": "Installment / EMI plan"
+        },
+        {
+          "@id": "ccoa:SCHOLARSHIP",
+          "skos:prefLabel": "Scholarship-funded"
+        },
+        {
+          "@id": "ccoa:VOUCHER",
+          "skos:prefLabel": "Voucher / coupon redemption"
+        },
+        {
+          "@id": "ccoa:EMPLOYER_SPONSORED",
+          "skos:prefLabel": "Employer-sponsored enrollment"
+        },
+        {
+          "@id": "ccoa:FREE",
+          "skos:prefLabel": "Free \u2014 no payment required"
+        }
+      ]
+    },
+    {
+      "@id": "ccoa:InstallmentStatus",
+      "@type": "skos:ConceptScheme",
+      "rdfs:label": "Installment Payment Status",
+      "skos:hasTopConcept": [
+        {
+          "@id": "ccoa:PENDING",
+          "skos:prefLabel": "Pending \u2014 not yet due or paid"
+        },
+        {
+          "@id": "ccoa:PAID",
+          "skos:prefLabel": "Paid"
+        },
+        {
+          "@id": "ccoa:OVERDUE",
+          "skos:prefLabel": "Overdue \u2014 past due date"
+        },
+        {
+          "@id": "ccoa:WAIVED",
+          "skos:prefLabel": "Waived \u2014 amount forgiven"
+        }
+      ]
+    }
+  ]
+}

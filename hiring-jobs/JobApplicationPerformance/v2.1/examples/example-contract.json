@@ -1,0 +1,99 @@
+{
+  "context": {
+    "action": "on_update",
+    "version": "2.0.0",
+    "schemaContext": [
+      "https://schema.beckn.io/JobApplicationPerformance/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-app-001",
+      "beckn:status": {
+        "code": "ACTIVE"
+      },
+      "beckn:participants": [
+        {
+          "beckn:id": "p-seeker-001",
+          "beckn:descriptor": {
+            "schema:name": "Arjun Mehta"
+          },
+          "beckn:participantAttributes": {
+            "role": "JOB_SEEKER"
+          }
+        },
+        {
+          "beckn:id": "p-employer-001",
+          "beckn:descriptor": {
+            "schema:name": "TechCorp India"
+          },
+          "beckn:participantAttributes": {
+            "role": "EMPLOYER"
+          }
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-001",
+          "beckn:status": {
+            "descriptor": {
+              "code": "ACTIVE"
+            }
+          },
+          "beckn:resources": [
+            {
+              "beckn:id": "job-001",
+              "quantity": {
+                "count": 1
+              }
+            }
+          ],
+          "beckn:offer": {
+            "beckn:id": "offer-001",
+            "beckn:resourceIds": [
+              "job-001"
+            ]
+          }
+        }
+      ],
+      "beckn:performance": [
+        {
+          "beckn:id": "perf-001",
+          "beckn:status": {
+            "code": "COMPLETED"
+          },
+          "beckn:commitmentIds": [
+            "commit-001"
+          ],
+          "beckn:performanceAttributes": {
+            "lifecycle_stage": "TECHNICAL_ROUND_COMPLETED",
+            "screening_notes": "Candidate performed well across both rounds.",
+            "evaluation_steps": [
+              {
+                "step_type": "TELEPHONIC",
+                "title": "HR Screening Call",
+                "scheduled_at": "2026-04-25T10:00:00Z",
+                "conducted_at": "2026-04-25T10:35:00Z",
+                "assessor_ids": ["emp-hr-001"],
+                "score": 78,
+                "result": "PASS",
+                "notes": "Strong communication, good technical foundation."
+              },
+              {
+                "step_type": "TECHNICAL_TEST",
+                "title": "Technical Round 1",
+                "scheduled_at": "2026-04-30T14:00:00Z",
+                "conducted_at": "2026-04-30T15:30:00Z",
+                "assessor_ids": ["emp-eng-001", "emp-eng-002"],
+                "score": 85,
+                "result": "PASS",
+                "notes": "Excellent system design answers."
+              }
+            ],
+            "next_step": "Offer discussion scheduled for May 5"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "@context": {
+    "cra": "https://schema.beckn.io/CourseResource#",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "deliveryMode": {
+      "@id": "cra:deliveryMode"
+    },
+    "courseLevel": {
+      "@id": "cra:courseLevel"
+    },
+    "durationHours": {
+      "@id": "cra:durationHours",
+      "@type": "xsd:decimal"
+    },
+    "sessionCount": {
+      "@id": "cra:sessionCount",
+      "@type": "xsd:integer"
+    },
+    "courseDomain": {
+      "@id": "cra:courseDomain",
+      "@type": "@id"
+    },
+    "industryType": {
+      "@id": "cra:industryType",
+      "@type": "@id"
+    },
+    "language": {
+      "@id": "cra:language"
+    },
+    "subtitleLanguages": {
+      "@id": "cra:subtitleLanguages",
+      "@container": "@set"
+    },
+    "prerequisites": {
+      "@id": "cra:prerequisites",
+      "@container": "@set"
+    },
+    "outcomeCredential": {
+      "@id": "cra:outcomeCredential",
+      "@type": "@id"
+    },
+    "accreditationBody": {
+      "@id": "cra:accreditationBody"
+    },
+    "maxLearners": {
+      "@id": "cra:maxLearners",
+      "@type": "xsd:integer"
+    },
+    "isSelfPaced": {
+      "@id": "cra:isSelfPaced",
+      "@type": "xsd:boolean"
+    },
+    "tags": {
+      "@id": "cra:tags",
+      "@container": "@set"
+    },
+    "code": {
+      "@id": "cra:code"
+    },
+    "name": {
+      "@id": "cra:name"
+    },
+    "context": {
+      "@id": "cra:context",
+      "@type": "@id"
+    },
+    "credentialType": {
+      "@id": "cra:credentialType"
+    },
+    "credentialName": {
+      "@id": "cra:credentialName"
+    },
+    "issuerType": {
+      "@id": "cra:issuerType"
+    },
+    "attested": {
+      "@id": "cra:attested",
+      "@type": "xsd:boolean"
+    },
+    "proofRequestUrl": {
+      "@id": "cra:proofRequestUrl",
+      "@type": "@id"
+    },
+    "category": {
+      "@id": "cra:category"
+    },
+    "qualificationLevel": {
+      "@id": "cra:qualificationLevel",
+      "@type": "@id"
+    },
+    "DeliveryMode": "cra:DeliveryMode",
+    "CourseLevel": "cra:CourseLevel",
+    "OutcomeCredentialCategory": "cra:OutcomeCredentialCategory",
+    "credential_type": {
+      "@id": "cra:credentialType"
+    },
+    "credential_name": {
+      "@id": "cra:credentialName"
+    },
+    "issuer_type": {
+      "@id": "cra:issuerType"
+    },
+    "proof_request_url": {
+      "@id": "cra:proofRequestUrl"
+    },
+    "qualification_level": {
+      "@id": "cra:qualificationLevel"
+    },
+    "delivery_mode": {
+      "@id": "cra:deliveryMode"
+    },
+    "course_level": {
+      "@id": "cra:courseLevel"
+    },
+    "duration_hours": {
+      "@id": "cra:durationHours"
+    },
+    "session_count": {
+      "@id": "cra:sessionCount"
+    },
+    "course_domain": {
+      "@id": "cra:courseDomain"
+    },
+    "industry_type": {
+      "@id": "cra:industryType"
+    },
+    "subtitle_languages": {
+      "@id": "cra:subtitleLanguages"
+    },
+    "outcome_credential": {
+      "@id": "cra:outcomeCredential"
+    },
+    "accreditation_body": {
+      "@id": "cra:accreditationBody"
+    },
+    "max_learners": {
+      "@id": "cra:maxLearners"
+    },
+    "is_self_paced": {
+      "@id": "cra:isSelfPaced"
+    }
+  }
+}

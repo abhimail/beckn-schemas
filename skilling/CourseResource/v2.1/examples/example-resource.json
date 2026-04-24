@@ -1,0 +1,135 @@
+{
+  "_comment": "on_discover \u2014 skill seeker BAP discovers courses from training platform BPP",
+  "context": {
+    "domain": "skilling:courses",
+    "action": "on_discover",
+    "version": "2.0.0",
+    "bap_id": "skill-seeker-app.example.com",
+    "bap_uri": "https://skill-seeker-app.example.com/beckn",
+    "bpp_id": "training-platform.example.com",
+    "bpp_uri": "https://training-platform.example.com/beckn",
+    "transaction_id": "txn-course-disc-001",
+    "message_id": "msg-course-disc-001",
+    "timestamp": "2026-04-16T09:00:00Z",
+    "schemaContext": [
+      {
+        "schema": "CourseResource",
+        "version": "2.1.0",
+        "namespace": "cra"
+      },
+      {
+        "schema": "CourseOfferAttributes",
+        "version": "2.1.0",
+        "namespace": "coa"
+      },
+      {
+        "schema": "CourseConsiderationAttributes",
+        "version": "2.1.0",
+        "namespace": "ccoa"
+      }
+    ]
+  },
+  "message": {
+    "catalog": {
+      "id": "catalog-courses-001",
+      "descriptor": {
+        "name": "Cloud Computing Courses"
+      },
+      "provider": {
+        "id": "training-platform.example.com",
+        "descriptor": {
+          "name": "SkillUp Training Platform"
+        }
+      },
+      "beckn:resources": [
+        {
+          "beckn:id": "course-aws-saa-001",
+          "beckn:descriptor": {
+            "name": "AWS Solutions Architect Associate",
+            "description": "Comprehensive preparation for the AWS SAA-C03 certification exam"
+          },
+          "beckn:isAvailable": true,
+          "beckn:resourceAttributes": {
+            "@context": "https://schema.beckn.io/CourseResource#",
+            "delivery_mode": "ONLINE",
+            "course_level": "INTERMEDIATE",
+            "duration_hours": 40,
+            "is_self_paced": true,
+            "course_domain": {
+              "code": "0613",
+              "name": "Software and applications development and analysis",
+              "@context": "https://uis.unesco.org/sites/default/files/documents/isced-f-2013-en.pdf"
+            },
+            "industry_type": {
+              "code": "6201",
+              "name": "Computer programming activities"
+            },
+            "language": "en",
+            "subtitle_languages": [
+              "hi",
+              "ta",
+              "te"
+            ],
+            "prerequisites": [
+              {
+                "credential_type": "aws_cloud_practitioner",
+                "credential_name": "AWS Cloud Practitioner",
+                "issuer_type": "AWS",
+                "attested": false
+              }
+            ],
+            "outcome_credential": {
+              "category": "CERTIFICATE",
+              "name": "AWS Certified Solutions Architect \u2013 Associate",
+              "issuer_type": "AWS",
+              "qualification_level": {
+                "code": "5",
+                "name": "NSQF Level 5"
+              }
+            },
+            "accreditation_body": "Amazon Web Services",
+            "tags": [
+              "AWS",
+              "cloud",
+              "architecture",
+              "SAA-C03",
+              "certification"
+            ]
+          }
+        }
+      ],
+      "beckn:offers": [
+        {
+          "beckn:id": "offer-aws-saa-001",
+          "beckn:status": {
+            "code": "ACTIVE"
+          },
+          "beckn:resourceIds": [
+            "course-aws-saa-001"
+          ],
+          "beckn:considerations": [
+            {
+              "beckn:id": "consid-course-001",
+              "beckn:type": "MONETARY",
+              "beckn:status": {
+                "code": "PROPOSED"
+              },
+              "beckn:amount": {
+                "currency": "INR",
+                "value": "4999"
+              }
+            }
+          ],
+          "beckn:offerAttributes": {
+            "@context": "https://schema.beckn.io/CourseOfferAttributes#",
+            "price": 4999,
+            "currency": "INR",
+            "enrollment_open_until": "2026-12-31",
+            "access_period_days": 180,
+            "includes_certification_voucher": true
+          }
+        }
+      ]
+    }
+  }
+}

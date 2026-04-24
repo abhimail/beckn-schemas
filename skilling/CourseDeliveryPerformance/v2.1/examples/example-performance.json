@@ -1,0 +1,95 @@
+{
+  "_comment": "on_status \u2014 learner BAP requests progress status on an enrolled course",
+  "context": {
+    "domain": "skilling:courses",
+    "action": "on_status",
+    "version": "2.0.0",
+    "bap_id": "skill-seeker-app.example.com",
+    "bap_uri": "https://skill-seeker-app.example.com/beckn",
+    "bpp_id": "training-platform.example.com",
+    "bpp_uri": "https://training-platform.example.com/beckn",
+    "transaction_id": "txn-course-conf-001",
+    "message_id": "msg-course-status-003",
+    "timestamp": "2026-05-16T14:00:00Z",
+    "schemaContext": [
+      {
+        "schema": "CourseEnrollmentContractAttributes",
+        "version": "2.1.0",
+        "namespace": "ceca"
+      },
+      {
+        "schema": "CourseDeliveryPerformance",
+        "version": "2.1.0",
+        "namespace": "cdpa"
+      }
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-enroll-001",
+      "beckn:status": {
+        "code": "IN_PROGRESS"
+      },
+      "beckn:participants": [
+        {
+          "beckn:id": "learner-session-001",
+          "beckn:descriptor": {
+            "name": "Learner"
+          },
+          "beckn:role": "BAP"
+        },
+        {
+          "beckn:id": "training-platform.example.com",
+          "beckn:descriptor": {
+            "name": "SkillUp Training Platform"
+          },
+          "beckn:role": "BPP"
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-enroll-001",
+          "beckn:status": {
+            "descriptor": {
+              "code": "ACTIVE"
+            }
+          },
+          "beckn:refType": "OFFER",
+          "beckn:ref": "offer-aws-saa-001",
+          "beckn:quantity": {
+            "count": 1
+          }
+        }
+      ],
+      "beckn:performance": [
+        {
+          "beckn:id": "perf-access-001",
+          "beckn:status": {
+            "code": "IN_PROGRESS"
+          },
+          "beckn:commitmentIds": [
+            "commit-enroll-001"
+          ],
+          "beckn:performanceAttributes": {
+            "@context": "https://schema.beckn.io/CourseDeliveryPerformance#",
+            "delivery_url": "https://training-platform.example.com/courses/aws-saa-001/learn",
+            "access_expires_at": "2026-10-16T23:59:59Z",
+            "completion_percentage": 62.5,
+            "time_spent_hours": 25,
+            "last_accessed_at": "2026-05-16T11:30:00Z",
+            "assessment_attempts": 1,
+            "current_score": 68
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "@context": "https://schema.beckn.io/CourseEnrollmentContractAttributes#",
+        "enrollment_date": "2026-04-16",
+        "stage": "IN_PROGRESS",
+        "completion_deadline": "2026-10-16",
+        "pass_threshold": 70,
+        "credential_issuance_status": "PENDING"
+      }
+    }
+  }
+}

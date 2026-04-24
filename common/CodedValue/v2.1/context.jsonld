@@ -1,0 +1,11 @@
+{
+  "@context": {
+    "cv": "https://schema.beckn.io/CodedValue#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "CodedValue": { "@id": "cv:CodedValue" },
+    "code": { "@id": "cv:code" },
+    "name": { "@id": "cv:name" },
+    "context": { "@id": "cv:context", "@type": "@id" }
+  }
+}

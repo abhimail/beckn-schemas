@@ -1,0 +1,37 @@
+{
+  "schema_name": "CourseDeliveryPerformance",
+  "version": "2.1.0",
+  "card_template": {
+    "title": "Progress: {{cdpa:completionPercentage}}%",
+    "subtitle": "Access expires: {{cdpa:accessExpiresAt}}",
+    "tags": ["{{cdpa:timeSpentHours}}h spent", "{{cdpa:sessionsAttended}}/{{cdpa:sessionsTotal}} sessions"]
+  },
+  "detail_template": {
+    "sections": [
+      {
+        "heading": "Self-Paced Access",
+        "fields": [
+          { "label": "Course URL", "value": "{{cdpa:deliveryUrl}}" },
+          { "label": "Access Expires", "value": "{{cdpa:accessExpiresAt}}" },
+          { "label": "Last Accessed", "value": "{{cdpa:lastAccessedAt}}" },
+          { "label": "Progress", "value": "{{cdpa:completionPercentage}}%" },
+          { "label": "Time Spent", "value": "{{cdpa:timeSpentHours}} hours" }
+        ]
+      },
+      {
+        "heading": "Assessment",
+        "fields": [
+          { "label": "Attempts", "value": "{{cdpa:assessmentAttempts}}" },
+          { "label": "Current Score", "value": "{{cdpa:currentScore}}%" }
+        ]
+      },
+      {
+        "heading": "Sessions (Instructor-Led)",
+        "list": "{{cdpa:sessionSchedule}}",
+        "item_template": "Session {{sessionNumber}}: {{title}} — {{scheduledAt}} ({{attendanceStatus}})"
+      }
+    ]
+  },
+  "html": "<div class='performance-card'><div class='progress-bar' style='width:{{cdpa:completionPercentage}}%'></div><p>{{cdpa:completionPercentage}}% complete</p><p>Expires: {{cdpa:accessExpiresAt}}</p></div>",
+  "html_detail": "<div class='performance-detail'><h2>Course Progress</h2><section><h4>Access</h4><p>URL: <a href='{{cdpa:deliveryUrl}}'>Open Course</a></p><p>Expires: {{cdpa:accessExpiresAt}}</p><p>Last accessed: {{cdpa:lastAccessedAt}}</p></section><section><h4>Progress</h4><div class='progress-bar-container'><div class='progress-bar' style='width:{{cdpa:completionPercentage}}%'></div></div><p>{{cdpa:completionPercentage}}% complete ({{cdpa:timeSpentHours}}h)</p></section>{{#if cdpa:sessionSchedule}}<section><h4>Sessions</h4>{{#each cdpa:sessionSchedule}}<p>{{sessionNumber}}. {{title}} — {{scheduledAt}} — {{attendanceStatus}}</p>{{/each}}<p>Attended: {{../cdpa:sessionsAttended}} / {{../cdpa:sessionsTotal}}</p></section>{{/if}}{{#if cdpa:currentScore}}<section><h4>Assessment</h4><p>Score: {{cdpa:currentScore}}% ({{cdpa:assessmentAttempts}} attempts)</p>{{#if cdpa:certificateDownloadUrl}}<p><a href='{{cdpa:certificateDownloadUrl}}'>Download Certificate</a></p>{{/if}}</section>{{/if}}</div>"
+}

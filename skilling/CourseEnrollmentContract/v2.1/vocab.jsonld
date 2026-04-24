@@ -1,0 +1,68 @@
+{
+  "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+  "@context": {
+    "ceca": "https://schema.beckn.io/CourseEnrollmentContract#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#"
+  },
+  "@graph": [
+    {
+      "@id": "ceca:EnrollmentStage",
+      "@type": "skos:ConceptScheme",
+      "rdfs:label": "Course Enrollment Stage",
+      "skos:hasTopConcept": [
+        {
+          "@id": "ceca:PENDING_PAYMENT",
+          "skos:prefLabel": "Pending Payment \u2014 not yet enrolled"
+        },
+        {
+          "@id": "ceca:ENROLLED",
+          "skos:prefLabel": "Enrolled \u2014 access granted"
+        },
+        {
+          "@id": "ceca:IN_PROGRESS",
+          "skos:prefLabel": "In Progress \u2014 learner has started"
+        },
+        {
+          "@id": "ceca:COMPLETED",
+          "skos:prefLabel": "Completed \u2014 successfully finished"
+        },
+        {
+          "@id": "ceca:FAILED",
+          "skos:prefLabel": "Failed \u2014 did not meet pass threshold"
+        },
+        {
+          "@id": "ceca:WITHDRAWN",
+          "skos:prefLabel": "Withdrawn \u2014 learner withdrew"
+        },
+        {
+          "@id": "ceca:EXPIRED",
+          "skos:prefLabel": "Expired \u2014 access period elapsed"
+        }
+      ]
+    },
+    {
+      "@id": "ceca:CredentialIssuanceStatus",
+      "@type": "skos:ConceptScheme",
+      "rdfs:label": "Credential Issuance Status",
+      "skos:hasTopConcept": [
+        {
+          "@id": "ceca:NOT_APPLICABLE",
+          "skos:prefLabel": "Not Applicable"
+        },
+        {
+          "@id": "ceca:PENDING",
+          "skos:prefLabel": "Pending \u2014 issuance in process"
+        },
+        {
+          "@id": "ceca:ISSUED",
+          "skos:prefLabel": "Issued \u2014 credential available"
+        },
+        {
+          "@id": "ceca:REVOKED",
+          "skos:prefLabel": "Revoked \u2014 credential invalidated"
+        }
+      ]
+    }
+  ]
+}

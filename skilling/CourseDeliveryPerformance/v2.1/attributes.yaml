@@ -1,0 +1,134 @@
+openapi: 3.1.1
+info:
+  title: CourseDeliveryPerformance
+  version: 2.1.0
+  description: >
+    Extension attributes for a course delivery performance in a Beckn v2.1
+    skilling network. Describes how the course is being delivered and tracked —
+    supports two modes:
+    - ACCESS (self-paced): delivery_url set; learner accesses on demand
+    - SERVICE (instructor-led / hybrid): session_schedule[] set; attendance tracked
+    The active mode is determined by delivery_mode in CourseResourceAttributes.
+  contact:
+    name: Beckn Protocol
+    url: https://becknprotocol.io
+
+x-beckn-pack: skilling
+x-beckn-container: performanceAttributes
+x-beckn-schema-version: "2.1.0"
+x-beckn-protocol-version: "2.0"
+
+components:
+  schemas:
+
+    SessionEntry:
+      type: object
+      description: A single instructor-led session in a cohort-based course
+      properties:
+        session_id:
+          type: string
+          description: Unique identifier for this session
+          x-jsonld-id: "cdpa:sessionId"
+        session_number:
+          type: integer
+          description: Sequence number of this session (1-based)
+          x-jsonld-id: "cdpa:sessionNumber"
+        title:
+          type: string
+          description: Title of the session topic
+          x-jsonld-id: "cdpa:title"
+        scheduled_at:
+          type: string
+          format: date-time
+          description: Scheduled date-time for this session (ISO 8601)
+          x-jsonld-id: "cdpa:scheduledAt"
+        conducted_at:
+          type: string
+          format: date-time
+          description: Actual date-time the session was conducted (ISO 8601)
+          x-jsonld-id: "cdpa:conductedAt"
+        duration_minutes:
+          type: integer
+          description: Duration of the session in minutes
+          x-jsonld-id: "cdpa:durationMinutes"
+        join_url:
+          type: string
+          format: uri
+          description: URL to join the live session (for online/hybrid delivery)
+          x-jsonld-id: "cdpa:joinUrl"
+        recording_url:
+          type: string
+          format: uri
+          description: URL to access the session recording (post-session)
+          x-jsonld-id: "cdpa:recordingUrl"
+        attendance_status:
+          type: string
+          enum: [REGISTERED, ATTENDED, ABSENT, EXCUSED]
+          description: Learner's attendance status for this session
+          x-jsonld-id: "cdpa:attendanceStatus"
+
+    CourseDeliveryPerformance:
+      type: object
+      description: >
+        Domain-specific extension attributes for course delivery performance.
+        Tracks learning progress, access, and session attendance for both
+        ACCESS (self-paced) and SERVICE (instructor-led) delivery modes.
+      x-jsonld-context: "./context.jsonld"
+      x-beckn-container: performanceAttributes
+      properties:
+        delivery_url:
+          type: string
+          format: uri
+          description: >
+            URL to access course content. Required for ACCESS (self-paced) mode.
+            Not used in pure offline SERVICE mode.
+          x-jsonld-id: "cdpa:deliveryUrl"
+        access_expires_at:
+          type: string
+          format: date-time
+          description: Date-time when the learner's access to course materials expires
+          x-jsonld-id: "cdpa:accessExpiresAt"
+        completion_percentage:
+          type: number
+          description: Percentage of course content completed (0–100)
+          minimum: 0
+          maximum: 100
+          x-jsonld-id: "cdpa:completionPercentage"
+        time_spent_hours:
+          type: number
+          description: Total hours spent on the course so far
+          x-jsonld-id: "cdpa:timeSpentHours"
+        last_accessed_at:
+          type: string
+          format: date-time
+          description: Date-time of the learner's most recent course access
+          x-jsonld-id: "cdpa:lastAccessedAt"
+        session_schedule:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionEntry"
+          description: >
+            Scheduled and completed sessions. Required for SERVICE
+            (instructor-led / hybrid) delivery mode.
+          x-jsonld-id: "cdpa:sessionSchedule"
+        sessions_attended:
+          type: integer
+          description: Number of scheduled sessions the learner has attended
+          x-jsonld-id: "cdpa:sessionsAttended"
+        sessions_total:
+          type: integer
+          description: Total number of scheduled sessions in the cohort
+          x-jsonld-id: "cdpa:sessionsTotal"
+        assessment_attempts:
+          type: integer
+          description: Number of assessment attempts made by the learner
+          x-jsonld-id: "cdpa:assessmentAttempts"
+        current_score:
+          type: number
+          description: Current best assessment score (percentage)
+          x-jsonld-id: "cdpa:currentScore"
+        certificate_download_url:
+          type: string
+          format: uri
+          description: URL to download the completion certificate (post-completion)
+          x-jsonld-id: "cdpa:certificateDownloadUrl"

@@ -1,0 +1,113 @@
+{
+  "@context": {
+    "coa": "https://schema.beckn.io/CourseOffer#",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "price": {
+      "@id": "coa:price",
+      "@type": "xsd:decimal"
+    },
+    "currency": {
+      "@id": "coa:currency"
+    },
+    "discountPercent": {
+      "@id": "coa:discountPercent",
+      "@type": "xsd:decimal"
+    },
+    "originalPrice": {
+      "@id": "coa:originalPrice",
+      "@type": "xsd:decimal"
+    },
+    "enrollmentOpenFrom": {
+      "@id": "coa:enrollmentOpenFrom",
+      "@type": "xsd:dateTime"
+    },
+    "enrollmentOpenUntil": {
+      "@id": "coa:enrollmentOpenUntil",
+      "@type": "xsd:date"
+    },
+    "cohortStartDate": {
+      "@id": "coa:cohortStartDate",
+      "@type": "xsd:date"
+    },
+    "cohortEndDate": {
+      "@id": "coa:cohortEndDate",
+      "@type": "xsd:date"
+    },
+    "maxCohortSize": {
+      "@id": "coa:maxCohortSize",
+      "@type": "xsd:integer"
+    },
+    "seatsAvailable": {
+      "@id": "coa:seatsAvailable",
+      "@type": "xsd:integer"
+    },
+    "accessPeriodDays": {
+      "@id": "coa:accessPeriodDays",
+      "@type": "xsd:integer"
+    },
+    "includesCertificationVoucher": {
+      "@id": "coa:includesCertificationVoucher",
+      "@type": "xsd:boolean"
+    },
+    "includesMentorSupport": {
+      "@id": "coa:includesMentorSupport",
+      "@type": "xsd:boolean"
+    },
+    "includesJobPlacement": {
+      "@id": "coa:includesJobPlacement",
+      "@type": "xsd:boolean"
+    },
+    "refundPolicy": {
+      "@id": "coa:refundPolicy"
+    },
+    "offerValidityDays": {
+      "@id": "coa:offerValidityDays",
+      "@type": "xsd:integer"
+    },
+    "RefundPolicy": "coa:RefundPolicy",
+    "discount_percent": {
+      "@id": "coa:discountPercent"
+    },
+    "original_price": {
+      "@id": "coa:originalPrice"
+    },
+    "enrollment_open_from": {
+      "@id": "coa:enrollmentOpenFrom"
+    },
+    "enrollment_open_until": {
+      "@id": "coa:enrollmentOpenUntil"
+    },
+    "cohort_start_date": {
+      "@id": "coa:cohortStartDate"
+    },
+    "cohort_end_date": {
+      "@id": "coa:cohortEndDate"
+    },
+    "max_cohort_size": {
+      "@id": "coa:maxCohortSize"
+    },
+    "seats_available": {
+      "@id": "coa:seatsAvailable"
+    },
+    "access_period_days": {
+      "@id": "coa:accessPeriodDays"
+    },
+    "includes_certification_voucher": {
+      "@id": "coa:includesCertificationVoucher"
+    },
+    "includes_mentor_support": {
+      "@id": "coa:includesMentorSupport"
+    },
+    "includes_job_placement": {
+      "@id": "coa:includesJobPlacement"
+    },
+    "refund_policy": {
+      "@id": "coa:refundPolicy"
+    },
+    "offer_validity_days": {
+      "@id": "coa:offerValidityDays"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_name": "CourseOffer",
+  "pack": "skilling",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "version": "2.1.0",
+  "beckn_container": "offerAttributes",
+  "namespace_prefix": "coa",
+  "namespace_iri": "https://schema.beckn.io/CourseOffer#",
+  "topology": "standard",
+  "bap_role": "Skill Seeker App",
+  "bpp_role": "Course Provider / Training Platform",
+  "description": "Offer attributes for course pricing, enrollment window, cohort constraints, access period, and included extras.",
+  "files": {
+    "attributes": "attributes.yaml",
+    "jsonld_context": "context.jsonld",
+    "vocab": "vocab.jsonld",
+    "renderer": "renderer.json",
+    "examples": "examples/"
+  }
+}

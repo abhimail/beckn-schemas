@@ -1,0 +1,54 @@
+openapi: 3.1.1
+info:
+  title: CodedValue
+  version: 2.1.0
+  description: >
+    Shared type for values governed by external classification authorities.
+    Provides international neutrality — any country's classification system
+    can be expressed without a schema change.
+
+    Examples:
+    - ISCED course domain codes (UNESCO)
+    - ISIC industry sector codes (UN Stats)
+    - NSQF qualification levels (India)
+    - NIC/NOC occupation codes
+
+    This is a shared library type in the hiring-common pack, reused across
+    hiring-jobs, hiring-candidates, and skilling schema packs.
+  contact:
+    name: Beckn Protocol
+    url: https://becknprotocol.io
+
+x-beckn-pack: hiring-common
+x-beckn-type: shared
+x-beckn-schema-version: "2.1.0"
+x-beckn-protocol-version: "2.0"
+
+components:
+  schemas:
+    CodedValue:
+      type: object
+      description: >
+        A value from an external classification authority.
+        Always include the code; name and @context are optional but recommended.
+      required: [code]
+      properties:
+        code:
+          type: string
+          description: The classification code from the authority's registry
+          x-jsonld-id: "cv:code"
+          example: "0613"
+        name:
+          type: string
+          description: Human-readable label for the code in the authority's registry
+          x-jsonld-id: "cv:name"
+          example: "Software and applications development and analysis"
+        "@context":
+          type: string
+          format: uri
+          description: >
+            URI of the code registry or classification authority. Enables
+            dereferencing to the full term definition. Can point to a
+            SkillNet-specific registry for proprietary classifications.
+          x-jsonld-id: "cv:context"
+          example: "https://uis.unesco.org/sites/default/files/documents/isced-f-2013-en.pdf"

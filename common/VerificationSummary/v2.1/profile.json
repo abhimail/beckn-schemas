@@ -1,0 +1,23 @@
+{
+  "schema_name": "VerificationSummary",
+  "pack": "hiring-common",
+  "type": "shared",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "version": "2.1.0",
+  "namespace_prefix": "vs",
+  "namespace_iri": "https://schema.beckn.io/VerificationSummary#",
+  "description": "Shared type for credential verification outcomes. Records aggregate result (PASS/FAIL/PARTIAL/PENDING), count, and notes. No VC payloads.",
+  "used_by": [
+    "hiring-jobs/JobApplicationContractAttributes",
+    "hiring-jobs/JobApplicationPerformanceAttributes",
+    "hiring-candidates/EmployerHiringContractAttributes",
+    "hiring-candidates/HiringProcessPerformanceAttributes",
+    "skilling/CourseEnrollmentContractAttributes"
+  ],
+  "upstream_core_candidate": true,
+  "files": {
+    "attributes": "attributes.yaml",
+    "jsonld_context": "context.jsonld"
+  }
+}

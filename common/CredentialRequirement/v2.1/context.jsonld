@@ -1,0 +1,14 @@
+{
+  "@context": {
+    "cr": "https://schema.beckn.io/CredentialRequirement#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "CredentialRequirement": { "@id": "cr:CredentialRequirement" },
+    "credentialType": { "@id": "cr:credentialType" },
+    "credentialName": { "@id": "cr:credentialName" },
+    "issuerType": { "@id": "cr:issuerType" },
+    "attested": { "@id": "cr:attested", "@type": "xsd:boolean" },
+    "proofRequestUrl": { "@id": "cr:proofRequestUrl", "@type": "@id" },
+    "isMandatory": { "@id": "cr:isMandatory", "@type": "xsd:boolean" }
+  }
+}

@@ -1,0 +1,110 @@
+openapi: 3.1.1
+info:
+  title: CourseEnrollmentContract
+  version: 2.1.0
+  description: >
+    Extension attributes for a course enrollment contract in a Beckn v2.1
+    skilling network. Captures the lifecycle of a learner's enrollment —
+    enrollment stage, progress, completion status, and post-enrollment
+    credential issuance reference. Contains zero PII.
+  contact:
+    name: Beckn Protocol
+    url: https://becknprotocol.io
+
+x-beckn-pack: skilling
+x-beckn-container: contractAttributes
+x-beckn-schema-version: "2.1.0"
+x-beckn-protocol-version: "2.0"
+
+components:
+  schemas:
+
+    EnrollmentStage:
+      type: string
+      enum:
+        - PENDING_PAYMENT
+        - ENROLLED
+        - IN_PROGRESS
+        - COMPLETED
+        - FAILED
+        - WITHDRAWN
+        - EXPIRED
+      description: Current lifecycle stage of the course enrollment
+
+    CourseEnrollmentContract:
+      type: object
+      description: >
+        Domain-specific extension attributes for a course enrollment contract.
+        Records enrollment date, progress, stage, completion deadline, and
+        credential issuance status. Zero PII — learner identity is managed
+        at the beckn:participants level.
+      x-jsonld-context: "./context.jsonld"
+      x-beckn-container: contractAttributes
+      required: [enrollment_date, stage]
+      properties:
+        enrollment_date:
+          type: string
+          format: date
+          description: Date on which the learner was enrolled (ISO 8601)
+          x-jsonld-id: "ceca:enrollmentDate"
+        stage:
+          $ref: "#/components/schemas/EnrollmentStage"
+          description: Current lifecycle stage of this enrollment
+          x-jsonld-id: "ceca:stage"
+        completion_deadline:
+          type: string
+          format: date
+          description: >
+            Deadline by which the learner must complete the course.
+            Calculated from enrollment date + access period.
+          x-jsonld-id: "ceca:completionDeadline"
+        completion_date:
+          type: string
+          format: date
+          description: Actual date of successful completion (ISO 8601)
+          x-jsonld-id: "ceca:completionDate"
+        final_score:
+          type: number
+          description: Final assessment score (percentage, 0–100)
+          x-jsonld-id: "ceca:finalScore"
+        pass_threshold:
+          type: number
+          description: Minimum score required for successful completion (percentage)
+          x-jsonld-id: "ceca:passThreshold"
+        credential_issuance_status:
+          type: string
+          enum: [NOT_APPLICABLE, PENDING, ISSUED, REVOKED]
+          description: Status of the outcome credential issuance
+          x-jsonld-id: "ceca:credentialIssuanceStatus"
+        credential_issuance_reference:
+          type: string
+          description: >
+            Opaque reference to the issued credential record (e.g. VC registry ID).
+            Not the VC payload itself.
+          x-jsonld-id: "ceca:credentialIssuanceReference"
+        proof_metadata_hash:
+          type: string
+          description: Integrity hash of the issued credential metadata
+          x-jsonld-id: "ceca:proofMetadataHash"
+        prerequisite_verification_summary:
+          type: object
+          description: >
+            Outcome of prerequisite credential verification at enrollment time.
+            References the shared VerificationSummary type.
+          properties:
+            overall_result:
+              type: string
+              enum: [PASS, FAIL, PARTIAL, PENDING]
+              x-jsonld-id: "ceca:overallResult"
+            checked_at:
+              type: string
+              format: date-time
+              x-jsonld-id: "ceca:checkedAt"
+            notes:
+              type: string
+              x-jsonld-id: "ceca:notes"
+          x-jsonld-id: "ceca:prerequisiteVerificationSummary"
+        withdrawal_reason:
+          type: string
+          description: Reason for withdrawal if stage is WITHDRAWN
+          x-jsonld-id: "ceca:withdrawalReason"

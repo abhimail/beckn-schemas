@@ -1,0 +1,174 @@
+openapi: 3.1.1
+info:
+  title: CourseResource
+  version: 2.1.0
+  description: >
+    Extension attributes for a course resource in a Beckn v2.1 skilling network.
+    Describes the educational content, delivery mode, prerequisites, and credential
+    outcomes available for discovery by skill seeker BAPs.
+  contact:
+    name: Beckn Protocol
+    url: https://becknprotocol.io
+
+x-beckn-pack: skilling
+x-beckn-container: resourceAttributes
+x-beckn-schema-version: "2.1.0"
+x-beckn-protocol-version: "2.0"
+
+components:
+  schemas:
+
+    DeliveryMode:
+      type: string
+      enum: [ONLINE, OFFLINE, HYBRID]
+      description: How the course is delivered
+
+    CourseLevel:
+      type: string
+      enum: [BEGINNER, INTERMEDIATE, ADVANCED, EXPERT]
+      description: Difficulty / prerequisite knowledge level of the course
+
+    CodedValue:
+      type: object
+      description: >
+        A value governed by an external classification authority,
+        e.g. ISCED course domain codes, NSQF qualification levels.
+      required: [code]
+      properties:
+        code:
+          type: string
+          description: The classification code
+          x-jsonld-id: "cra:code"
+        name:
+          type: string
+          description: Human-readable label for the code
+          x-jsonld-id: "cra:name"
+        "@context":
+          type: string
+          format: uri
+          description: URI of the classification authority's code registry
+          x-jsonld-id: "cra:context"
+
+    CredentialRequirement:
+      type: object
+      description: >
+        A prerequisite credential required before enrolling in this course.
+        Supports graceful degradation: attested=false for soft prerequisites.
+      required: [credential_type, attested]
+      properties:
+        credential_type:
+          type: string
+          description: Type or name of the required credential
+          x-jsonld-id: "cra:credentialType"
+        credential_name:
+          type: string
+          description: Human-readable name of the required credential
+          x-jsonld-id: "cra:credentialName"
+        issuer_type:
+          type: string
+          description: Type of issuer (e.g. "Government", "University", "Platform")
+          x-jsonld-id: "cra:issuerType"
+        attested:
+          type: boolean
+          description: Whether VC-backed verification is required
+          x-jsonld-id: "cra:attested"
+        proof_request_url:
+          type: string
+          format: uri
+          description: DeDi endpoint URI for credential verification (when attested=true)
+          x-jsonld-id: "cra:proofRequestUrl"
+
+    OutcomeCredential:
+      type: object
+      description: The credential awarded upon successful course completion
+      properties:
+        category:
+          type: string
+          enum: [CERTIFICATE, DIPLOMA, DEGREE, BADGE, MARK, LICENSE, OTHER]
+          description: Category of the outcome credential
+          x-jsonld-id: "cra:category"
+        name:
+          type: string
+          description: Name of the credential (e.g. "AWS Certified Solutions Architect")
+          x-jsonld-id: "cra:name"
+        issuer_type:
+          type: string
+          description: Type of issuing authority (e.g. "Platform", "University", "Government")
+          x-jsonld-id: "cra:issuerType"
+        qualification_level:
+          $ref: "#/components/schemas/CodedValue"
+          description: NSQF or equivalent level of the awarded credential
+          x-jsonld-id: "cra:qualificationLevel"
+
+    CourseResource:
+      type: object
+      description: >
+        Domain-specific extension attributes for a course resource. Describes
+        what is being offered — content, duration, delivery, prerequisites,
+        and outcome credentials — for discovery by learner BAPs.
+      x-jsonld-context: "./context.jsonld"
+      x-beckn-container: resourceAttributes
+      required: [delivery_mode, course_level, duration_hours]
+      properties:
+        delivery_mode:
+          $ref: "#/components/schemas/DeliveryMode"
+          description: How the course content is delivered
+          x-jsonld-id: "cra:deliveryMode"
+        course_level:
+          $ref: "#/components/schemas/CourseLevel"
+          description: Difficulty level of the course
+          x-jsonld-id: "cra:courseLevel"
+        duration_hours:
+          type: number
+          description: Total estimated duration of the course in hours
+          x-jsonld-id: "cra:durationHours"
+        session_count:
+          type: integer
+          description: Number of sessions (for instructor-led delivery)
+          x-jsonld-id: "cra:sessionCount"
+        course_domain:
+          $ref: "#/components/schemas/CodedValue"
+          description: ISCED field of education classification code
+          x-jsonld-id: "cra:courseDomain"
+        industry_type:
+          $ref: "#/components/schemas/CodedValue"
+          description: ISIC industry sector this course targets
+          x-jsonld-id: "cra:industryType"
+        language:
+          type: string
+          description: Primary language of instruction (ISO 639-1 code)
+          x-jsonld-id: "cra:language"
+        subtitle_languages:
+          type: array
+          items:
+            type: string
+          description: Languages for which subtitles or translations are available
+          x-jsonld-id: "cra:subtitleLanguages"
+        prerequisites:
+          type: array
+          items:
+            $ref: "#/components/schemas/CredentialRequirement"
+          description: Credentials required before enrolling
+          x-jsonld-id: "cra:prerequisites"
+        outcome_credential:
+          $ref: "#/components/schemas/OutcomeCredential"
+          description: Credential awarded on successful completion
+          x-jsonld-id: "cra:outcomeCredential"
+        accreditation_body:
+          type: string
+          description: Name of the accrediting body (if applicable)
+          x-jsonld-id: "cra:accreditationBody"
+        max_learners:
+          type: integer
+          description: Maximum cohort size (for instructor-led / offline delivery)
+          x-jsonld-id: "cra:maxLearners"
+        is_self_paced:
+          type: boolean
+          description: Whether the course can be completed at the learner's own pace
+          x-jsonld-id: "cra:isSelfPaced"
+        tags:
+          type: array
+          items:
+            type: string
+          description: Searchable tags for discovery (skills, topics, tools)
+          x-jsonld-id: "cra:tags"

@@ -1,0 +1,158 @@
+{
+  "_comment": "on_discover — employer BAP discovers candidate profiles from candidate platform BPP",
+  "context": {
+    "domain": "hiring:candidates",
+    "action": "on_discover",
+    "version": "2.0.0",
+    "bap_id": "employer-app.example.com",
+    "bap_uri": "https://employer-app.example.com/beckn",
+    "bpp_id": "candidate-platform.example.com",
+    "bpp_uri": "https://candidate-platform.example.com/beckn",
+    "transaction_id": "txn-cand-disc-001",
+    "message_id": "msg-cand-disc-001",
+    "timestamp": "2026-04-16T09:00:00Z",
+    "schemaContext": [
+      {
+        "schema": "CandidateProfileResource",
+        "version": "2.1.0",
+        "namespace": "cpra"
+      },
+      {
+        "schema": "CandidateAvailabilityOfferAttributes",
+        "version": "2.1.0",
+        "namespace": "caoa"
+      }
+    ]
+  },
+  "message": {
+    "catalog": {
+      "id": "catalog-candidates-001",
+      "descriptor": {
+        "name": "Mid-Senior Software Engineers"
+      },
+      "provider": {
+        "id": "candidate-platform.example.com",
+        "descriptor": {
+          "name": "TalentHub Platform"
+        }
+      },
+      "beckn:resources": [
+        {
+          "beckn:id": "candidate-profile-001",
+          "beckn:descriptor": {
+            "name": "Senior Full-Stack Engineer",
+            "description": "Experienced full-stack engineer with cloud and microservices background"
+          },
+          "beckn:isAvailable": true,
+          "beckn:resourceAttributes": {
+            "@context": "https://schema.beckn.io/CandidateProfileResource#",
+            "experience_level": "SENIOR",
+            "total_experience_years": 7.5,
+            "availability_status": "ACTIVELY_LOOKING",
+            "notice_period": "P30D",
+            "preferred_work_mode": "HYBRID",
+            "current_location": {
+              "address_locality": "Bengaluru",
+              "address_region": "Karnataka",
+              "address_country": "IN"
+            },
+            "relocation_willing": true,
+            "skills": [
+              {
+                "skill_name": "Node.js",
+                "proficiency": "EXPERT",
+                "years_of_experience": 6,
+                "attested": false
+              },
+              {
+                "skill_name": "React",
+                "proficiency": "ADVANCED",
+                "years_of_experience": 5,
+                "attested": true,
+                "proof_request_url": "https://dedi.example.com/verify/skill/react/candidate-profile-001"
+              },
+              {
+                "skill_name": "AWS",
+                "proficiency": "ADVANCED",
+                "years_of_experience": 4,
+                "attested": true,
+                "proof_request_url": "https://dedi.example.com/verify/cert/aws-saa/candidate-profile-001"
+              }
+            ],
+            "education": [
+              {
+                "degree": "B.Tech Computer Science",
+                "field_of_study": "Computer Science and Engineering",
+                "institution_type": "UNIVERSITY",
+                "year_of_completion": 2018
+              }
+            ],
+            "industry_preference": [
+              {
+                "code": "6201",
+                "name": "Computer programming activities"
+              },
+              {
+                "code": "6202",
+                "name": "Computer consultancy activities"
+              }
+            ],
+            "functional_area_preference": [
+              "Engineering",
+              "Architecture"
+            ],
+            "expected_salary": {
+              "salary_min": 2000000,
+              "salary_max": 2800000,
+              "salary_currency": "INR",
+              "salary_period": "ANNUAL"
+            },
+            "languages": [
+              "en",
+              "hi",
+              "kn"
+            ],
+            "open_to_job_types": [
+              "FULL_TIME",
+              "CONTRACT"
+            ],
+            "reputation_summary": {
+              "rating_value": 4.1,
+              "rating_count": 23,
+              "rating_agency": "HiringNetwork-Attestation"
+            }
+          }
+        }
+      ],
+      "beckn:offers": [
+        {
+          "beckn:id": "availability-offer-001",
+          "beckn:status": {
+            "code": "ACTIVE"
+          },
+          "beckn:resourceIds": [
+            "candidate-profile-001"
+          ],
+          "beckn:considerations": [
+            {
+              "beckn:id": "consid-avail-001",
+              "beckn:type": "MONETARY",
+              "beckn:status": {
+                "code": "PROPOSED"
+              }
+            }
+          ],
+          "beckn:offerAttributes": {
+            "@context": "https://schema.beckn.io/CandidateAvailabilityOfferAttributes#",
+            "available_from": "2026-05-01",
+            "engagement_types_open": [
+              "FULL_TIME",
+              "CONTRACT"
+            ],
+            "min_contract_duration_months": 6
+          }
+        }
+      ]
+    }
+  }
+}

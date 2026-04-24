@@ -1,0 +1,104 @@
+openapi: 3.1.1
+info:
+  title: CourseOffer
+  version: 2.1.0
+  description: >
+    Extension attributes for a course offer in a Beckn v2.1 skilling network.
+    Describes the commercial and access terms under which a course resource
+    is offered to learners — pricing, enrollment window, access period,
+    cohort limits, and included extras.
+  contact:
+    name: Beckn Protocol
+    url: https://becknprotocol.io
+
+x-beckn-pack: skilling
+x-beckn-container: offerAttributes
+x-beckn-schema-version: "2.1.0"
+x-beckn-protocol-version: "2.0"
+
+components:
+  schemas:
+
+    CourseOffer:
+      type: object
+      description: >
+        Domain-specific extension attributes for a course offer. Defines
+        pricing, enrollment window, access duration, cohort constraints,
+        and included extras for a specific course resource offering.
+      x-jsonld-context: "./context.jsonld"
+      x-beckn-container: offerAttributes
+      required: [price, currency]
+      properties:
+        price:
+          type: number
+          description: Offer price in the specified currency
+          x-jsonld-id: "coa:price"
+        currency:
+          type: string
+          description: ISO 4217 currency code
+          x-jsonld-id: "coa:currency"
+        discount_percent:
+          type: number
+          description: Percentage discount applied from the base price (0–100)
+          x-jsonld-id: "coa:discountPercent"
+        original_price:
+          type: number
+          description: Original price before discount (for display purposes)
+          x-jsonld-id: "coa:originalPrice"
+        enrollment_open_from:
+          type: string
+          format: date-time
+          description: Date-time from which enrollment opens (ISO 8601)
+          x-jsonld-id: "coa:enrollmentOpenFrom"
+        enrollment_open_until:
+          type: string
+          format: date
+          description: Last date to enroll (ISO 8601)
+          x-jsonld-id: "coa:enrollmentOpenUntil"
+        cohort_start_date:
+          type: string
+          format: date
+          description: >
+            Start date of the cohort (for instructor-led / batch courses).
+            Not applicable for self-paced courses.
+          x-jsonld-id: "coa:cohortStartDate"
+        cohort_end_date:
+          type: string
+          format: date
+          description: End date of the instructor-led cohort (ISO 8601)
+          x-jsonld-id: "coa:cohortEndDate"
+        max_cohort_size:
+          type: integer
+          description: Maximum number of learners in this cohort / batch
+          x-jsonld-id: "coa:maxCohortSize"
+        seats_available:
+          type: integer
+          description: Number of seats still available at time of discovery
+          x-jsonld-id: "coa:seatsAvailable"
+        access_period_days:
+          type: integer
+          description: >
+            Number of days the learner can access course materials after
+            enrollment (for self-paced online courses)
+          x-jsonld-id: "coa:accessPeriodDays"
+        includes_certification_voucher:
+          type: boolean
+          description: Whether the offer includes the certification exam voucher
+          x-jsonld-id: "coa:includesCertificationVoucher"
+        includes_mentor_support:
+          type: boolean
+          description: Whether the offer includes access to mentor support
+          x-jsonld-id: "coa:includesMentorSupport"
+        includes_job_placement:
+          type: boolean
+          description: Whether the offer includes job placement assistance
+          x-jsonld-id: "coa:includesJobPlacement"
+        refund_policy:
+          type: string
+          enum: [NO_REFUND, PARTIAL_REFUND, FULL_REFUND_BEFORE_START, FULL_REFUND_ANY_TIME]
+          description: Refund policy for this offer
+          x-jsonld-id: "coa:refundPolicy"
+        offer_validity_days:
+          type: integer
+          description: Number of days this offer is valid (from time of discovery)
+          x-jsonld-id: "coa:offerValidityDays"

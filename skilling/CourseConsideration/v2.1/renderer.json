@@ -1,0 +1,36 @@
+{
+  "schema_name": "CourseConsideration",
+  "version": "2.1.0",
+  "card_template": {
+    "title": "{{ccoa:currency}} {{ccoa:totalAmount}}",
+    "subtitle": "{{ccoa:paymentMode}}",
+    "tags": ["{{ccoa:taxCode}}"]
+  },
+  "detail_template": {
+    "sections": [
+      {
+        "heading": "Payment",
+        "fields": [
+          { "label": "Mode", "value": "{{ccoa:paymentMode}}" },
+          { "label": "Total", "value": "{{ccoa:currency}} {{ccoa:totalAmount}}" },
+          { "label": "Tax", "value": "{{ccoa:currency}} {{ccoa:taxAmount}} ({{ccoa:taxCode}})" }
+        ]
+      },
+      {
+        "heading": "Installment Plan",
+        "list": "{{ccoa:installmentPlan}}",
+        "item_template": "Installment {{installmentNumber}}: {{ccoa:currency}} {{amount}} — due {{dueDate}} ({{status}})"
+      },
+      {
+        "heading": "Discounts & Sponsorship",
+        "fields": [
+          { "label": "Scholarship Amount", "value": "{{ccoa:currency}} {{ccoa:scholarshipAmount}}" },
+          { "label": "Voucher Discount", "value": "{{ccoa:currency}} {{ccoa:voucherDiscountAmount}}" },
+          { "label": "Employer Sponsor", "value": "{{ccoa:employerSponsorId}}" }
+        ]
+      }
+    ]
+  },
+  "html": "<div class='consideration-card'><p><strong>{{ccoa:paymentMode}}</strong></p><p>Total: {{ccoa:currency}} {{ccoa:totalAmount}}</p>{{#if ccoa:scholarshipAmount}}<p>Scholarship: -{{ccoa:currency}} {{ccoa:scholarshipAmount}}</p>{{/if}}</div>",
+  "html_detail": "<div class='consideration-detail'><h3>Payment Details</h3><section><h4>Mode: {{ccoa:paymentMode}}</h4><p>Total: {{ccoa:currency}} {{ccoa:totalAmount}}</p>{{#if ccoa:taxAmount}}<p>Tax ({{ccoa:taxCode}}): {{ccoa:currency}} {{ccoa:taxAmount}}</p>{{/if}}</section>{{#if ccoa:installmentPlan}}<section><h4>Installments</h4>{{#each ccoa:installmentPlan}}<p>{{installmentNumber}}. {{../ccoa:currency}} {{amount}} — {{dueDate}} — {{status}}</p>{{/each}}</section>{{/if}}{{#if ccoa:scholarshipAmount}}<section><h4>Scholarship</h4><p>Scholarship ID: {{ccoa:scholarshipId}}</p><p>Amount: {{ccoa:currency}} {{ccoa:scholarshipAmount}}</p></section>{{/if}}</div>"
+}

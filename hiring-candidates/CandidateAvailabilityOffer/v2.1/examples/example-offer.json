@@ -1,0 +1,107 @@
+{
+  "_comment": "on_select \u2014 employer selects a candidate profile and reviews availability offer details",
+  "context": {
+    "domain": "hiring:candidates",
+    "action": "on_select",
+    "version": "2.0.0",
+    "bap_id": "employer-app.example.com",
+    "bap_uri": "https://employer-app.example.com/beckn",
+    "bpp_id": "candidate-platform.example.com",
+    "bpp_uri": "https://candidate-platform.example.com/beckn",
+    "transaction_id": "txn-cand-sel-001",
+    "message_id": "msg-cand-sel-001",
+    "timestamp": "2026-04-16T09:15:00Z",
+    "schemaContext": [
+      {
+        "schema": "CandidateProfileResourceAttributes",
+        "version": "2.1.0",
+        "namespace": "cpra"
+      },
+      {
+        "schema": "CandidateAvailabilityOffer",
+        "version": "2.1.0",
+        "namespace": "caoa"
+      }
+    ]
+  },
+  "message": {
+    "catalog": {
+      "id": "catalog-candidates-001",
+      "descriptor": {
+        "name": "Selected Candidate Profile"
+      },
+      "provider": {
+        "id": "candidate-platform.example.com",
+        "descriptor": {
+          "name": "TalentHub Platform"
+        }
+      },
+      "beckn:resources": [
+        {
+          "beckn:id": "candidate-profile-001",
+          "beckn:descriptor": {
+            "name": "Senior Full-Stack Engineer",
+            "description": "7.5 years experience, Node.js + React, AWS certified"
+          },
+          "beckn:isAvailable": true,
+          "beckn:resourceAttributes": {
+            "@context": "https://schema.beckn.io/CandidateProfileResourceAttributes#",
+            "experience_level": "SENIOR",
+            "total_experience_years": 7.5,
+            "availability_status": "ACTIVELY_LOOKING",
+            "notice_period_value": 30,
+            "notice_period_unit": "DAYS",
+            "preferred_work_mode": "HYBRID",
+            "expected_salary_min": 2000000,
+            "expected_salary_max": 2800000,
+            "expected_salary_currency": "INR",
+            "expected_salary_period": "ANNUAL"
+          }
+        }
+      ],
+      "beckn:offers": [
+        {
+          "beckn:id": "availability-offer-001",
+          "beckn:status": {
+            "code": "ACTIVE"
+          },
+          "beckn:resourceIds": [
+            "candidate-profile-001"
+          ],
+          "beckn:considerations": [
+            {
+              "beckn:id": "consid-avail-001",
+              "beckn:type": "MONETARY",
+              "beckn:status": {
+                "code": "PROPOSED"
+              },
+              "beckn:amount": {
+                "currency": "INR",
+                "value": "2400000"
+              }
+            }
+          ],
+          "beckn:offerAttributes": {
+            "@context": "https://schema.beckn.io/CandidateAvailabilityOffer#",
+            "available_from": "2026-05-15",
+            "available_until": "2026-07-15",
+            "engagement_types_open": [
+              "FULL_TIME",
+              "CONTRACT"
+            ],
+            "min_contract_duration_months": 6,
+            "max_contract_duration_months": 24,
+            "relocation_support_required": false,
+            "visa_sponsorship_required": false,
+            "interview_availability": "WEEKDAYS",
+            "preferred_process_steps": [
+              "VIDEO",
+              "TECHNICAL_TEST"
+            ],
+            "offer_expiry_days": 7
+          }
+        }
+      ]
+    }
+  }
+}

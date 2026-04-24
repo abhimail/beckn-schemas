@@ -1,0 +1,83 @@
+openapi: 3.1.1
+info:
+  title: VerificationSummary
+  version: 2.1.0
+  description: >
+    Shared type for recording the outcome of credential verification.
+    Used wherever credential verification occurs — hiring (background checks,
+    skill attestation), healthcare (KYC, license verification), financial
+    services (KYC), skilling (prerequisite verification), logistics
+    (driver license check).
+
+    Records the aggregate outcome (PASS/FAIL/PARTIAL/PENDING) with an
+    optional notes field and timestamp. Does not contain the VC payload
+    itself — only the verification outcome.
+
+    This is a shared library type in the hiring-common pack.
+    Upstream Beckn core candidate.
+  contact:
+    name: Beckn Protocol
+    url: https://becknprotocol.io
+
+x-beckn-pack: hiring-common
+x-beckn-type: shared
+x-beckn-schema-version: "2.1.0"
+x-beckn-protocol-version: "2.0"
+
+components:
+  schemas:
+    VerificationResult:
+      type: string
+      enum: [PASS, FAIL, PARTIAL, PENDING]
+      description: >
+        Aggregate outcome of credential verification.
+        PASS: all required credentials verified successfully
+        FAIL: one or more required credentials failed verification
+        PARTIAL: some credentials verified, some pending or failed
+        PENDING: verification process has not yet completed
+
+    VerificationSummary:
+      type: object
+      description: >
+        Summary of credential verification outcome. Contains no VC payloads —
+        only the verification result, timestamp, and optional notes.
+      required: [overall_result]
+      properties:
+        overall_result:
+          $ref: "#/components/schemas/VerificationResult"
+          description: Aggregate outcome of all credential verifications
+          x-jsonld-id: "vs:overallResult"
+          example: "PASS"
+        checked_at:
+          type: string
+          format: date-time
+          description: Date-time when the verification was performed (ISO 8601)
+          x-jsonld-id: "vs:checkedAt"
+          example: "2026-04-16T10:00:00Z"
+        verifier_id:
+          type: string
+          description: >
+            Opaque identifier of the verification service or agent.
+            Not a personal identifier.
+          x-jsonld-id: "vs:verifierId"
+          example: "dedi-verifier.example.com"
+        credential_count:
+          type: integer
+          description: Number of credentials included in this verification
+          x-jsonld-id: "vs:credentialCount"
+          example: 3
+        passed_count:
+          type: integer
+          description: Number of credentials that passed verification
+          x-jsonld-id: "vs:passedCount"
+          example: 3
+        failed_count:
+          type: integer
+          description: Number of credentials that failed verification
+          x-jsonld-id: "vs:failedCount"
+          example: 0
+        notes:
+          type: string
+          description: Human-readable notes on the verification outcome (non-PII)
+          x-jsonld-id: "vs:notes"
+          example: "All required credentials verified via DeDi"

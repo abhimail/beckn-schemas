@@ -1,0 +1,104 @@
+{
+  "context": {
+    "action": "on_confirm",
+    "version": "2.0.0",
+    "schemaContext": [
+      "https://schema.beckn.io/JobApplicationContract/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-app-001",
+      "beckn:status": {
+        "code": "ACTIVE"
+      },
+      "beckn:participants": [
+        {
+          "beckn:id": "p-seeker-001",
+          "beckn:descriptor": {
+            "schema:name": "Arjun Mehta"
+          },
+          "beckn:participantAttributes": {
+            "role": "JOB_SEEKER"
+          }
+        },
+        {
+          "beckn:id": "p-employer-001",
+          "beckn:descriptor": {
+            "schema:name": "TechCorp India"
+          },
+          "beckn:participantAttributes": {
+            "role": "EMPLOYER"
+          }
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-001",
+          "beckn:status": {
+            "descriptor": {
+              "code": "ACTIVE"
+            }
+          },
+          "beckn:resources": [
+            {
+              "beckn:id": "job-001",
+              "quantity": {
+                "count": 1
+              }
+            }
+          ],
+          "beckn:offer": {
+            "beckn:id": "offer-001",
+            "beckn:resourceIds": [
+              "job-001"
+            ]
+          }
+        }
+      ],
+      "beckn:consideration": [
+        {
+          "beckn:id": "consid-001",
+          "beckn:status": {
+            "code": "PROPOSED"
+          }
+        }
+      ],
+      "beckn:performance": [
+        {
+          "beckn:id": "perf-001",
+          "beckn:status": {
+            "code": "PLANNED"
+          },
+          "beckn:commitmentIds": [
+            "commit-001"
+          ],
+          "beckn:performanceAttributes": {
+            "lifecycle_stage": "TELEPHONIC_SCREENING",
+            "evaluation_steps": [
+              {
+                "step_type": "TELEPHONIC",
+                "title": "Initial HR Screen",
+                "scheduled_at": "2026-04-25T10:00:00Z",
+                "result": "PENDING"
+              }
+            ]
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "application_reference": "APP-2026-00123",
+        "application_date": "2026-04-16T09:30:00Z",
+        "stage": "SCREENING",
+        "notes": "Candidate has strong Go experience.",
+        "submitted_documents": [
+          {
+            "document_type": "RESUME",
+            "document_reference": "doc-resume-001",
+            "verified": false
+          }
+        ]
+      }
+    }
+  }
+}

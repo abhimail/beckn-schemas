@@ -1,0 +1,22 @@
+{
+  "schema_name": "CodedValue",
+  "pack": "hiring-common",
+  "type": "shared",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "version": "2.1.0",
+  "namespace_prefix": "cv",
+  "namespace_iri": "https://schema.beckn.io/CodedValue#",
+  "description": "Shared type for externally governed classification codes. Provides international neutrality for industry, domain, and qualification level fields.",
+  "used_by": [
+    "skilling/CourseResourceAttributes",
+    "hiring-jobs/HiringJobResourceAttributes",
+    "hiring-candidates/CandidateProfileResourceAttributes",
+    "hiring-candidates/CandidateAvailabilityOfferAttributes"
+  ],
+  "upstream_core_candidate": true,
+  "files": {
+    "attributes": "attributes.yaml",
+    "jsonld_context": "context.jsonld"
+  }
+}

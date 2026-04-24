@@ -1,0 +1,70 @@
+{
+  "context": {
+    "action": "on_discover",
+    "version": "2.0.0",
+    "schemaContext": [
+      "https://schema.beckn.io/HiringJobOffer/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "catalogs": [
+      {
+        "beckn:id": "cat-001",
+        "beckn:descriptor": {
+          "schema:name": "TechCorp Listings"
+        },
+        "beckn:provider": {
+          "beckn:id": "employer-001",
+          "beckn:descriptor": {
+            "schema:name": "TechCorp"
+          }
+        },
+        "beckn:resources": [
+          {
+            "beckn:id": "job-001",
+            "beckn:descriptor": {
+              "schema:name": "Senior Backend Engineer"
+            }
+          }
+        ],
+        "beckn:offers": [
+          {
+            "beckn:id": "offer-001",
+            "beckn:resourceIds": [
+              "job-001"
+            ],
+            "beckn:considerations": [
+              {
+                "beckn:id": "consid-001",
+                "beckn:status": {
+                  "code": "PROPOSED"
+                }
+              }
+            ],
+            "beckn:offerAttributes": {
+              "salary_specification": {
+                "salary_min": 2000000,
+                "salary_max": 3500000,
+                "salary_currency": "INR",
+                "salary_period": "ANNUAL"
+              },
+              "benefits": [
+                "Health Insurance",
+                "ESOPs",
+                "Flexible Hours"
+              ],
+              "equity_offered": true,
+              "insurance_provided": true,
+              "accommodation_provided": false,
+              "joining_date": "2026-07-01",
+              "probation_period": "P3M",
+              "notice_period": "P2M",
+              "offer_issued_at": "2026-04-20T10:00:00Z",
+              "offer_validity": "P7D"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

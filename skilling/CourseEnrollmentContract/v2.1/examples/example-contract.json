@@ -1,0 +1,122 @@
+{
+  "_comment": "on_confirm \u2014 learner BAP confirms course enrollment with training platform BPP",
+  "context": {
+    "domain": "skilling:courses",
+    "action": "on_confirm",
+    "version": "2.0.0",
+    "bap_id": "skill-seeker-app.example.com",
+    "bap_uri": "https://skill-seeker-app.example.com/beckn",
+    "bpp_id": "training-platform.example.com",
+    "bpp_uri": "https://training-platform.example.com/beckn",
+    "transaction_id": "txn-course-conf-001",
+    "message_id": "msg-course-conf-001",
+    "timestamp": "2026-04-16T10:00:00Z",
+    "schemaContext": [
+      {
+        "schema": "CourseEnrollmentContract",
+        "version": "2.1.0",
+        "namespace": "ceca"
+      },
+      {
+        "schema": "CourseConsiderationAttributes",
+        "version": "2.1.0",
+        "namespace": "ccoa"
+      },
+      {
+        "schema": "CourseDeliveryPerformanceAttributes",
+        "version": "2.1.0",
+        "namespace": "cdpa"
+      }
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-enroll-001",
+      "beckn:status": {
+        "code": "ACTIVE"
+      },
+      "beckn:participants": [
+        {
+          "beckn:id": "learner-session-001",
+          "beckn:descriptor": {
+            "name": "Learner"
+          },
+          "beckn:role": "BAP"
+        },
+        {
+          "beckn:id": "training-platform.example.com",
+          "beckn:descriptor": {
+            "name": "SkillUp Training Platform"
+          },
+          "beckn:role": "BPP"
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-enroll-001",
+          "beckn:status": {
+            "descriptor": {
+              "code": "ACTIVE"
+            }
+          },
+          "beckn:refType": "OFFER",
+          "beckn:ref": "offer-aws-saa-001",
+          "beckn:quantity": {
+            "count": 1
+          }
+        }
+      ],
+      "beckn:consideration": [
+        {
+          "beckn:id": "consid-course-001",
+          "beckn:type": "MONETARY",
+          "beckn:status": {
+            "code": "AGREED"
+          },
+          "beckn:amount": {
+            "currency": "INR",
+            "value": "4999"
+          },
+          "beckn:considerationAttributes": {
+            "@context": "https://schema.beckn.io/CourseConsiderationAttributes#",
+            "payment_mode": "ONE_TIME",
+            "total_amount": 4999,
+            "currency": "INR",
+            "tax_amount": 899.82,
+            "tax_code": "GST18"
+          }
+        }
+      ],
+      "beckn:performance": [
+        {
+          "beckn:id": "perf-access-001",
+          "beckn:status": {
+            "code": "PLANNED"
+          },
+          "beckn:commitmentIds": [
+            "commit-enroll-001"
+          ],
+          "beckn:performanceAttributes": {
+            "@context": "https://schema.beckn.io/CourseDeliveryPerformanceAttributes#",
+            "delivery_url": "https://training-platform.example.com/courses/aws-saa-001/learn",
+            "access_expires_at": "2026-10-16T23:59:59Z",
+            "completion_percentage": 0
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "@context": "https://schema.beckn.io/CourseEnrollmentContract#",
+        "enrollment_date": "2026-04-16",
+        "stage": "ENROLLED",
+        "completion_deadline": "2026-10-16",
+        "pass_threshold": 70,
+        "credential_issuance_status": "PENDING",
+        "prerequisite_verification_summary": {
+          "overall_result": "PASS",
+          "checked_at": "2026-04-16T09:55:00Z",
+          "notes": "No VC-backed prerequisites required for this course"
+        }
+      }
+    }
+  }
+}
