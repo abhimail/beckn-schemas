@@ -1,5 +1,7 @@
 # HiringJobOffer
 
+**Tag:** hiring hiring-jobs offer
+
 **Domain pack:** `hiring-jobs`  
 **Beckn container:** `offerAttributes`
 

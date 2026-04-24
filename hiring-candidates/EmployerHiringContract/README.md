@@ -1,5 +1,7 @@
 # EmployerHiringContract
 
+**Tag:** hiring hiring-candidates contract
+
 **Domain pack:** `hiring-candidates`  
 **Beckn container:** `contractAttributes`
 

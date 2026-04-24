@@ -1,5 +1,7 @@
 # CourseEnrollmentContract
 
+**Tag:** skilling contract
+
 **Domain pack:** `skilling`  
 **Beckn container:** `contractAttributes`
 

@@ -1,5 +1,7 @@
 # CourseResource
 
+**Tag:** skilling resource
+
 **Domain pack:** `skilling`  
 **Beckn container:** `resourceAttributes`
 

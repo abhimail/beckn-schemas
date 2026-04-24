@@ -2,7 +2,7 @@
 
 **Container:** `beckn:resourceAttributes`  
 **Use Cases:** UC1 — Driver/Aggregator Initiated Job Application  
-**Tag:** transport-hiring
+**Tag:** transport-hiring hiring resource
 
 Extension attributes for a driver job vacancy Resource published by an
 operator platform. Extends the generic `HiringJobResource` with driver-specific

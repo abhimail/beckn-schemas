@@ -1,6 +1,7 @@
 # SalarySpecification
 
 **Container:** inline sub-schema (shared utility type)
+**Tag:** hiring hiring-common shared-type
 **Pack:** hiring-common
 **Use Cases:** Any hiring-domain network carrying salary data on job offers or candidate expectations
 

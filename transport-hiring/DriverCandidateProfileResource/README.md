@@ -2,7 +2,7 @@
 
 **Container:** `beckn:resourceAttributes`  
 **Use Cases:** UC2 — Operator Initiated Driver Recruitment  
-**Tag:** transport-hiring
+**Tag:** transport-hiring hiring resource
 
 Extension attributes for a driver candidate profile Resource. Published by
 driver platforms and aggregators. Extends CandidateProfileResource with

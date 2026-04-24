@@ -1,5 +1,7 @@
 # HiringJobResource
 
+**Tag:** hiring hiring-jobs resource transport-hiring
+
 **Domain pack:** `hiring-jobs`  
 **Beckn container:** `resourceAttributes`
 

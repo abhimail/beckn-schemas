@@ -1,5 +1,7 @@
 # CandidateProfileResource
 
+**Tag:** hiring hiring-candidates resource transport-hiring
+
 **Domain pack:** `hiring-candidates`  
 **Beckn container:** `resourceAttributes`
 

@@ -1,6 +1,7 @@
 # ReputationSummary
 
 **Container:** inline sub-schema (shared utility type)
+**Tag:** hiring hiring-common shared-type
 **Pack:** hiring-common
 **Use Cases:** Any hiring-domain network requiring reputation signals
 

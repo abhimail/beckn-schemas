@@ -1,5 +1,7 @@
 # JobApplicationPerformance
 
+**Tag:** hiring hiring-jobs performance
+
 **Domain pack:** `hiring-jobs`  
 **Beckn container:** `performanceAttributes`
 

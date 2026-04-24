@@ -1,5 +1,7 @@
 # CourseOffer
 
+**Tag:** skilling offer
+
 **Domain pack:** `skilling`  
 **Beckn container:** `offerAttributes`
 

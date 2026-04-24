@@ -1,5 +1,7 @@
 # HiringProcessPerformance
 
+**Tag:** hiring hiring-candidates performance
+
 **Domain pack:** `hiring-candidates`  
 **Beckn container:** `performanceAttributes`
 

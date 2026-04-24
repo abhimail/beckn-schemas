@@ -1,5 +1,7 @@
 # CourseConsideration
 
+**Tag:** skilling consideration
+
 **Domain pack:** `skilling`  
 **Beckn container:** `considerationAttributes`
 

@@ -1,5 +1,7 @@
 # CourseDeliveryPerformance
 
+**Tag:** skilling performance
+
 **Domain pack:** `skilling`  
 **Beckn container:** `performanceAttributes`
 
