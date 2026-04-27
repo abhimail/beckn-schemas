@@ -1,0 +1,44 @@
+{
+  "schema_id": "https://schema.beckn.io/SchemePerformance/v2.1",
+  "card_template": {
+    "title": "{{beckn:performanceAttributes.spe:schemeDeliveryType}}",
+    "subtitle": "{{beckn:performanceAttributes.spe:applicationStatus}}",
+    "badge_primary": "{{beckn:performanceAttributes.spe:submissionMode}}",
+    "metadata_line": "{{beckn:performanceAttributes.spe:statusNote}}"
+  },
+  "detail_template": {
+    "header": {
+      "title": "Application Status",
+      "subtitle": "{{beckn:performanceAttributes.spe:applicationStatus}}"
+    },
+    "sections": [
+      {
+        "label": "Delivery",
+        "fields": [
+          { "label": "Delivery Type",    "value": "{{beckn:performanceAttributes.spe:schemeDeliveryType}}" },
+          { "label": "Submission Mode",  "value": "{{beckn:performanceAttributes.spe:submissionMode}}" },
+          { "label": "Document Mode",    "value": "{{beckn:performanceAttributes.spe:documentCollectionMode}}" },
+          { "label": "Portal Reference", "value": "{{beckn:performanceAttributes.spe:applicationPortalReference}}" }
+        ]
+      },
+      {
+        "label": "Application Status",
+        "fields": [
+          { "label": "Status",      "value": "{{beckn:performanceAttributes.spe:applicationStatus}}" },
+          { "label": "Status Note", "value": "{{beckn:performanceAttributes.spe:statusNote}}" }
+        ]
+      },
+      {
+        "label": "Agent",
+        "fields": [
+          { "label": "Agent Name",         "value": "{{beckn:performanceAttributes.spe:agentDetails.spe:agentName}}" },
+          { "label": "Agent Contact",      "value": "{{beckn:performanceAttributes.spe:agentDetails.spe:agentContact}}" },
+          { "label": "Agent Organisation", "value": "{{beckn:performanceAttributes.spe:agentDetails.spe:agentOrganization}}" },
+          { "label": "Agent Type",         "value": "{{beckn:performanceAttributes.spe:agentDetails.spe:agentType}}" }
+        ]
+      }
+    ]
+  },
+  "html": "<div class=\"agri-schemes-scheme-performance-card\" data-performance-id=\"{{beckn:id}}\"><div class=\"status-header\"><span class=\"status-badge status-{{toLowerCase beckn:performanceAttributes.spe:applicationStatus}}\">{{beckn:performanceAttributes.spe:applicationStatus}}</span><span class=\"delivery-badge\">{{beckn:performanceAttributes.spe:schemeDeliveryType}}</span></div>{{#if beckn:performanceAttributes.spe:statusNote}}<p class=\"status-note\">{{beckn:performanceAttributes.spe:statusNote}}</p>{{/if}}<dl class=\"performance-meta\"><dt>Submission</dt><dd>{{beckn:performanceAttributes.spe:submissionMode}}</dd>{{#if beckn:performanceAttributes.spe:documentCollectionMode}}<dt>Documents</dt><dd>{{beckn:performanceAttributes.spe:documentCollectionMode}}</dd>{{/if}}</dl></div>",
+  "html_detail": "<div class=\"agri-schemes-scheme-performance-detail\" data-performance-id=\"{{beckn:id}}\"><section class=\"status-section\"><h4>Application Status</h4><span class=\"status-badge status-{{toLowerCase beckn:performanceAttributes.spe:applicationStatus}}\">{{beckn:performanceAttributes.spe:applicationStatus}}</span>{{#if beckn:performanceAttributes.spe:statusNote}}<p class=\"status-note\">{{beckn:performanceAttributes.spe:statusNote}}</p>{{/if}}</section><section class=\"delivery-section\"><h4>Delivery Details</h4><dl><dt>Delivery Type</dt><dd>{{beckn:performanceAttributes.spe:schemeDeliveryType}}</dd><dt>Submission Mode</dt><dd>{{beckn:performanceAttributes.spe:submissionMode}}</dd>{{#if beckn:performanceAttributes.spe:documentCollectionMode}}<dt>Document Collection</dt><dd>{{beckn:performanceAttributes.spe:documentCollectionMode}}</dd>{{/if}}{{#if beckn:performanceAttributes.spe:applicationPortalReference}}<dt>Portal Reference</dt><dd><code>{{beckn:performanceAttributes.spe:applicationPortalReference}}</code></dd>{{/if}}</dl></section>{{#if beckn:performanceAttributes.spe:agentDetails}}<section class=\"agent-section\"><h4>Assigned Agent</h4><dl>{{#if beckn:performanceAttributes.spe:agentDetails.spe:agentName}}<dt>Name</dt><dd>{{beckn:performanceAttributes.spe:agentDetails.spe:agentName}}</dd>{{/if}}{{#if beckn:performanceAttributes.spe:agentDetails.spe:agentContact}}<dt>Contact</dt><dd>{{beckn:performanceAttributes.spe:agentDetails.spe:agentContact}}</dd>{{/if}}{{#if beckn:performanceAttributes.spe:agentDetails.spe:agentOrganization}}<dt>Organisation</dt><dd>{{beckn:performanceAttributes.spe:agentDetails.spe:agentOrganization}} <code>{{beckn:performanceAttributes.spe:agentDetails.spe:agentOrganizationCode}}</code></dd>{{/if}}<dt>Type</dt><dd>{{beckn:performanceAttributes.spe:agentDetails.spe:agentType}}</dd></dl></section>{{/if}}</div>"
+}

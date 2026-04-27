@@ -1,0 +1,83 @@
+{
+  "context": {
+    "domain": "agri-schemes",
+    "action": "on_status",
+    "bapId": "bap-kisaan-app-001",
+    "bppId": "bpp-agri-mah-001",
+    "transactionId": "txn-pmfby-claim-settle-20261101-001",
+    "messageId": "msg-on-status-settle-pmfby-001",
+    "timestamp": "2026-11-01T15:00:00Z",
+    "version": "2.0.0",
+    "ttl": "PT30S",
+    "schemaContext": [
+      "https://schema.beckn.io/SchemeContract/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeConsideration/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeSettlement/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-pmfby-mah-kharif-2026-001",
+      "beckn:status": { "code": "COMPLETE" },
+      "beckn:participants": [
+        {
+          "beckn:id": "participant-farmer-001",
+          "beckn:descriptor": { "schema:name": "Suresh Patil" },
+          "beckn:role": "APPLICANT"
+        },
+        {
+          "beckn:id": "bpp-agri-mah-001",
+          "beckn:descriptor": { "schema:name": "Government of Maharashtra — Agriculture Insurance" },
+          "beckn:role": "SCHEME_AUTHORITY"
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-pmfby-001",
+          "beckn:status": { "code": "COMMITTED" },
+          "beckn:resources": [
+            { "beckn:id": "resource-pmfby-mah-kharif-2026", "beckn:quantity": { "beckn:count": 1 } }
+          ],
+          "beckn:offer": {
+            "beckn:id": "offer-pmfby-mah-kharif-2026",
+            "beckn:resourceIds": ["resource-pmfby-mah-kharif-2026"]
+          }
+        }
+      ],
+      "beckn:consideration": [
+        {
+          "beckn:id": "cons-pmfby-mah-kharif-2026",
+          "beckn:status": { "code": "SETTLED" },
+          "beckn:type": "MONETARY",
+          "beckn:considerationAttributes": {
+            "sco:benefitType": "INSURANCE_COVER",
+            "sco:benefitPeriod": "PER_SEASON",
+            "sco:benefitNote": "Crop insurance claim settlement for Kharif 2026 crop failure due to drought."
+          }
+        }
+      ],
+      "beckn:settlements": [
+        {
+          "beckn:id": "settle-pmfby-claim-001",
+          "beckn:considerationId": "cons-pmfby-mah-kharif-2026",
+          "beckn:status": "COMPLETE",
+          "beckn:settlementAttributes": {
+            "sse:disbursementDate": "2026-11-01T00:00:00Z",
+            "sse:disbursedAmount": 18500,
+            "sse:disbursedCurrency": "INR",
+            "sse:governmentTransactionReference": "PMFBY-CLAIM-MH-2026-KH-9988776",
+            "sse:disbursementInstallment": 1,
+            "sse:totalInstallments": 1,
+            "sse:disbursementMode": "DIRECT_BANK_CREDIT"
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "scr:governmentApplicationId": "PMFBY-MH-2026-KH-0056789",
+        "scr:schemeApplicationStatus": "DISBURSED",
+        "scr:applicantConsentGiven": true,
+        "scr:consentTimestamp": "2026-06-15T09:00:00Z"
+      }
+    }
+  }
+}

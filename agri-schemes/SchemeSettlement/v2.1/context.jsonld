@@ -1,0 +1,21 @@
+{
+  "@context": {
+    "@version": 1.1,
+
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "sse":   "https://schema.beckn.io/SchemeSettlement#",
+
+    "sse:SchemeSettlement":                { "@id": "sse:SchemeSettlement" },
+
+    "sse:disbursementDate":                { "@id": "sse:disbursementDate",                "@type": "schema:DateTime" },
+    "sse:disbursedAmount":                 { "@id": "sse:disbursedAmount",                 "@type": "schema:Number" },
+    "sse:disbursedCurrency":               { "@id": "sse:disbursedCurrency",               "@type": "schema:Text" },
+    "sse:governmentTransactionReference":  { "@id": "sse:governmentTransactionReference",  "@type": "schema:identifier" },
+    "sse:disbursementInstallment":         { "@id": "sse:disbursementInstallment",         "@type": "schema:Integer" },
+    "sse:totalInstallments":               { "@id": "sse:totalInstallments",               "@type": "schema:Integer" },
+    "sse:disbursementMode":                { "@id": "sse:disbursementMode",                "@type": "@vocab" },
+
+    "DisbursementMode":                    "sse:DisbursementMode"
+  }
+}

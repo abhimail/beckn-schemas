@@ -1,0 +1,71 @@
+{
+  "context": {
+    "domain": "agri-schemes",
+    "action": "on_discover",
+    "bapId": "bap-kisaan-app-001",
+    "bppId": "bpp-mgnregs-001",
+    "transactionId": "txn-mgnregs-discover-20260401-001",
+    "messageId": "msg-on-discover-mgnregs-001",
+    "timestamp": "2026-04-01T11:00:00Z",
+    "version": "2.0.0",
+    "ttl": "PT30S",
+    "schemaContext": [
+      "https://schema.beckn.io/SchemeResource/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeOffer/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "catalogs": [
+      {
+        "beckn:id": "cat-mgnregs-mh-001",
+        "beckn:descriptor": { "schema:name": "MGNREGS Maharashtra — Employment Scheme Catalogue" },
+        "beckn:provider": {
+          "beckn:id": "bpp-mgnregs-mh-001",
+          "beckn:descriptor": { "schema:name": "Government of Maharashtra — Rural Development Department" }
+        },
+        "beckn:resources": [
+          {
+            "beckn:id": "resource-mgnregs-001",
+            "beckn:isAvailable": true,
+            "beckn:descriptor": {
+              "schema:name": "Mahatma Gandhi National Rural Employment Guarantee Scheme (MGNREGS)",
+              "beckn:shortDesc": "Guaranteed 100 days of wage employment per household per year for rural households."
+            },
+            "beckn:resourceAttributes": {
+              "sr:schemeType": "EMPLOYMENT_GUARANTEE",
+              "sr:fundingModel": "CENTRALLY_SPONSORED",
+              "sr:targetBeneficiaryType": ["RURAL_HOUSEHOLD", "AGRICULTURAL_LABOURER"],
+              "sr:sponsoringMinistry": "Ministry of Rural Development",
+              "sr:applicationModes": ["GOVERNMENT_OFFICE", "COMMON_SERVICE_CENTER"]
+            }
+          }
+        ],
+        "beckn:offers": [
+          {
+            "beckn:id": "offer-mgnregs-mh-2026",
+            "beckn:resourceIds": ["resource-mgnregs-001"],
+            "beckn:considerationIds": ["cons-mgnregs-mh-2026"],
+            "beckn:offerAttributes": {
+              "sof:eligibilityCriteria": {
+                "sof:demographicCriteria": {
+                  "sof:minAge": 18,
+                  "sof:gender": "ANY"
+                },
+                "sof:residencyCriteria": {
+                  "sof:statesOfResidence": ["IN-MH"]
+                }
+              },
+              "sof:benefitQuantum": {
+                "sof:benefitType": "EMPLOYMENT_DAYS",
+                "sof:guaranteedEmploymentDays": 100,
+                "sof:benefitPeriod": "PER_ANNUM",
+                "sof:benefitNote": "100 days of guaranteed wage employment per household per financial year. Statutory minimum wage applicable."
+              },
+              "sof:applicationWindowNote": "Job card enrollment is open year-round at the Gram Panchayat office."
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

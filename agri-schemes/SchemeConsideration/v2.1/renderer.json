@@ -1,0 +1,28 @@
+{
+  "schema_id": "https://schema.beckn.io/SchemeConsideration/v2.1",
+  "card_template": {
+    "title": "{{beckn:considerationAttributes.sco:benefitType}}",
+    "subtitle": "{{beckn:considerationAttributes.sco:benefitPeriod}}",
+    "badge_primary": "{{beckn:considerationAttributes.sco:agreedAmountCurrency}} {{beckn:considerationAttributes.sco:agreedAmount}}",
+    "metadata_line": "{{beckn:considerationAttributes.sco:benefitNote}}"
+  },
+  "detail_template": {
+    "header": {
+      "title": "Benefit Commitment",
+      "subtitle": "{{beckn:considerationAttributes.sco:benefitType}}"
+    },
+    "sections": [
+      {
+        "label": "Committed Benefit",
+        "fields": [
+          { "label": "Benefit Type",   "value": "{{beckn:considerationAttributes.sco:benefitType}}" },
+          { "label": "Amount",         "value": "{{beckn:considerationAttributes.sco:agreedAmountCurrency}} {{beckn:considerationAttributes.sco:agreedAmount}}" },
+          { "label": "Period",         "value": "{{beckn:considerationAttributes.sco:benefitPeriod}}" },
+          { "label": "Note",           "value": "{{beckn:considerationAttributes.sco:benefitNote}}" }
+        ]
+      }
+    ]
+  },
+  "html": "<div class=\"agri-schemes-scheme-consideration-card\" data-consideration-id=\"{{beckn:id}}\"><div class=\"consideration-type\"><span class=\"badge badge-{{toLowerCase beckn:considerationAttributes.sco:benefitType}}\">{{beckn:considerationAttributes.sco:benefitType}}</span><span class=\"period-tag\">{{beckn:considerationAttributes.sco:benefitPeriod}}</span></div>{{#if beckn:considerationAttributes.sco:agreedAmount}}<div class=\"consideration-amount\"><strong>{{beckn:considerationAttributes.sco:agreedAmountCurrency}} {{beckn:considerationAttributes.sco:agreedAmount}}</strong></div>{{/if}}{{#if beckn:considerationAttributes.sco:benefitNote}}<p class=\"benefit-note\">{{beckn:considerationAttributes.sco:benefitNote}}</p>{{/if}}</div>",
+  "html_detail": "<div class=\"agri-schemes-scheme-consideration-detail\" data-consideration-id=\"{{beckn:id}}\"><section class=\"consideration-section\"><h4>Committed Benefit</h4><dl><dt>Benefit Type</dt><dd><span class=\"badge\">{{beckn:considerationAttributes.sco:benefitType}}</span></dd>{{#if beckn:considerationAttributes.sco:agreedAmount}}<dt>Agreed Amount</dt><dd><strong>{{beckn:considerationAttributes.sco:agreedAmountCurrency}} {{beckn:considerationAttributes.sco:agreedAmount}}</strong></dd>{{/if}}<dt>Period</dt><dd>{{beckn:considerationAttributes.sco:benefitPeriod}}</dd>{{#if beckn:considerationAttributes.sco:benefitNote}}<dt>Note</dt><dd>{{beckn:considerationAttributes.sco:benefitNote}}</dd>{{/if}}</dl></section></div>"
+}

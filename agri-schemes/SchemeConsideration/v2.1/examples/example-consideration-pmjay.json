@@ -1,0 +1,68 @@
+{
+  "context": {
+    "domain": "agri-schemes",
+    "action": "on_confirm",
+    "bapId": "bap-aarogyasetu-001",
+    "bppId": "bpp-nha-pmjay-001",
+    "transactionId": "txn-pmjay-confirm-20260401-001",
+    "messageId": "msg-on-confirm-cons-pmjay-001",
+    "timestamp": "2026-04-01T14:00:00Z",
+    "version": "2.0.0",
+    "ttl": "PT30S",
+    "schemaContext": [
+      "https://schema.beckn.io/SchemeContract/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeConsideration/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-pmjay-mh-20260401-001",
+      "beckn:status": { "code": "ACTIVE" },
+      "beckn:participants": [
+        {
+          "beckn:id": "participant-raju-shinde-001",
+          "beckn:descriptor": { "schema:name": "Raju Shinde" },
+          "beckn:role": "APPLICANT"
+        },
+        {
+          "beckn:id": "bpp-nha-pmjay-001",
+          "beckn:descriptor": { "schema:name": "National Health Authority (NHA)" },
+          "beckn:role": "SCHEME_AUTHORITY"
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-pmjay-mh-001",
+          "beckn:status": { "code": "COMMITTED" },
+          "beckn:resources": [
+            { "beckn:id": "resource-pmjay-001", "beckn:quantity": { "beckn:count": 1 } }
+          ],
+          "beckn:offer": {
+            "beckn:id": "offer-pmjay-mah-2026",
+            "beckn:resourceIds": ["resource-pmjay-001"]
+          }
+        }
+      ],
+      "beckn:consideration": [
+        {
+          "beckn:id": "cons-pmjay-mah-2026",
+          "beckn:status": { "code": "AGREED" },
+          "beckn:type": "MONETARY",
+          "beckn:considerationAttributes": {
+            "sco:benefitType": "INSURANCE_COVER",
+            "sco:agreedAmount": 500000,
+            "sco:agreedAmountCurrency": "INR",
+            "sco:benefitPeriod": "PER_ANNUM",
+            "sco:benefitNote": "Cashless health insurance on a family floater basis. Cover resets each policy year. Pre- and post-hospitalisation expenses included."
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "scr:governmentApplicationId": "PMJAY-MH-2026-00123456",
+        "scr:schemeApplicationStatus": "APPROVED",
+        "scr:applicantConsentGiven": true,
+        "scr:consentTimestamp": "2026-04-01T13:45:00Z"
+      }
+    }
+  }
+}

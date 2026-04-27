@@ -1,0 +1,59 @@
+{
+  "schema_id": "https://schema.beckn.io/SchemeResource/v2.1",
+  "card_template": {
+    "title": "{{beckn:descriptor.schema:name}}",
+    "subtitle": "{{beckn:descriptor.beckn:shortDesc}}",
+    "badge_primary": "{{beckn:resourceAttributes.sr:schemeType}}",
+    "badge_secondary": "{{beckn:resourceAttributes.sr:fundingModel}}",
+    "metadata_line": "{{beckn:resourceAttributes.sr:sponsoringMinistry}}",
+    "tags": [
+      "{{beckn:resourceAttributes.sr:targetBeneficiaryType}}"
+    ]
+  },
+  "detail_template": {
+    "header": {
+      "title": "{{beckn:descriptor.schema:name}}",
+      "subtitle": "{{beckn:descriptor.beckn:shortDesc}}",
+      "logo": "{{beckn:descriptor.schema:image[0]}}"
+    },
+    "sections": [
+      {
+        "label": "About this Scheme",
+        "fields": [
+          { "label": "Scheme Type",       "value": "{{beckn:resourceAttributes.sr:schemeType}}" },
+          { "label": "Funding Model",     "value": "{{beckn:resourceAttributes.sr:fundingModel}}" },
+          { "label": "Sponsored By",      "value": "{{beckn:resourceAttributes.sr:sponsoringMinistry}}" },
+          { "label": "Scheme Code",       "value": "{{beckn:resourceAttributes.sr:officialSchemeCode}}" },
+          { "label": "Official Portal",   "value": "{{beckn:resourceAttributes.sr:officialPortalUrl}}" }
+        ]
+      },
+      {
+        "label": "Who Can Apply",
+        "fields": [
+          { "label": "Target Beneficiary", "value": "{{beckn:resourceAttributes.sr:targetBeneficiaryType}}" },
+          { "label": "Apply Via",          "value": "{{beckn:resourceAttributes.sr:applicationModes}}" },
+          { "label": "Languages",          "value": "{{beckn:resourceAttributes.sr:availableLanguages}}" }
+        ]
+      },
+      {
+        "label": "Required Documents",
+        "list": {
+          "source": "{{beckn:resourceAttributes.sr:requiredDocuments}}",
+          "item_template": "{{sr:documentName}} ({{sr:documentCode}}){{#sr:mandatory}} — Required{{/sr:mandatory}}",
+          "sub_template": "{{sr:documentExample}}"
+        }
+      },
+      {
+        "label": "Benefits",
+        "list": {
+          "source": "{{beckn:resourceAttributes.sr:schemeBenefits}}",
+          "item_template": "{{sr:benefitCategory}}",
+          "sub_template": "{{sr:benefitDescription}}"
+        }
+      }
+    ],
+    "long_description": "{{beckn:descriptor.beckn:longDesc}}"
+  },
+  "html": "<div class=\"agri-schemes-scheme-resource-card\" data-resource-id=\"{{beckn:id}}\"><div class=\"resource-header\"><h3>{{beckn:descriptor.schema:name}}</h3><p class=\"short-desc\">{{beckn:descriptor.beckn:shortDesc}}</p></div><div class=\"resource-badges\"><span class=\"badge badge-{{toLowerCase beckn:resourceAttributes.sr:schemeType}}\">{{beckn:resourceAttributes.sr:schemeType}}</span><span class=\"badge badge-secondary\">{{beckn:resourceAttributes.sr:fundingModel}}</span></div><div class=\"resource-meta\"><span class=\"ministry\">{{beckn:resourceAttributes.sr:sponsoringMinistry}}</span></div><div class=\"beneficiary-chips\">{{#each beckn:resourceAttributes.sr:targetBeneficiaryType}}<span class=\"chip\">{{this}}</span>{{/each}}</div><div class=\"app-modes\">{{#each beckn:resourceAttributes.sr:applicationModes}}<span class=\"mode-tag\">{{this}}</span>{{/each}}</div>{{#if beckn:resourceAttributes.sr:officialPortalUrl}}<a class=\"portal-link\" href=\"{{beckn:resourceAttributes.sr:officialPortalUrl}}\">Official Portal ↗</a>{{/if}}</div>",
+  "html_detail": "<div class=\"agri-schemes-scheme-resource-detail\" data-resource-id=\"{{beckn:id}}\"><div class=\"detail-header\"><h2>{{beckn:descriptor.schema:name}}</h2><p class=\"short-desc\">{{beckn:descriptor.beckn:shortDesc}}</p><div class=\"badges\"><span class=\"badge badge-{{toLowerCase beckn:resourceAttributes.sr:schemeType}}\">{{beckn:resourceAttributes.sr:schemeType}}</span><span class=\"badge\">{{beckn:resourceAttributes.sr:fundingModel}}</span></div></div><section class=\"about\"><h4>About</h4><p class=\"long-desc\">{{beckn:descriptor.beckn:longDesc}}</p><dl><dt>Scheme Code</dt><dd>{{beckn:resourceAttributes.sr:officialSchemeCode}}</dd><dt>Sponsored By</dt><dd>{{beckn:resourceAttributes.sr:sponsoringMinistry}}</dd>{{#if beckn:resourceAttributes.sr:officialPortalUrl}}<dt>Official Portal</dt><dd><a href=\"{{beckn:resourceAttributes.sr:officialPortalUrl}}\">{{beckn:resourceAttributes.sr:officialPortalUrl}}</a></dd>{{/if}}</dl></section><section class=\"target-beneficiaries\"><h4>Who Can Apply</h4><div class=\"chips\">{{#each beckn:resourceAttributes.sr:targetBeneficiaryType}}<span class=\"chip\">{{this}}</span>{{/each}}</div></section><section class=\"application-channels\"><h4>How to Apply</h4>{{#each beckn:resourceAttributes.sr:applicationModes}}<span class=\"mode-pill\">{{this}}</span>{{/each}}</section><section class=\"languages\"><h4>Available In</h4>{{#each beckn:resourceAttributes.sr:availableLanguages}}<span class=\"lang-tag\">{{this}}</span>{{/each}}</section><section class=\"documents\"><h4>Required Documents</h4><ul>{{#each beckn:resourceAttributes.sr:requiredDocuments}}<li><strong>{{sr:documentName}}</strong> <code>{{sr:documentCode}}</code>{{#sr:mandatory}} <span class=\"required-badge\">Required</span>{{/sr:mandatory}}{{#sr:documentExample}}<br><em>{{sr:documentExample}}</em>{{/sr:documentExample}}</li>{{/each}}</ul></section><section class=\"benefits\"><h4>Benefits</h4><ul>{{#each beckn:resourceAttributes.sr:schemeBenefits}}<li><span class=\"benefit-cat badge\">{{sr:benefitCategory}}</span><p>{{sr:benefitDescription}}</p></li>{{/each}}</ul></section></div>"
+}

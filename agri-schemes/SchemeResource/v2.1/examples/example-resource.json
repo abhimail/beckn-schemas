@@ -1,0 +1,162 @@
+{
+  "context": {
+    "domain": "agri-schemes",
+    "action": "on_discover",
+    "bapId": "bap-kisaan-app-001",
+    "bppId": "bpp-agri-mah-001",
+    "bapUri": "https://kisaan-app.example.in/beckn",
+    "bppUri": "https://agri-schemes.mah.gov.in/beckn",
+    "transactionId": "txn-pmfby-discover-20260401-001",
+    "messageId": "msg-on-discover-pmfby-001",
+    "timestamp": "2026-04-01T09:30:00Z",
+    "version": "2.0.0",
+    "ttl": "PT30S",
+    "schemaContext": [
+      "https://schema.beckn.io/SchemeResource/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeOffer/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "catalogs": [
+      {
+        "beckn:id": "cat-agri-mah-001",
+        "beckn:descriptor": {
+          "schema:name": "Maharashtra Agriculture Department — Scheme Catalogue"
+        },
+        "beckn:provider": {
+          "beckn:id": "bpp-agri-mah-001",
+          "beckn:descriptor": {
+            "schema:name": "Government of Maharashtra — Agriculture Department"
+          }
+        },
+        "beckn:resources": [
+          {
+            "beckn:id": "resource-pmfby-mah-kharif-2026",
+            "beckn:isAvailable": true,
+            "beckn:descriptor": {
+              "schema:name": "Pradhan Mantri Fasal Bima Yojana (PMFBY) — Kharif 2026",
+              "beckn:shortDesc": "Government crop insurance protecting farmers against crop loss from natural calamities.",
+              "beckn:longDesc": "PMFBY provides comprehensive risk insurance coverage for crop failure due to non-preventable natural risks including drought, flood, inundation, pests and diseases, landslide, natural fire, storm, hailstorm and cyclone. Balance premium borne by State and Central Governments on a 50:50 basis."
+            },
+            "beckn:resourceAttributes": {
+              "sr:officialSchemeCode": "PMFBY-2016",
+              "sr:schemeType": "INSURANCE",
+              "sr:fundingModel": "CENTRALLY_SPONSORED",
+              "sr:targetBeneficiaryType": ["FARMER", "FARMER_GROUP"],
+              "sr:sponsoringMinistry": "Ministry of Agriculture and Farmers Welfare",
+              "sr:officialPortalUrl": "https://pmfby.gov.in",
+              "sr:applicationModes": [
+                "ONLINE_PORTAL",
+                "AGENT_ASSISTED",
+                "GOVERNMENT_OFFICE",
+                "COMMON_SERVICE_CENTER",
+                "BANK_BRANCH"
+              ],
+              "sr:availableLanguages": ["hi", "en", "mr"],
+              "sr:requiredDocuments": [
+                {
+                  "sr:documentCode": "POI",
+                  "sr:documentName": "Proof of Identity",
+                  "sr:documentExample": "Aadhaar Card, Voter ID, Passport",
+                  "sr:mandatory": true
+                },
+                {
+                  "sr:documentCode": "LAND",
+                  "sr:documentName": "Land Records / 7-12 Extract",
+                  "sr:documentExample": "7/12 Utara (Maharashtra)",
+                  "sr:mandatory": true
+                },
+                {
+                  "sr:documentCode": "BANK",
+                  "sr:documentName": "Bank Account Details",
+                  "sr:documentExample": "Bank passbook front page or cancelled cheque",
+                  "sr:mandatory": true
+                },
+                {
+                  "sr:documentCode": "SOW",
+                  "sr:documentName": "Sowing Certificate",
+                  "sr:documentExample": "Issued by village Patwari or Gram Panchayat",
+                  "sr:mandatory": true
+                }
+              ],
+              "sr:schemeBenefits": [
+                {
+                  "sr:benefitCategory": "CROP_INSURANCE",
+                  "sr:benefitDescription": "Insurance coverage against crop loss from drought, flood, hailstorm, cyclone, pests and diseases. Claim settled on area-yield shortfall at village/panchayat level."
+                },
+                {
+                  "sr:benefitCategory": "INCOME_SUPPORT",
+                  "sr:benefitDescription": "Low uniform farmer premium of 2% for Kharif crops. Balance premium borne jointly by State and Central Governments."
+                }
+              ]
+            }
+          },
+          {
+            "beckn:id": "resource-pmkisan-001",
+            "beckn:isAvailable": true,
+            "beckn:descriptor": {
+              "schema:name": "PM Kisan Samman Nidhi (PM-KISAN)",
+              "beckn:shortDesc": "Income support of ₹6,000 per year to eligible farmer households in three equal installments.",
+              "beckn:longDesc": "PM-KISAN provides income support of ₹6,000 per year to all land-holding farmer families across the country. The amount is disbursed in three installments of ₹2,000 each directly into the bank accounts of the beneficiaries."
+            },
+            "beckn:resourceAttributes": {
+              "sr:officialSchemeCode": "PMKISAN-2019",
+              "sr:schemeType": "DIRECT_BENEFIT_TRANSFER",
+              "sr:fundingModel": "CENTRAL_SECTOR",
+              "sr:targetBeneficiaryType": ["FARMER", "RURAL_HOUSEHOLD"],
+              "sr:sponsoringMinistry": "Ministry of Agriculture and Farmers Welfare",
+              "sr:officialPortalUrl": "https://pmkisan.gov.in",
+              "sr:applicationModes": [
+                "ONLINE_PORTAL",
+                "COMMON_SERVICE_CENTER",
+                "GOVERNMENT_OFFICE"
+              ],
+              "sr:availableLanguages": ["hi", "en", "mr", "pa", "ta", "te", "kn"],
+              "sr:requiredDocuments": [
+                {
+                  "sr:documentCode": "POI",
+                  "sr:documentName": "Proof of Identity",
+                  "sr:documentExample": "Aadhaar Card",
+                  "sr:mandatory": true
+                },
+                {
+                  "sr:documentCode": "LAND",
+                  "sr:documentName": "Land Ownership Records",
+                  "sr:documentExample": "7/12, ROR, Khatoni, or equivalent state land record",
+                  "sr:mandatory": true
+                },
+                {
+                  "sr:documentCode": "BANK",
+                  "sr:documentName": "Bank Account (Aadhaar-seeded)",
+                  "sr:documentExample": "Passbook or cancelled cheque with Aadhaar-linked account",
+                  "sr:mandatory": true
+                }
+              ],
+              "sr:schemeBenefits": [
+                {
+                  "sr:benefitCategory": "INCOME_SUPPORT",
+                  "sr:benefitDescription": "₹6,000 per year in three equal installments of ₹2,000 transferred directly to the farmer's Aadhaar-linked bank account."
+                }
+              ]
+            }
+          }
+        ],
+        "beckn:offers": [
+          {
+            "beckn:id": "offer-pmfby-mah-kharif-2026",
+            "beckn:resourceIds": ["resource-pmfby-mah-kharif-2026"],
+            "beckn:considerationIds": ["cons-pmfby-mah-kharif-2026"],
+            "beckn:offerAttributes": {
+              "sof:benefitQuantum": {
+                "sof:benefitType": "INSURANCE_COVER",
+                "sof:benefitPeriod": "PER_SEASON",
+                "sof:benefitNote": "Sum insured based on scale of finance per hectare. Farmer premium: 2% of sum insured for Kharif crops."
+              },
+              "sof:applicationWindowNote": "Applications open 1 June – 31 July for Kharif 2026 season."
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

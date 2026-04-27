@@ -1,0 +1,18 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "rdfs":  "http://www.w3.org/2000/01/rdf-schema#",
+    "sse":   "https://schema.beckn.io/SchemeSettlement#"
+  },
+  "@graph": [
+    { "@id": "sse:DisbursementMode", "@type": "rdfs:Class", "rdfs:label": "Disbursement Mode", "rdfs:comment": "Channel through which monetary benefits are disbursed to the beneficiary. Migrated from SchemeFulfillmentAttributes.sfa:disbursementMode (v2)." },
+    { "@id": "sse:BANK_TRANSFER_NEFT",  "@type": "sse:DisbursementMode", "rdfs:label": "NEFT Bank Transfer",   "rdfs:comment": "Transfer via NEFT (National Electronic Funds Transfer)." },
+    { "@id": "sse:BANK_TRANSFER_RTGS",  "@type": "sse:DisbursementMode", "rdfs:label": "RTGS Bank Transfer",   "rdfs:comment": "Transfer via RTGS (Real Time Gross Settlement)." },
+    { "@id": "sse:DIRECT_BANK_CREDIT",  "@type": "sse:DisbursementMode", "rdfs:label": "Direct Bank Credit",   "rdfs:comment": "Direct credit via PFMS or DBT gateway." },
+    { "@id": "sse:CHEQUE",              "@type": "sse:DisbursementMode", "rdfs:label": "Cheque",               "rdfs:comment": "Account payee cheque issued to the beneficiary." },
+    { "@id": "sse:COMMODITY_IN_KIND",   "@type": "sse:DisbursementMode", "rdfs:label": "In-Kind (Commodity)",  "rdfs:comment": "Physical commodity or goods provided — no monetary transfer." },
+    { "@id": "sse:NOT_APPLICABLE",      "@type": "sse:DisbursementMode", "rdfs:label": "Not Applicable",       "rdfs:comment": "No monetary disbursement; benefit is service-based or in-kind." }
+  ]
+}

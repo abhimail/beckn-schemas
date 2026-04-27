@@ -1,0 +1,44 @@
+{
+  "id": "https://schema.beckn.io/SchemeContract/v2.1",
+  "name": "Scheme Contract",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "description": "Transaction metadata for confirmed scheme application contracts: government reference IDs, scheme authority outcome status, DPDP Act 2023 consent records, and UC2 external enrollment linkage.",
+  "domain": "agri-schemes",
+  "included_schemas": [
+    "https://schema.beckn.io/SchemeResource/v2.1",
+    "https://schema.beckn.io/SchemeOffer/v2.1",
+    "https://schema.beckn.io/SchemePerformance/v2.1",
+    "https://schema.beckn.io/SchemeContract/v2.1",
+    "https://schema.beckn.io/SchemeConsideration/v2.1",
+    "https://schema.beckn.io/SchemeSettlement/v2.1"
+  ],
+  "discovery_fields": [
+    "beckn:contractAttributes.scr:schemeApplicationStatus",
+    "beckn:contractAttributes.scr:governmentApplicationId"
+  ],
+  "indexable_paths": [
+    "beckn:id",
+    "beckn:contractAttributes.scr:governmentApplicationId",
+    "beckn:contractAttributes.scr:schemeApplicationStatus",
+    "beckn:contractAttributes.scr:applicationSubmissionDate",
+    "beckn:contractAttributes.scr:externalEnrollmentRef",
+    "beckn:contractAttributes.scr:externalEnrollmentIdType"
+  ],
+  "filterable_paths": [
+    "beckn:contractAttributes.scr:schemeApplicationStatus",
+    "beckn:contractAttributes.scr:applicationSubmissionDate",
+    "beckn:contractAttributes.scr:externalEnrollmentIdType"
+  ],
+  "sortable_paths": [
+    "beckn:contractAttributes.scr:applicationSubmissionDate",
+    "beckn:updatedAt"
+  ],
+  "privacy_notes": [
+    "scr:governmentApplicationId is a sensitive government reference — do not expose in public indices.",
+    "scr:applicantConsentGiven and scr:consentTimestamp are DPDP Act consent records — retain per applicable data retention law (minimum 7 years for government scheme records).",
+    "scr:externalEnrollmentRef may contain an Aadhaar-derived or mobile-linked identifier — treat as sensitive PII.",
+    "Core Contract participant fields (name, contact) are applicant PII — handle per DPDP Act 2023."
+  ]
+}

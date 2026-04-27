@@ -1,0 +1,243 @@
+openapi: 3.1.1
+info:
+  title: SchemeResource — Agri Scheme Discovery
+  version: 2.1.0
+  description: |
+    Extension schema for `Resource.resourceAttributes` in the Agriculture/Government Scheme
+    Discovery vertical. Models the intrinsic identity, type, documentation, and access channels
+    of a government or NGO welfare scheme as a discoverable Beckn v2.1 Resource.
+
+    Migrated from SchemeItemAttributes (v2 itemAttributes). Prefix: sr:
+
+x-jsonld-context: "./context.jsonld"
+x-status: under-review
+x-tags:
+  - agri-schemes
+  - scheme-discovery
+  - government-welfare
+  - resourceAttributes
+
+components:
+  schemas:
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # TOP-LEVEL: SchemeResource
+    # Attaches to: Resource.resourceAttributes
+    # ─────────────────────────────────────────────────────────────────────────
+    SchemeResource:
+      type: object
+      x-beckn-container: resourceAttributes
+      x-status: under-review
+      x-tags:
+        - agri-schemes
+        - scheme-discovery
+        - government-welfare
+        - resourceAttributes
+      description: |
+        Intrinsic metadata describing a government or NGO welfare scheme as a Beckn v2.1
+        Resource. Captures scheme identity, type, funding model, sponsoring authority,
+        available application channels, and required documentation.
+      required:
+        - "sr:schemeType"
+        - "sr:fundingModel"
+      additionalProperties: false
+      properties:
+
+        "sr:officialSchemeCode":
+          type: string
+          description: |
+            Official alphanumeric code assigned to the scheme by the sponsoring government
+            authority (e.g., "PMFBY-2016", "PM000024"). Enables cross-referencing with
+            DigiLocker, PFMS, and scheme aggregator portals.
+          example: "PMFBY-2016"
+          x-jsonld-id: "sr:officialSchemeCode"
+
+        "sr:schemeType":
+          type: string
+          description: |
+            Primary classification of the welfare scheme.
+          enum:
+            - INSURANCE
+            - DIRECT_BENEFIT_TRANSFER
+            - EMPLOYMENT_GUARANTEE
+            - SUBSIDY
+            - SCHOLARSHIP
+            - PENSION
+            - IN_KIND_SUPPORT
+            - HOUSING
+            - SKILL_DEVELOPMENT
+            - OTHER
+          x-jsonld-id: "sr:schemeType"
+
+        "sr:fundingModel":
+          type: string
+          description: |
+            Funding and governance model of the scheme.
+          enum:
+            - CENTRALLY_SPONSORED
+            - CENTRAL_SECTOR
+            - STATE_SPONSORED
+            - DISTRICT_LOCAL_BODY
+            - NGO_FUNDED
+            - PUBLIC_PRIVATE_PARTNERSHIP
+          x-jsonld-id: "sr:fundingModel"
+
+        "sr:targetBeneficiaryType":
+          type: array
+          description: |
+            Categories of beneficiaries the scheme primarily targets. Multiple values
+            are permitted for schemes covering several beneficiary groups.
+          items:
+            type: string
+            enum:
+              - INDIVIDUAL
+              - FARMER
+              - FARMER_GROUP
+              - AGRICULTURAL_LABOURER
+              - WOMAN
+              - CHILD
+              - SENIOR_CITIZEN
+              - DIFFERENTLY_ABLED
+              - ARTISAN
+              - FISHERMAN
+              - RURAL_HOUSEHOLD
+              - BELOW_POVERTY_LINE
+          x-jsonld-id: "sr:targetBeneficiaryType"
+
+        "sr:sponsoringMinistry":
+          type: string
+          description: |
+            Name of the government ministry, department, or organisation sponsoring the scheme.
+          example: "Ministry of Agriculture and Farmers Welfare"
+          x-jsonld-id: "sr:sponsoringMinistry"
+
+        "sr:officialPortalUrl":
+          type: string
+          format: uri
+          description: |
+            URL of the official government portal for this scheme.
+          example: "https://pmfby.gov.in"
+          x-jsonld-id: "sr:officialPortalUrl"
+
+        "sr:applicationModes":
+          type: array
+          description: |
+            Channels through which a beneficiary can apply for this scheme. Surfaced at the
+            resource level to support channel-filtered discovery.
+          items:
+            type: string
+            enum:
+              - ONLINE_PORTAL
+              - AGENT_ASSISTED
+              - GOVERNMENT_OFFICE
+              - COMMON_SERVICE_CENTER
+              - BANK_BRANCH
+              - MOBILE_APP
+              - OFFLINE_FORM
+          x-jsonld-id: "sr:applicationModes"
+
+        "sr:availableLanguages":
+          type: array
+          description: |
+            BCP 47 language tags for languages in which the scheme information and
+            application forms are available.
+          items:
+            type: string
+          example: ["hi", "en", "mr", "pa", "ta"]
+          x-jsonld-id: "sr:availableLanguages"
+
+        "sr:requiredDocuments":
+          type: array
+          description: |
+            List of documents required to apply for this scheme. Each entry follows
+            the RequiredDocument sub-schema.
+          items:
+            $ref: "#/components/schemas/RequiredDocument"
+          x-jsonld-id: "sr:requiredDocuments"
+
+        "sr:schemeBenefits":
+          type: array
+          description: |
+            Descriptive summaries of the benefits provided by this scheme. These are
+            catalogue-time descriptions without amounts; amounts live in SchemeOffer and
+            SchemeConsideration.
+          items:
+            $ref: "#/components/schemas/SchemeBenefitSummary"
+          x-jsonld-id: "sr:schemeBenefits"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: RequiredDocument
+    # ─────────────────────────────────────────────────────────────────────────
+    RequiredDocument:
+      type: object
+      description: |
+        A single document required as part of the scheme application.
+      required:
+        - "sr:documentCode"
+        - "sr:documentName"
+      additionalProperties: false
+      properties:
+        "sr:documentCode":
+          type: string
+          description: Short code identifying the document type (matches v1 tag descriptor codes).
+          example: "POI"
+          x-jsonld-id: "sr:documentCode"
+
+        "sr:documentName":
+          type: string
+          description: Human-readable name of the required document.
+          example: "Proof of Identity"
+          x-jsonld-id: "sr:documentName"
+
+        "sr:documentExample":
+          type: string
+          description: An example of an accepted document for this requirement.
+          example: "Aadhaar Card, Voter ID, Passport"
+          x-jsonld-id: "sr:documentExample"
+
+        "sr:mandatory":
+          type: boolean
+          description: |
+            Whether this document is mandatory for the application. If false, the document
+            is optional or conditionally required.
+          default: true
+          x-jsonld-id: "sr:mandatory"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: SchemeBenefitSummary
+    # ─────────────────────────────────────────────────────────────────────────
+    SchemeBenefitSummary:
+      type: object
+      description: |
+        A descriptive summary of one category of benefit provided by the scheme.
+        Amounts are not included here; they belong in SchemeOffer (offerAttributes)
+        and SchemeConsideration (considerationAttributes).
+      additionalProperties: false
+      properties:
+        "sr:benefitCategory":
+          type: string
+          description: Category of the benefit.
+          enum:
+            - CASH_TRANSFER
+            - CROP_INSURANCE
+            - INCOME_SUPPORT
+            - HEALTH_INSURANCE
+            - EMPLOYMENT_GUARANTEE
+            - SKILL_TRAINING
+            - HOUSING_SUPPORT
+            - RATION_ENTITLEMENT
+            - PENSION
+            - SCHOLARSHIP
+            - DIGITAL_ENTITLEMENT
+            - OTHER
+          x-jsonld-id: "sr:benefitCategory"
+
+        "sr:benefitDescription":
+          type: string
+          description: |
+            Human-readable description of the benefit — what it covers, how it is
+            delivered, and any key conditions. No monetary amounts.
+          example: |
+            Insurance coverage against crop loss from drought, flood, hailstorm, cyclone,
+            pests and diseases. Claim settled on area-yield shortfall at village level.
+          x-jsonld-id: "sr:benefitDescription"

@@ -1,0 +1,51 @@
+{
+  "id": "https://schema.beckn.io/SchemeResource/v2.1",
+  "name": "Scheme Resource",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "description": "Intrinsic metadata for a government or NGO welfare scheme as a Beckn v2.1 Resource. Covers scheme type, funding model, sponsoring authority, required documents, and benefit categories.",
+  "domain": "agri-schemes",
+  "included_schemas": [
+    "https://schema.beckn.io/SchemeResource/v2.1",
+    "https://schema.beckn.io/SchemeOffer/v2.1",
+    "https://schema.beckn.io/SchemePerformance/v2.1",
+    "https://schema.beckn.io/SchemeContract/v2.1",
+    "https://schema.beckn.io/SchemeConsideration/v2.1",
+    "https://schema.beckn.io/SchemeSettlement/v2.1"
+  ],
+  "discovery_fields": [
+    "beckn:resourceAttributes.sr:schemeType",
+    "beckn:resourceAttributes.sr:fundingModel",
+    "beckn:resourceAttributes.sr:targetBeneficiaryType",
+    "beckn:resourceAttributes.sr:applicationModes",
+    "beckn:resourceAttributes.sr:availableLanguages"
+  ],
+  "indexable_paths": [
+    "beckn:id",
+    "beckn:descriptor.schema:name",
+    "beckn:resourceAttributes.sr:officialSchemeCode",
+    "beckn:resourceAttributes.sr:schemeType",
+    "beckn:resourceAttributes.sr:fundingModel",
+    "beckn:resourceAttributes.sr:targetBeneficiaryType",
+    "beckn:resourceAttributes.sr:sponsoringMinistry",
+    "beckn:resourceAttributes.sr:applicationModes",
+    "beckn:resourceAttributes.sr:availableLanguages"
+  ],
+  "filterable_paths": [
+    "beckn:resourceAttributes.sr:schemeType",
+    "beckn:resourceAttributes.sr:fundingModel",
+    "beckn:resourceAttributes.sr:targetBeneficiaryType",
+    "beckn:resourceAttributes.sr:applicationModes",
+    "beckn:resourceAttributes.sr:availableLanguages"
+  ],
+  "sortable_paths": [
+    "beckn:descriptor.schema:name",
+    "beckn:resourceAttributes.sr:sponsoringMinistry"
+  ],
+  "privacy_notes": [
+    "No PII in SchemeResource — all fields are scheme-level catalogue metadata.",
+    "sr:officialPortalUrl is a public URL — safe for indexing.",
+    "sr:officialSchemeCode is a public government reference — safe for indexing."
+  ]
+}

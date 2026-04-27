@@ -1,0 +1,40 @@
+{
+  "id": "https://schema.beckn.io/SchemePerformance/v2.1",
+  "name": "Scheme Performance",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "description": "Execution-layer metadata for a scheme benefit delivery: delivery type, submission mode, document collection, agent assignment, and application lifecycle status.",
+  "domain": "agri-schemes",
+  "included_schemas": [
+    "https://schema.beckn.io/SchemeResource/v2.1",
+    "https://schema.beckn.io/SchemeOffer/v2.1",
+    "https://schema.beckn.io/SchemePerformance/v2.1",
+    "https://schema.beckn.io/SchemeContract/v2.1",
+    "https://schema.beckn.io/SchemeConsideration/v2.1",
+    "https://schema.beckn.io/SchemeSettlement/v2.1"
+  ],
+  "discovery_fields": [
+    "beckn:performanceAttributes.spe:schemeDeliveryType",
+    "beckn:performanceAttributes.spe:applicationStatus"
+  ],
+  "indexable_paths": [
+    "beckn:id",
+    "beckn:performanceAttributes.spe:schemeDeliveryType",
+    "beckn:performanceAttributes.spe:submissionMode",
+    "beckn:performanceAttributes.spe:applicationStatus",
+    "beckn:performanceAttributes.spe:applicationPortalReference"
+  ],
+  "filterable_paths": [
+    "beckn:performanceAttributes.spe:schemeDeliveryType",
+    "beckn:performanceAttributes.spe:applicationStatus"
+  ],
+  "sortable_paths": [
+    "beckn:performanceAttributes.spe:applicationStatus"
+  ],
+  "privacy_notes": [
+    "spe:agentDetails contains the agent's name and mobile number — treat as professional contact data, not applicant PII.",
+    "spe:applicationPortalReference is a portal reference — do not expose in public indices.",
+    "Core Performance.beckn:customer fields (name, phone) are applicant PII — handle per DPDP Act 2023."
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schema_id": "https://schema.beckn.io/SchemeSettlement/v2.1",
+  "card_template": {
+    "title": "Installment {{beckn:settlementAttributes.sse:disbursementInstallment}} of {{beckn:settlementAttributes.sse:totalInstallments}}",
+    "subtitle": "{{beckn:settlementAttributes.sse:disbursedCurrency}} {{beckn:settlementAttributes.sse:disbursedAmount}}",
+    "badge_primary": "{{beckn:settlementAttributes.sse:disbursementMode}}",
+    "metadata_line": "{{beckn:settlementAttributes.sse:disbursementDate}}"
+  },
+  "detail_template": {
+    "header": {
+      "title": "Disbursement",
+      "subtitle": "Installment {{beckn:settlementAttributes.sse:disbursementInstallment}} of {{beckn:settlementAttributes.sse:totalInstallments}}"
+    },
+    "sections": [
+      {
+        "label": "Disbursement Details",
+        "fields": [
+          { "label": "Date",             "value": "{{beckn:settlementAttributes.sse:disbursementDate}}" },
+          { "label": "Amount",           "value": "{{beckn:settlementAttributes.sse:disbursedCurrency}} {{beckn:settlementAttributes.sse:disbursedAmount}}" },
+          { "label": "Mode",             "value": "{{beckn:settlementAttributes.sse:disbursementMode}}" },
+          { "label": "PFMS Reference",   "value": "{{beckn:settlementAttributes.sse:governmentTransactionReference}}" },
+          { "label": "Installment",      "value": "{{beckn:settlementAttributes.sse:disbursementInstallment}} of {{beckn:settlementAttributes.sse:totalInstallments}}" }
+        ]
+      }
+    ]
+  },
+  "html": "<div class=\"agri-schemes-scheme-settlement-card\" data-settlement-id=\"{{beckn:id}}\"><div class=\"settlement-header\"><span class=\"installment-badge\">Installment {{beckn:settlementAttributes.sse:disbursementInstallment}}/{{beckn:settlementAttributes.sse:totalInstallments}}</span><strong class=\"amount\">{{beckn:settlementAttributes.sse:disbursedCurrency}} {{beckn:settlementAttributes.sse:disbursedAmount}}</strong></div><p class=\"disbursement-date\">{{beckn:settlementAttributes.sse:disbursementDate}}</p><span class=\"mode-badge\">{{beckn:settlementAttributes.sse:disbursementMode}}</span>{{#if beckn:settlementAttributes.sse:governmentTransactionReference}}<p class=\"pfms-ref\">PFMS: <code>{{beckn:settlementAttributes.sse:governmentTransactionReference}}</code></p>{{/if}}</div>",
+  "html_detail": "<div class=\"agri-schemes-scheme-settlement-detail\" data-settlement-id=\"{{beckn:id}}\"><section class=\"settlement-section\"><h4>Disbursement Record</h4><dl><dt>Installment</dt><dd>{{beckn:settlementAttributes.sse:disbursementInstallment}} of {{beckn:settlementAttributes.sse:totalInstallments}}</dd><dt>Amount Disbursed</dt><dd><strong>{{beckn:settlementAttributes.sse:disbursedCurrency}} {{beckn:settlementAttributes.sse:disbursedAmount}}</strong></dd><dt>Disbursement Date</dt><dd>{{beckn:settlementAttributes.sse:disbursementDate}}</dd><dt>Discharge Channel</dt><dd><span class=\"badge\">{{beckn:settlementAttributes.sse:disbursementMode}}</span></dd>{{#if beckn:settlementAttributes.sse:governmentTransactionReference}}<dt>Government Transaction Reference</dt><dd><code>{{beckn:settlementAttributes.sse:governmentTransactionReference}}</code></dd>{{/if}}</dl></section></div>"
+}

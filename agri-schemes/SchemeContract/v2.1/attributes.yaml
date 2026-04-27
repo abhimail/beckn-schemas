@@ -1,0 +1,135 @@
+openapi: 3.1.1
+info:
+  title: SchemeContract — Agri Scheme Discovery
+  version: 2.1.0
+  description: |
+    Extension schema for `Contract.contractAttributes` in the Agriculture/Government Scheme
+    Discovery vertical. Models transaction-level metadata for a confirmed scheme application:
+    official government reference IDs, scheme authority outcome status, DPDP Act 2023 consent
+    records, and UC2 external enrollment linkage.
+
+    Migrated from SchemeOrderAttributes (v2 orderAttributes). Prefix: scr:
+    Note: DisbursementRecord has been dissolved — amounts to SchemeConsideration,
+    transaction references to SchemeSettlement.
+
+x-jsonld-context: "./context.jsonld"
+x-status: under-review
+x-tags:
+  - agri-schemes
+  - scheme-discovery
+  - government-welfare
+  - contractAttributes
+
+components:
+  schemas:
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # TOP-LEVEL: SchemeContract
+    # Attaches to: Contract.contractAttributes
+    # ─────────────────────────────────────────────────────────────────────────
+    SchemeContract:
+      type: object
+      x-beckn-container: contractAttributes
+      x-status: under-review
+      x-tags:
+        - agri-schemes
+        - scheme-discovery
+        - government-welfare
+        - contractAttributes
+      description: |
+        Transaction-level metadata for a confirmed scheme application Contract.
+        Captures the official government application reference, scheme authority outcome status,
+        DPDP Act 2023 consent record, and UC2 external enrollment linkage.
+        Migrated from SchemeOrderAttributes (v2). Prefix: scr:
+      required: []
+      additionalProperties: false
+      properties:
+
+        # ── Government Application Reference ─────────────────────────────────
+
+        "scr:governmentApplicationId":
+          type: string
+          description: |
+            Official application reference number assigned by the government scheme authority
+            after formal submission. Distinct from the BPP's internal portal reference
+            (in SchemePerformance.spe:applicationPortalReference).
+          example: "PMJAY-MH-2026-00123456"
+          x-jsonld-id: "scr:governmentApplicationId"
+
+        "scr:applicationSubmissionDate":
+          type: string
+          format: date-time
+          description: |
+            ISO 8601 timestamp when the application was formally submitted to the government
+            scheme authority.
+          example: "2026-06-20T14:30:00Z"
+          x-jsonld-id: "scr:applicationSubmissionDate"
+
+        # ── Scheme Application Outcome ────────────────────────────────────────
+
+        "scr:schemeApplicationStatus":
+          type: string
+          description: |
+            Final or current status of the application as reported by the government scheme
+            authority. This is the authoritative scheme-side status, distinct from the
+            execution process status in SchemePerformance.spe:applicationStatus.
+          enum:
+            - SUBMITTED
+            - UNDER_REVIEW
+            - APPROVED
+            - REJECTED
+            - DISBURSED
+            - DISBURSEMENT_FAILED
+            - CLOSED
+          x-jsonld-id: "scr:schemeApplicationStatus"
+
+        "scr:rejectionReason":
+          type: string
+          description: |
+            Reason provided by the scheme authority for rejecting the application.
+            Populated only when scr:schemeApplicationStatus = REJECTED.
+          example: "Applicant income exceeds the prescribed annual limit for this scheme tier."
+          x-jsonld-id: "scr:rejectionReason"
+
+        # ── Consent & Declaration (DPDP Act 2023) ────────────────────────────
+
+        "scr:applicantConsentGiven":
+          type: boolean
+          description: |
+            Whether the applicant has given explicit, informed consent under the Digital Personal
+            Data Protection Act 2023 for their data to be submitted to the scheme authority
+            and used for benefit disbursal.
+          default: false
+          x-jsonld-id: "scr:applicantConsentGiven"
+
+        "scr:consentTimestamp":
+          type: string
+          format: date-time
+          description: |
+            ISO 8601 timestamp when the applicant's DPDP consent was captured and recorded.
+          example: "2026-06-18T10:15:00Z"
+          x-jsonld-id: "scr:consentTimestamp"
+
+        # ── External Enrollment Link (UC2) ────────────────────────────────────
+
+        "scr:externalEnrollmentRef":
+          type: string
+          description: |
+            External enrollment reference number for beneficiaries who enrolled in a scheme
+            through a non-Beckn channel (government portal, CSC, bank branch, or field agent
+            visit). Used as the primary lookup key when a BAP creates a Beckn tracking
+            contract against an existing government enrollment (UC2 — Status Enquiry and
+            Grievance Redressal). Not populated for UC1 orders initiated through Beckn.
+          example: "MH-FARMER-2024-112345"
+          x-jsonld-id: "scr:externalEnrollmentRef"
+
+        "scr:externalEnrollmentIdType":
+          type: string
+          description: |
+            Type of external identifier provided in scr:externalEnrollmentRef.
+          enum:
+            - FARMER_REGISTRY_ID
+            - AADHAAR_MASKED
+            - GOVERNMENT_APPLICATION_ID
+            - MOBILE_LINKED_ID
+          x-jsonld-id: "scr:externalEnrollmentIdType"

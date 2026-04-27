@@ -1,0 +1,23 @@
+{
+  "@context": {
+    "@version": 1.1,
+
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "scr":   "https://schema.beckn.io/SchemeContract#",
+
+    "scr:SchemeContract":              { "@id": "scr:SchemeContract" },
+
+    "scr:governmentApplicationId":     { "@id": "scr:governmentApplicationId",    "@type": "schema:identifier" },
+    "scr:applicationSubmissionDate":   { "@id": "scr:applicationSubmissionDate",  "@type": "schema:DateTime" },
+    "scr:schemeApplicationStatus":     { "@id": "scr:schemeApplicationStatus",    "@type": "@vocab" },
+    "scr:rejectionReason":             { "@id": "scr:rejectionReason",            "@type": "schema:description" },
+    "scr:applicantConsentGiven":       { "@id": "scr:applicantConsentGiven",      "@type": "schema:Boolean" },
+    "scr:consentTimestamp":            { "@id": "scr:consentTimestamp",           "@type": "schema:DateTime" },
+    "scr:externalEnrollmentRef":       { "@id": "scr:externalEnrollmentRef",      "@type": "schema:identifier" },
+    "scr:externalEnrollmentIdType":    { "@id": "scr:externalEnrollmentIdType",   "@type": "@vocab" },
+
+    "SchemeApplicationStatus":         "scr:SchemeApplicationStatus",
+    "ExternalEnrollmentIdType":        "scr:ExternalEnrollmentIdType"
+  }
+}

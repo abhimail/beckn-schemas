@@ -1,0 +1,87 @@
+{
+  "context": {
+    "domain": "agri-schemes",
+    "action": "on_status",
+    "bapId": "bap-kisaan-app-001",
+    "bppId": "bpp-agri-mah-001",
+    "transactionId": "txn-pmkisan-status-20260801-001",
+    "messageId": "msg-on-status-perf-001",
+    "timestamp": "2026-08-01T10:00:00Z",
+    "version": "2.0.0",
+    "ttl": "PT30S",
+    "schemaContext": [
+      "https://schema.beckn.io/SchemeContract/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemePerformance/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeSettlement/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-pmkisan-mh-20260305-004",
+      "beckn:status": { "code": "COMPLETE" },
+      "beckn:participants": [
+        {
+          "beckn:id": "participant-farmer-kiran-001",
+          "beckn:descriptor": { "schema:name": "Kiran Patil" },
+          "beckn:role": "APPLICANT"
+        },
+        {
+          "beckn:id": "bpp-pmkisan-mh-001",
+          "beckn:descriptor": { "schema:name": "Government of Maharashtra — Agriculture Department" },
+          "beckn:role": "SCHEME_AUTHORITY"
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-pmkisan-001",
+          "beckn:status": { "code": "COMMITTED" },
+          "beckn:resources": [
+            { "beckn:id": "resource-pmkisan-001", "beckn:quantity": { "beckn:count": 1 } }
+          ],
+          "beckn:offer": {
+            "beckn:id": "offer-pmkisan-mh-2026",
+            "beckn:resourceIds": ["resource-pmkisan-001"]
+          }
+        }
+      ],
+      "beckn:performance": [
+        {
+          "beckn:id": "perf-pmkisan-mh-004",
+          "beckn:status": { "code": "COMPLETED" },
+          "beckn:mode": "TRANSFER",
+          "beckn:commitmentIds": ["commit-pmkisan-001"],
+          "beckn:performanceAttributes": {
+            "spe:schemeDeliveryType": "DBT_BANK_TRANSFER",
+            "spe:submissionMode": "COMMON_SERVICE_CENTER",
+            "spe:documentCollectionMode": "DIGILOCKER_PULL",
+            "spe:applicationStatus": "BENEFIT_DISBURSED",
+            "spe:statusNote": "₹2,000 disbursed successfully for installment 2 of 3. Next installment: November 2026.",
+            "spe:applicationPortalReference": "PORTAL-REF-2026-MH-PMKISAN-0012345"
+          }
+        }
+      ],
+      "beckn:settlements": [
+        {
+          "beckn:id": "settle-pmkisan-instl2-001",
+          "beckn:considerationId": "cons-pmkisan-mh-2026",
+          "beckn:status": "COMPLETE",
+          "beckn:settlementAttributes": {
+            "sse:disbursementDate": "2026-08-01T00:00:00Z",
+            "sse:disbursedAmount": 2000,
+            "sse:disbursedCurrency": "INR",
+            "sse:governmentTransactionReference": "PFMS2026080100123456",
+            "sse:disbursementInstallment": 2,
+            "sse:totalInstallments": 3,
+            "sse:disbursementMode": "DIRECT_BANK_CREDIT"
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "scr:governmentApplicationId": "PMKISAN-MH-FY2627-0012345",
+        "scr:schemeApplicationStatus": "DISBURSED",
+        "scr:applicantConsentGiven": true,
+        "scr:consentTimestamp": "2026-03-01T08:05:00Z"
+      }
+    }
+  }
+}

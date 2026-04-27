@@ -1,0 +1,31 @@
+{
+  "@context": {
+    "@version": 1.1,
+
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "spe":   "https://schema.beckn.io/SchemePerformance#",
+
+    "spe:SchemePerformance":          { "@id": "spe:SchemePerformance" },
+
+    "spe:schemeDeliveryType":         { "@id": "spe:schemeDeliveryType",         "@type": "@vocab" },
+    "spe:submissionMode":             { "@id": "spe:submissionMode",             "@type": "@vocab" },
+    "spe:documentCollectionMode":     { "@id": "spe:documentCollectionMode",     "@type": "@vocab" },
+    "spe:applicationStatus":          { "@id": "spe:applicationStatus",          "@type": "@vocab" },
+    "spe:statusNote":                 { "@id": "spe:statusNote",                 "@type": "schema:description" },
+    "spe:agentDetails":               { "@id": "spe:agentDetails" },
+    "spe:applicationPortalReference": { "@id": "spe:applicationPortalReference", "@type": "schema:identifier" },
+
+    "spe:agentName":                  { "@id": "schema:name" },
+    "spe:agentContact":               { "@id": "schema:telephone" },
+    "spe:agentOrganization":          { "@id": "schema:legalName" },
+    "spe:agentOrganizationCode":      { "@id": "schema:identifier" },
+    "spe:agentType":                  { "@id": "spe:agentType",                  "@type": "@vocab" },
+
+    "SchemeDeliveryType":             "spe:SchemeDeliveryType",
+    "SubmissionMode":                 "spe:SubmissionMode",
+    "DocumentCollectionMode":         "spe:DocumentCollectionMode",
+    "ApplicationStatus":              "spe:ApplicationStatus",
+    "AgentType":                      "spe:AgentType"
+  }
+}

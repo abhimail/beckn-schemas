@@ -1,0 +1,99 @@
+{
+  "context": {
+    "domain": "agri-schemes",
+    "action": "on_status",
+    "bapId": "bap-kisaan-app-001",
+    "bppId": "bpp-pmkisan-mh-001",
+    "transactionId": "txn-pmkisan-status-20260801-001",
+    "messageId": "msg-on-status-settle-001",
+    "timestamp": "2026-08-01T10:00:00Z",
+    "version": "2.0.0",
+    "ttl": "PT30S",
+    "schemaContext": [
+      "https://schema.beckn.io/SchemeContract/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeConsideration/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeSettlement/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-pmkisan-mh-20260305-001",
+      "beckn:status": { "code": "IN_PROGRESS" },
+      "beckn:participants": [
+        {
+          "beckn:id": "participant-kiran-patil-001",
+          "beckn:descriptor": { "schema:name": "Kiran Patil" },
+          "beckn:role": "APPLICANT"
+        },
+        {
+          "beckn:id": "bpp-pmkisan-mh-001",
+          "beckn:descriptor": { "schema:name": "Government of Maharashtra — Agriculture Department" },
+          "beckn:role": "SCHEME_AUTHORITY"
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-pmkisan-001",
+          "beckn:status": { "code": "COMMITTED" },
+          "beckn:resources": [
+            { "beckn:id": "resource-pmkisan-001", "beckn:quantity": { "beckn:count": 1 } }
+          ],
+          "beckn:offer": {
+            "beckn:id": "offer-pmkisan-mh-2026",
+            "beckn:resourceIds": ["resource-pmkisan-001"]
+          }
+        }
+      ],
+      "beckn:consideration": [
+        {
+          "beckn:id": "cons-pmkisan-mh-2026",
+          "beckn:status": { "code": "AGREED" },
+          "beckn:type": "MONETARY",
+          "beckn:considerationAttributes": {
+            "sco:benefitType": "CASH_TRANSFER",
+            "sco:agreedAmount": 6000,
+            "sco:agreedAmountCurrency": "INR",
+            "sco:benefitPeriod": "PER_ANNUM",
+            "sco:benefitNote": "₹6,000 per year in 3 installments of ₹2,000 each."
+          }
+        }
+      ],
+      "beckn:settlements": [
+        {
+          "beckn:id": "settle-pmkisan-instl1-001",
+          "beckn:considerationId": "cons-pmkisan-mh-2026",
+          "beckn:status": "COMPLETE",
+          "beckn:settlementAttributes": {
+            "sse:disbursementDate": "2026-04-01T00:00:00Z",
+            "sse:disbursedAmount": 2000,
+            "sse:disbursedCurrency": "INR",
+            "sse:governmentTransactionReference": "PFMS2026040100112233",
+            "sse:disbursementInstallment": 1,
+            "sse:totalInstallments": 3,
+            "sse:disbursementMode": "DIRECT_BANK_CREDIT"
+          }
+        },
+        {
+          "beckn:id": "settle-pmkisan-instl2-001",
+          "beckn:considerationId": "cons-pmkisan-mh-2026",
+          "beckn:status": "COMPLETE",
+          "beckn:settlementAttributes": {
+            "sse:disbursementDate": "2026-08-01T00:00:00Z",
+            "sse:disbursedAmount": 2000,
+            "sse:disbursedCurrency": "INR",
+            "sse:governmentTransactionReference": "PFMS2026080100123456",
+            "sse:disbursementInstallment": 2,
+            "sse:totalInstallments": 3,
+            "sse:disbursementMode": "DIRECT_BANK_CREDIT"
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "scr:governmentApplicationId": "PMKISAN-MH-FY2627-0012345",
+        "scr:schemeApplicationStatus": "DISBURSED",
+        "scr:applicantConsentGiven": true,
+        "scr:consentTimestamp": "2026-03-01T08:05:00Z"
+      }
+    }
+  }
+}

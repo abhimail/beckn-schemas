@@ -1,0 +1,37 @@
+{
+  "schema_id": "https://schema.beckn.io/SchemeOffer/v2.1",
+  "card_template": {
+    "title": "{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitType}}",
+    "subtitle": "{{beckn:offerAttributes.sof:applicationWindowNote}}",
+    "badge_primary": "{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitPeriod}}",
+    "metadata_line": "Max beneficiaries: {{beckn:offerAttributes.sof:maxBeneficiaries}}"
+  },
+  "detail_template": {
+    "header": {
+      "title": "Scheme Offer",
+      "subtitle": "{{beckn:offerAttributes.sof:applicationWindowNote}}"
+    },
+    "sections": [
+      {
+        "label": "Benefit",
+        "fields": [
+          { "label": "Benefit Type",   "value": "{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitType}}" },
+          { "label": "Benefit Period", "value": "{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitPeriod}}" },
+          { "label": "Note",           "value": "{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitNote}}" }
+        ]
+      },
+      {
+        "label": "Eligibility",
+        "fields": [
+          { "label": "Gender",        "value": "{{beckn:offerAttributes.sof:eligibilityCriteria.sof:demographicCriteria.sof:gender}}" },
+          { "label": "Caste",         "value": "{{beckn:offerAttributes.sof:eligibilityCriteria.sof:demographicCriteria.sof:casteCategory}}" },
+          { "label": "Ration Card",   "value": "{{beckn:offerAttributes.sof:eligibilityCriteria.sof:economicCriteria.sof:rationCardType}}" },
+          { "label": "Occupation",    "value": "{{beckn:offerAttributes.sof:eligibilityCriteria.sof:professionalCriteria.sof:occupationType}}" },
+          { "label": "States",        "value": "{{beckn:offerAttributes.sof:eligibilityCriteria.sof:residencyCriteria.sof:statesOfResidence}}" }
+        ]
+      }
+    ]
+  },
+  "html": "<div class=\"agri-schemes-scheme-offer-card\" data-offer-id=\"{{beckn:id}}\"><div class=\"offer-benefit\"><span class=\"badge badge-{{toLowerCase beckn:offerAttributes.sof:benefitQuantum.sof:benefitType}}\">{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitType}}</span><span class=\"period-badge\">{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitPeriod}}</span>{{#if beckn:offerAttributes.sof:benefitQuantum.sof:monetaryAmount}}<span class=\"amount\">{{beckn:offerAttributes.sof:benefitQuantum.sof:monetaryAmount.currency}} {{beckn:offerAttributes.sof:benefitQuantum.sof:monetaryAmount.value}}</span>{{/if}}</div>{{#if beckn:offerAttributes.sof:applicationWindowNote}}<p class=\"window-note\">{{beckn:offerAttributes.sof:applicationWindowNote}}</p>{{/if}}{{#if beckn:offerAttributes.sof:benefitQuantum.sof:benefitNote}}<p class=\"benefit-note\">{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitNote}}</p>{{/if}}</div>",
+  "html_detail": "<div class=\"agri-schemes-scheme-offer-detail\" data-offer-id=\"{{beckn:id}}\"><section class=\"benefit-section\"><h4>Benefit</h4><dl><dt>Type</dt><dd><span class=\"badge\">{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitType}}</span></dd><dt>Period</dt><dd>{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitPeriod}}</dd>{{#if beckn:offerAttributes.sof:benefitQuantum.sof:monetaryAmount}}<dt>Maximum Amount</dt><dd>{{beckn:offerAttributes.sof:benefitQuantum.sof:monetaryAmount.currency}} {{beckn:offerAttributes.sof:benefitQuantum.sof:monetaryAmount.value}}</dd>{{/if}}{{#if beckn:offerAttributes.sof:benefitQuantum.sof:subsidyPaymentPercentage}}<dt>Subsidy</dt><dd>{{beckn:offerAttributes.sof:benefitQuantum.sof:subsidyPaymentPercentage}}%</dd>{{/if}}{{#if beckn:offerAttributes.sof:benefitQuantum.sof:guaranteedEmploymentDays}}<dt>Employment Days</dt><dd>{{beckn:offerAttributes.sof:benefitQuantum.sof:guaranteedEmploymentDays}} days</dd>{{/if}}{{#if beckn:offerAttributes.sof:benefitQuantum.sof:benefitNote}}<dt>Note</dt><dd>{{beckn:offerAttributes.sof:benefitQuantum.sof:benefitNote}}</dd>{{/if}}</dl></section><section class=\"eligibility-section\"><h4>Eligibility</h4>{{#if beckn:offerAttributes.sof:eligibilityCriteria.sof:demographicCriteria}}<div class=\"criteria-group\"><strong>Demographic</strong><dl>{{#if beckn:offerAttributes.sof:eligibilityCriteria.sof:demographicCriteria.sof:gender}}<dt>Gender</dt><dd>{{beckn:offerAttributes.sof:eligibilityCriteria.sof:demographicCriteria.sof:gender}}</dd>{{/if}}{{#if beckn:offerAttributes.sof:eligibilityCriteria.sof:demographicCriteria.sof:casteCategory}}<dt>Caste</dt><dd>{{#each beckn:offerAttributes.sof:eligibilityCriteria.sof:demographicCriteria.sof:casteCategory}}<span>{{this}}</span>{{/each}}</dd>{{/if}}</dl></div>{{/if}}{{#if beckn:offerAttributes.sof:eligibilityCriteria.sof:economicCriteria}}<div class=\"criteria-group\"><strong>Economic</strong><dl>{{#if beckn:offerAttributes.sof:eligibilityCriteria.sof:economicCriteria.sof:rationCardType}}<dt>Ration Card</dt><dd>{{#each beckn:offerAttributes.sof:eligibilityCriteria.sof:economicCriteria.sof:rationCardType}}<span>{{this}}</span>{{/each}}</dd>{{/if}}</dl></div>{{/if}}{{#if beckn:offerAttributes.sof:eligibilityCriteria.sof:residencyCriteria.sof:statesOfResidence}}<div class=\"criteria-group\"><strong>States</strong><div>{{#each beckn:offerAttributes.sof:eligibilityCriteria.sof:residencyCriteria.sof:statesOfResidence}}<span class=\"state-tag\">{{this}}</span>{{/each}}</div></div>{{/if}}</section>{{#if beckn:offerAttributes.sof:applicationWindowNote}}<section class=\"window-section\"><h4>Application Window</h4><p>{{beckn:offerAttributes.sof:applicationWindowNote}}</p></section>{{/if}}</div>"
+}

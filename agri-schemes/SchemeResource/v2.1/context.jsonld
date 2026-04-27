@@ -1,0 +1,36 @@
+{
+  "@context": {
+    "@version": 1.1,
+
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "sr":    "https://schema.beckn.io/SchemeResource#",
+
+    "sr:SchemeResource":          { "@id": "sr:SchemeResource" },
+
+    "sr:officialSchemeCode":      { "@id": "sr:officialSchemeCode",      "@type": "schema:identifier" },
+    "sr:schemeType":              { "@id": "sr:schemeType",              "@type": "@vocab" },
+    "sr:fundingModel":            { "@id": "sr:fundingModel",            "@type": "@vocab" },
+    "sr:targetBeneficiaryType":   { "@id": "sr:targetBeneficiaryType",   "@container": "@set", "@type": "@vocab" },
+    "sr:sponsoringMinistry":      { "@id": "sr:sponsoringMinistry",      "@type": "schema:name" },
+    "sr:officialPortalUrl":       { "@id": "sr:officialPortalUrl",       "@type": "@id" },
+    "sr:applicationModes":        { "@id": "sr:applicationModes",        "@container": "@set", "@type": "@vocab" },
+    "sr:availableLanguages":      { "@id": "sr:availableLanguages",      "@container": "@set" },
+    "sr:requiredDocuments":       { "@id": "sr:requiredDocuments",       "@container": "@set" },
+    "sr:schemeBenefits":          { "@id": "sr:schemeBenefits",          "@container": "@set" },
+
+    "sr:documentCode":            { "@id": "sr:documentCode",            "@type": "schema:identifier" },
+    "sr:documentName":            { "@id": "sr:documentName",            "@type": "schema:name" },
+    "sr:documentExample":         { "@id": "sr:documentExample",         "@type": "schema:description" },
+    "sr:mandatory":               { "@id": "sr:mandatory",               "@type": "schema:Boolean" },
+
+    "sr:benefitCategory":         { "@id": "sr:benefitCategory",         "@type": "@vocab" },
+    "sr:benefitDescription":      { "@id": "sr:benefitDescription",      "@type": "schema:description" },
+
+    "SchemeType":                 "sr:SchemeType",
+    "FundingModel":               "sr:FundingModel",
+    "BeneficiaryType":            "sr:BeneficiaryType",
+    "ApplicationMode":            "sr:ApplicationMode",
+    "BenefitCategory":            "sr:BenefitCategory"
+  }
+}

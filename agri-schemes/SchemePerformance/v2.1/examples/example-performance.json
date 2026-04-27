@@ -1,0 +1,89 @@
+{
+  "context": {
+    "domain": "agri-schemes",
+    "action": "on_confirm",
+    "bapId": "bap-kisaan-app-001",
+    "bppId": "bpp-agri-mah-001",
+    "transactionId": "txn-pmjay-confirm-20260401-001",
+    "messageId": "msg-on-confirm-perf-001",
+    "timestamp": "2026-04-01T14:00:00Z",
+    "version": "2.0.0",
+    "ttl": "PT30S",
+    "schemaContext": [
+      "https://schema.beckn.io/SchemeContract/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemePerformance/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeConsideration/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "contract": {
+      "beckn:id": "contract-pmjay-mh-20260401-001",
+      "beckn:status": { "code": "ACTIVE" },
+      "beckn:participants": [
+        {
+          "beckn:id": "participant-farmer-raju-001",
+          "beckn:descriptor": { "schema:name": "Raju Shinde" },
+          "beckn:role": "APPLICANT"
+        },
+        {
+          "beckn:id": "bpp-nha-pmjay-001",
+          "beckn:descriptor": { "schema:name": "National Health Authority (NHA)" },
+          "beckn:role": "SCHEME_AUTHORITY"
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-pmjay-001",
+          "beckn:status": { "code": "COMMITTED" },
+          "beckn:resources": [
+            { "beckn:id": "resource-pmjay-001", "beckn:quantity": { "beckn:count": 1 } }
+          ],
+          "beckn:offer": {
+            "beckn:id": "offer-pmjay-mah-2026",
+            "beckn:resourceIds": ["resource-pmjay-001"]
+          }
+        }
+      ],
+      "beckn:performance": [
+        {
+          "beckn:id": "perf-pmjay-mh-001",
+          "beckn:status": { "code": "IN_PROGRESS" },
+          "beckn:mode": "SERVICE",
+          "beckn:commitmentIds": ["commit-pmjay-001"],
+          "beckn:performanceAttributes": {
+            "spe:schemeDeliveryType": "AGENT_ASSISTED_APPLICATION",
+            "spe:submissionMode": "AGENT_ASSISTED",
+            "spe:documentCollectionMode": "PHYSICAL_DOORSTEP_COLLECTION",
+            "spe:applicationStatus": "AGENT_ASSIGNED",
+            "spe:statusNote": "Field agent Suresh Kumar has been assigned. He will contact you within 24 hours to collect documents.",
+            "spe:agentDetails": {
+              "spe:agentName": "Suresh Kumar",
+              "spe:agentContact": "+91-98765-43210",
+              "spe:agentOrganization": "Janaagraha CSC Partner Network",
+              "spe:agentOrganizationCode": "CSC-MH-NAG-0042",
+              "spe:agentType": "CSC_OPERATOR"
+            },
+            "spe:applicationPortalReference": "PORTAL-REF-2026-MH-0042193"
+          }
+        }
+      ],
+      "beckn:consideration": [
+        {
+          "beckn:id": "cons-pmjay-mah-2026",
+          "beckn:status": { "code": "DRAFT" },
+          "beckn:type": "MONETARY",
+          "beckn:considerationAttributes": {
+            "sco:benefitType": "INSURANCE_COVER",
+            "sco:benefitPeriod": "PER_ANNUM",
+            "sco:benefitNote": "Health insurance cover on a family floater basis."
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "scr:schemeApplicationStatus": "SUBMITTED",
+        "scr:applicantConsentGiven": true,
+        "scr:consentTimestamp": "2026-04-01T13:45:00Z"
+      }
+    }
+  }
+}

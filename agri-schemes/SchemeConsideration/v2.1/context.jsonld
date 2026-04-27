@@ -1,0 +1,20 @@
+{
+  "@context": {
+    "@version": 1.1,
+
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "sco":   "https://schema.beckn.io/SchemeConsideration#",
+
+    "sco:SchemeConsideration":    { "@id": "sco:SchemeConsideration" },
+
+    "sco:benefitType":            { "@id": "sco:benefitType",            "@type": "@vocab" },
+    "sco:agreedAmount":           { "@id": "sco:agreedAmount",           "@type": "schema:Number" },
+    "sco:agreedAmountCurrency":   { "@id": "sco:agreedAmountCurrency",   "@type": "schema:Text" },
+    "sco:benefitPeriod":          { "@id": "sco:benefitPeriod",          "@type": "@vocab" },
+    "sco:benefitNote":            { "@id": "sco:benefitNote",            "@type": "schema:description" },
+
+    "SchemeBenefitType":          "sco:SchemeBenefitType",
+    "SchemeBenefitPeriod":        "sco:SchemeBenefitPeriod"
+  }
+}

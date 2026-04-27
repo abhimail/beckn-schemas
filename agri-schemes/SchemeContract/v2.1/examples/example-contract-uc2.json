@@ -1,0 +1,93 @@
+{
+  "context": {
+    "domain": "agri-schemes",
+    "action": "on_confirm",
+    "bapId": "bap-kisaan-app-001",
+    "bppId": "bpp-pmkisan-mh-001",
+    "transactionId": "txn-uc2-pmkisan-20260301-004",
+    "messageId": "msg-on-confirm-uc2-001",
+    "timestamp": "2026-03-05T11:00:00Z",
+    "version": "2.0.0",
+    "ttl": "PT30S",
+    "schemaContext": [
+      "https://schema.beckn.io/SchemeContract/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemePerformance/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeConsideration/v2.1/context.jsonld"
+    ]
+  },
+  "_comment": "UC2 — Shadow Tracking Contract: Farmer Kiran Patil enrolled in PM-KISAN via CSC (external channel). BAP creates a Beckn tracking contract using externalEnrollmentRef to link this contract to the existing government enrollment.",
+  "message": {
+    "contract": {
+      "beckn:id": "contract-uc2-pmkisan-mh-20260305-004",
+      "beckn:status": { "code": "ACTIVE" },
+      "beckn:participants": [
+        {
+          "beckn:id": "participant-kiran-patil-001",
+          "beckn:descriptor": { "schema:name": "Kiran Patil" },
+          "beckn:role": "BENEFICIARY"
+        },
+        {
+          "beckn:id": "bpp-pmkisan-mh-001",
+          "beckn:descriptor": { "schema:name": "Government of Maharashtra — Agriculture Department (PM-KISAN)" },
+          "beckn:role": "SCHEME_AUTHORITY"
+        },
+        {
+          "beckn:id": "portal-pmkisan-gov-in",
+          "beckn:descriptor": { "schema:name": "PM-KISAN Government Portal" },
+          "beckn:role": "PORTAL_OPERATOR"
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commit-uc2-pmkisan-001",
+          "beckn:status": { "code": "COMMITTED" },
+          "beckn:resources": [
+            { "beckn:id": "resource-pmkisan-001", "beckn:quantity": { "beckn:count": 1 } }
+          ],
+          "beckn:offer": {
+            "beckn:id": "offer-pmkisan-mh-2026",
+            "beckn:resourceIds": ["resource-pmkisan-001"]
+          }
+        }
+      ],
+      "beckn:consideration": [
+        {
+          "beckn:id": "cons-uc2-pmkisan-mh-2026",
+          "beckn:status": { "code": "AGREED" },
+          "beckn:type": "MONETARY",
+          "beckn:considerationAttributes": {
+            "sco:benefitType": "CASH_TRANSFER",
+            "sco:agreedAmount": 6000,
+            "sco:agreedAmountCurrency": "INR",
+            "sco:benefitPeriod": "PER_ANNUM",
+            "sco:benefitNote": "₹6,000 per year disbursed in 3 installments of ₹2,000 each. Farmer enrolled via external CSC channel."
+          }
+        }
+      ],
+      "beckn:performance": [
+        {
+          "beckn:id": "perf-uc2-pmkisan-mh-001",
+          "beckn:status": { "code": "IN_PROGRESS" },
+          "beckn:mode": "TRANSFER",
+          "beckn:commitmentIds": ["commit-uc2-pmkisan-001"],
+          "beckn:performanceAttributes": {
+            "spe:schemeDeliveryType": "DBT_BANK_TRANSFER",
+            "spe:submissionMode": "COMMON_SERVICE_CENTER",
+            "spe:applicationStatus": "APPROVED",
+            "spe:statusNote": "Application approved. Second installment disbursement pending.",
+            "spe:applicationPortalReference": "PORTAL-REF-2026-MH-PMKISAN-0012345"
+          }
+        }
+      ],
+      "beckn:contractAttributes": {
+        "scr:governmentApplicationId": "PMKISAN-MH-FY2627-0012345",
+        "scr:applicationSubmissionDate": "2026-03-05T11:00:00Z",
+        "scr:schemeApplicationStatus": "APPROVED",
+        "scr:applicantConsentGiven": true,
+        "scr:consentTimestamp": "2026-03-01T08:05:00Z",
+        "scr:externalEnrollmentRef": "MH-FARMER-2024-112345",
+        "scr:externalEnrollmentIdType": "FARMER_REGISTRY_ID"
+      }
+    }
+  }
+}

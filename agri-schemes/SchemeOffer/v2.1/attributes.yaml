@@ -1,0 +1,361 @@
+openapi: 3.1.1
+info:
+  title: SchemeOffer — Agri Scheme Discovery
+  version: 2.1.0
+  description: |
+    Extension schema for `Offer.offerAttributes` in the Agriculture/Government Scheme
+    Discovery vertical. Models the eligibility criteria, benefit quantum, application window,
+    and enrollment cap for a government or NGO welfare scheme offer.
+
+    Migrated from SchemeOfferAttributes (v2 offerAttributes). Prefix: sof:
+
+x-jsonld-context: "./context.jsonld"
+x-status: under-review
+x-tags:
+  - agri-schemes
+  - scheme-discovery
+  - government-welfare
+  - offerAttributes
+
+components:
+  schemas:
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # TOP-LEVEL: SchemeOffer
+    # Attaches to: Offer.offerAttributes
+    # ─────────────────────────────────────────────────────────────────────────
+    SchemeOffer:
+      type: object
+      x-beckn-container: offerAttributes
+      x-status: under-review
+      x-tags:
+        - agri-schemes
+        - scheme-discovery
+        - government-welfare
+        - offerAttributes
+      description: |
+        Commercial and access policy for a scheme offer. Contains structured eligibility
+        criteria, benefit quantum, application window, and geographic applicability.
+        Migrated from SchemeOfferAttributes (v2). Prefix: sof:
+      required: []
+      additionalProperties: false
+      properties:
+
+        "sof:eligibilityCriteria":
+          $ref: "#/components/schemas/EligibilityCriteria"
+          description: |
+            Multi-dimensional eligibility criteria an applicant must satisfy.
+            Each sub-dimension is optional; a missing sub-dimension implies no restriction.
+          x-jsonld-id: "sof:eligibilityCriteria"
+
+        "sof:benefitQuantum":
+          $ref: "#/components/schemas/BenefitQuantum"
+          description: |
+            Descriptive quantification of what the beneficiary receives under this offer.
+            Amounts here are catalogue-time declarations; committed amounts are in SchemeConsideration.
+          x-jsonld-id: "sof:benefitQuantum"
+
+        "sof:applicationWindowNote":
+          type: string
+          description: |
+            Human-readable note about the application window or season.
+          example: "Applications open 1 June – 31 July for Kharif 2026 season."
+          x-jsonld-id: "sof:applicationWindowNote"
+
+        "sof:eligibilityForm":
+          type: object
+          description: |
+            Reference to a multi-step eligibility questionnaire (xinput). If present,
+            the BAP renders this form to collect applicant details before offer selection.
+          additionalProperties: false
+          properties:
+            "sof:formUrl":
+              type: string
+              format: uri
+              description: URL where the eligibility form can be fetched.
+              example: "https://scheme-finder.example.in/eligibility/formid/a23f2fdfbbb8ac4"
+              x-jsonld-id: "sof:formUrl"
+            "sof:mimeType":
+              type: string
+              description: MIME type of the eligibility form content.
+              enum: ["text/html", "application/json", "application/xml"]
+              x-jsonld-id: "sof:mimeType"
+            "sof:required":
+              type: boolean
+              description: Whether completing this form is mandatory before transacting.
+              default: false
+              x-jsonld-id: "sof:required"
+          x-jsonld-id: "sof:eligibilityForm"
+
+        "sof:maxBeneficiaries":
+          type: integer
+          minimum: 1
+          description: |
+            Maximum number of beneficiaries that can be enrolled under this offer, if a cap
+            exists. Omit if there is no cap.
+          example: 50000000
+          x-jsonld-id: "sof:maxBeneficiaries"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: EligibilityCriteria
+    # ─────────────────────────────────────────────────────────────────────────
+    EligibilityCriteria:
+      type: object
+      description: |
+        Structured eligibility requirements across demographic, economic, professional,
+        identity, educational, and residency dimensions. Each sub-object is optional.
+        A missing sub-object implies no restriction on that dimension.
+      additionalProperties: false
+      properties:
+        "sof:demographicCriteria":
+          $ref: "#/components/schemas/DemographicCriteria"
+          x-jsonld-id: "sof:demographicCriteria"
+        "sof:economicCriteria":
+          $ref: "#/components/schemas/EconomicCriteria"
+          x-jsonld-id: "sof:economicCriteria"
+        "sof:professionalCriteria":
+          $ref: "#/components/schemas/ProfessionalCriteria"
+          x-jsonld-id: "sof:professionalCriteria"
+        "sof:identityCriteria":
+          $ref: "#/components/schemas/IdentityCriteria"
+          x-jsonld-id: "sof:identityCriteria"
+        "sof:educationCriteria":
+          $ref: "#/components/schemas/EducationCriteria"
+          x-jsonld-id: "sof:educationCriteria"
+        "sof:residencyCriteria":
+          $ref: "#/components/schemas/ResidencyCriteria"
+          x-jsonld-id: "sof:residencyCriteria"
+        "sof:additionalCriteria":
+          type: array
+          description: Free-form additional eligibility conditions not covered by structured sub-schemas.
+          items:
+            $ref: "#/components/schemas/AdditionalEligibilityCriterion"
+          x-jsonld-id: "sof:additionalCriteria"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: DemographicCriteria
+    # ─────────────────────────────────────────────────────────────────────────
+    DemographicCriteria:
+      type: object
+      description: Age, gender, caste, and physical ability eligibility rules.
+      additionalProperties: false
+      properties:
+        "sof:gender":
+          type: string
+          enum: [MALE, FEMALE, TRANSGENDER, ANY]
+          x-jsonld-id: "sof:gender"
+        "sof:minAge":
+          type: integer
+          minimum: 0
+          example: 18
+          x-jsonld-id: "sof:minAge"
+        "sof:maxAge":
+          type: integer
+          minimum: 0
+          example: 60
+          x-jsonld-id: "sof:maxAge"
+        "sof:casteCategory":
+          type: array
+          items:
+            type: string
+            enum: [GENERAL, OBC, SC, ST, EWS, ANY]
+          x-jsonld-id: "sof:casteCategory"
+        "sof:differentlyAbled":
+          type: string
+          enum: [ONLY_DIFFERENTLY_ABLED, NOT_REQUIRED, ANY]
+          x-jsonld-id: "sof:differentlyAbled"
+        "sof:minGirlChildren":
+          type: integer
+          minimum: 0
+          example: 1
+          x-jsonld-id: "sof:minGirlChildren"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: EconomicCriteria
+    # ─────────────────────────────────────────────────────────────────────────
+    EconomicCriteria:
+      type: object
+      description: Income, land ownership, and poverty classification eligibility rules.
+      additionalProperties: false
+      properties:
+        "sof:rationCardType":
+          type: array
+          items:
+            type: string
+            enum: [BELOW_POVERTY_LINE, ANTYODAYA, ABOVE_POVERTY_LINE, PRIORITY_HOUSEHOLD, NONE_REQUIRED]
+          x-jsonld-id: "sof:rationCardType"
+        "sof:landOwnership":
+          type: string
+          enum: [REQUIRED, NOT_REQUIRED, ANY]
+          x-jsonld-id: "sof:landOwnership"
+        "sof:annualIncomeMaxCurrency":
+          type: string
+          example: "INR"
+          x-jsonld-id: "sof:annualIncomeMaxCurrency"
+        "sof:annualIncomeMax":
+          type: number
+          minimum: 0
+          example: 200000
+          x-jsonld-id: "sof:annualIncomeMax"
+        "sof:isTaxpayer":
+          type: string
+          enum: [TAXPAYERS_EXCLUDED, TAXPAYERS_ALLOWED, ANY]
+          x-jsonld-id: "sof:isTaxpayer"
+        "sof:hasCattleInsurance":
+          type: string
+          enum: [REQUIRED, NOT_REQUIRED, ANY]
+          x-jsonld-id: "sof:hasCattleInsurance"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: ProfessionalCriteria
+    # ─────────────────────────────────────────────────────────────────────────
+    ProfessionalCriteria:
+      type: object
+      description: Occupation, enterprise type, and business support eligibility rules.
+      additionalProperties: false
+      properties:
+        "sof:occupationType":
+          type: array
+          items:
+            type: string
+            enum: [FARMER, AGRICULTURAL_LABOURER, DAIRY_FARMER, FISHERMAN, CARPENTER, ARTISAN, SELF_EMPLOYED, DAILY_WAGE_WORKER, ANY]
+          x-jsonld-id: "sof:occupationType"
+        "sof:enterpriseCategory":
+          type: array
+          items:
+            type: string
+            enum: [AGRICULTURE, AGRICULTURE_ALLIED, HORTICULTURE, ANIMAL_HUSBANDRY, FISHERIES, FOOD_PROCESSING, RURAL_CRAFTS, OTHERS]
+          x-jsonld-id: "sof:enterpriseCategory"
+        "sof:businessSupportType":
+          type: array
+          items:
+            type: string
+            enum: [REGISTRATION, LOAN, SUBSIDY, MARKET_LINKAGE, INFRASTRUCTURE, TRAINING, ANY]
+          x-jsonld-id: "sof:businessSupportType"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: IdentityCriteria
+    # ─────────────────────────────────────────────────────────────────────────
+    IdentityCriteria:
+      type: object
+      description: Government identity document possession requirements.
+      additionalProperties: false
+      properties:
+        "sof:hasVoterId":
+          type: string
+          enum: [REQUIRED, NOT_REQUIRED, ANY]
+          x-jsonld-id: "sof:hasVoterId"
+        "sof:hasAadhaar":
+          type: string
+          enum: [REQUIRED, NOT_REQUIRED, ANY]
+          x-jsonld-id: "sof:hasAadhaar"
+        "sof:hasSECCRegistration":
+          type: string
+          enum: [REQUIRED, NOT_REQUIRED, ANY]
+          x-jsonld-id: "sof:hasSECCRegistration"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: EducationCriteria
+    # ─────────────────────────────────────────────────────────────────────────
+    EducationCriteria:
+      type: object
+      description: Educational attainment eligibility rules.
+      additionalProperties: false
+      properties:
+        "sof:maxEducationLevel":
+          type: string
+          enum: [NO_FORMAL_EDUCATION, PRIMARY, UPPER_PRIMARY, SECONDARY, HIGHER_SECONDARY, GRADUATE, POST_GRADUATE, ANY]
+          x-jsonld-id: "sof:maxEducationLevel"
+        "sof:minEducationLevel":
+          type: string
+          enum: [NO_FORMAL_EDUCATION, PRIMARY, UPPER_PRIMARY, SECONDARY, HIGHER_SECONDARY, GRADUATE, ANY]
+          x-jsonld-id: "sof:minEducationLevel"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: ResidencyCriteria
+    # ─────────────────────────────────────────────────────────────────────────
+    ResidencyCriteria:
+      type: object
+      description: Geographic residency and domicile requirements.
+      additionalProperties: false
+      properties:
+        "sof:statesOfResidence":
+          type: array
+          items:
+            type: string
+          example: ["IN-MH", "IN-KA"]
+          x-jsonld-id: "sof:statesOfResidence"
+        "sof:bornInStateOfResidence":
+          type: string
+          enum: [REQUIRED, NOT_REQUIRED, ANY]
+          x-jsonld-id: "sof:bornInStateOfResidence"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: AdditionalEligibilityCriterion
+    # ─────────────────────────────────────────────────────────────────────────
+    AdditionalEligibilityCriterion:
+      type: object
+      description: Free-form key-value eligibility condition for rare or scheme-specific rules.
+      required:
+        - "sof:criterionCode"
+        - "sof:criterionValue"
+      additionalProperties: false
+      properties:
+        "sof:criterionCode":
+          type: string
+          example: "CT0001TU"
+          x-jsonld-id: "sof:criterionCode"
+        "sof:criterionName":
+          type: string
+          example: "Has SECC Registration Number"
+          x-jsonld-id: "sof:criterionName"
+        "sof:criterionValue":
+          type: string
+          example: "Yes"
+          x-jsonld-id: "sof:criterionValue"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: BenefitQuantum
+    # ─────────────────────────────────────────────────────────────────────────
+    BenefitQuantum:
+      type: object
+      description: |
+        Descriptive quantification of the scheme benefit. Monetary amounts here are
+        catalogue-time declarations (the "up to" amount). Committed transactional amounts
+        live in SchemeConsideration.considerationAttributes.
+      additionalProperties: false
+      properties:
+        "sof:benefitType":
+          type: string
+          enum: [CASH_TRANSFER, INSURANCE_COVER, SUBSIDY_PERCENTAGE, IN_KIND, EMPLOYMENT_DAYS, MIXED]
+          x-jsonld-id: "sof:benefitType"
+        "sof:monetaryAmount":
+          type: object
+          description: Maximum monetary benefit amount per beneficiary (catalogue-time declaration).
+          properties:
+            currency:
+              type: string
+              example: "INR"
+            value:
+              type: number
+              example: 500000
+          x-jsonld-id: "sof:monetaryAmount"
+        "sof:subsidyPaymentPercentage":
+          type: number
+          minimum: 0
+          maximum: 100
+          example: 98
+          x-jsonld-id: "sof:subsidyPaymentPercentage"
+        "sof:guaranteedEmploymentDays":
+          type: integer
+          minimum: 1
+          example: 100
+          x-jsonld-id: "sof:guaranteedEmploymentDays"
+        "sof:benefitPeriod":
+          type: string
+          enum: [PER_EPISODE, PER_ANNUM, PER_SEASON, LIFETIME, ONE_TIME]
+          x-jsonld-id: "sof:benefitPeriod"
+        "sof:benefitNote":
+          type: string
+          example: "On a family floater basis. Cover resets each policy year."
+          x-jsonld-id: "sof:benefitNote"

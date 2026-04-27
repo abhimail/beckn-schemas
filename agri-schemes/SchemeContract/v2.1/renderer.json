@@ -1,0 +1,35 @@
+{
+  "schema_id": "https://schema.beckn.io/SchemeContract/v2.1",
+  "card_template": {
+    "title": "Application {{beckn:contractAttributes.scr:governmentApplicationId}}",
+    "subtitle": "{{beckn:contractAttributes.scr:schemeApplicationStatus}}",
+    "badge_primary": "{{beckn:contractAttributes.scr:schemeApplicationStatus}}",
+    "metadata_line": "Submitted: {{beckn:contractAttributes.scr:applicationSubmissionDate}}"
+  },
+  "detail_template": {
+    "header": {
+      "title": "Scheme Application",
+      "subtitle": "{{beckn:contractAttributes.scr:schemeApplicationStatus}}"
+    },
+    "sections": [
+      {
+        "label": "Application Details",
+        "fields": [
+          { "label": "Government ID",     "value": "{{beckn:contractAttributes.scr:governmentApplicationId}}" },
+          { "label": "Submitted On",      "value": "{{beckn:contractAttributes.scr:applicationSubmissionDate}}" },
+          { "label": "Status",            "value": "{{beckn:contractAttributes.scr:schemeApplicationStatus}}" },
+          { "label": "Rejection Reason",  "value": "{{beckn:contractAttributes.scr:rejectionReason}}" }
+        ]
+      },
+      {
+        "label": "Consent",
+        "fields": [
+          { "label": "Consent Given",     "value": "{{beckn:contractAttributes.scr:applicantConsentGiven}}" },
+          { "label": "Consent Timestamp", "value": "{{beckn:contractAttributes.scr:consentTimestamp}}" }
+        ]
+      }
+    ]
+  },
+  "html": "<div class=\"agri-schemes-scheme-contract-card\" data-contract-id=\"{{beckn:id}}\"><div class=\"contract-status\"><span class=\"status-badge status-{{toLowerCase beckn:contractAttributes.scr:schemeApplicationStatus}}\">{{beckn:contractAttributes.scr:schemeApplicationStatus}}</span></div>{{#if beckn:contractAttributes.scr:governmentApplicationId}}<p class=\"gov-ref\">Ref: <code>{{beckn:contractAttributes.scr:governmentApplicationId}}</code></p>{{/if}}{{#if beckn:contractAttributes.scr:applicationSubmissionDate}}<p class=\"submission-date\">Submitted: {{beckn:contractAttributes.scr:applicationSubmissionDate}}</p>{{/if}}{{#if beckn:contractAttributes.scr:rejectionReason}}<p class=\"rejection-reason\">Reason: {{beckn:contractAttributes.scr:rejectionReason}}</p>{{/if}}</div>",
+  "html_detail": "<div class=\"agri-schemes-scheme-contract-detail\" data-contract-id=\"{{beckn:id}}\"><section class=\"contract-status-section\"><h4>Application Status</h4><span class=\"status-badge status-{{toLowerCase beckn:contractAttributes.scr:schemeApplicationStatus}}\">{{beckn:contractAttributes.scr:schemeApplicationStatus}}</span>{{#if beckn:contractAttributes.scr:rejectionReason}}<div class=\"rejection-block\"><strong>Rejection Reason:</strong><p>{{beckn:contractAttributes.scr:rejectionReason}}</p></div>{{/if}}</section><section class=\"contract-ref-section\"><h4>Application Reference</h4><dl>{{#if beckn:contractAttributes.scr:governmentApplicationId}}<dt>Government Application ID</dt><dd><code>{{beckn:contractAttributes.scr:governmentApplicationId}}</code></dd>{{/if}}{{#if beckn:contractAttributes.scr:applicationSubmissionDate}}<dt>Submitted On</dt><dd>{{beckn:contractAttributes.scr:applicationSubmissionDate}}</dd>{{/if}}</dl></section><section class=\"consent-section\"><h4>Consent Record</h4><dl><dt>DPDP Consent Given</dt><dd>{{#if beckn:contractAttributes.scr:applicantConsentGiven}}Yes{{else}}No{{/if}}</dd>{{#if beckn:contractAttributes.scr:consentTimestamp}}<dt>Consent Timestamp</dt><dd>{{beckn:contractAttributes.scr:consentTimestamp}}</dd>{{/if}}</dl></section>{{#if beckn:contractAttributes.scr:externalEnrollmentRef}}<section class=\"external-enrollment-section\"><h4>External Enrollment (UC2)</h4><dl><dt>Enrollment Reference</dt><dd><code>{{beckn:contractAttributes.scr:externalEnrollmentRef}}</code></dd><dt>ID Type</dt><dd>{{beckn:contractAttributes.scr:externalEnrollmentIdType}}</dd></dl></section>{{/if}}</div>"
+}

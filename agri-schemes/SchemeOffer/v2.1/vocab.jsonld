@@ -1,0 +1,74 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "rdfs":  "http://www.w3.org/2000/01/rdf-schema#",
+    "sof":   "https://schema.beckn.io/SchemeOffer#"
+  },
+  "@graph": [
+    { "@id": "sof:Gender", "@type": "rdfs:Class", "rdfs:label": "Gender", "rdfs:comment": "Gender eligibility restriction." },
+    { "@id": "sof:MALE",        "@type": "sof:Gender", "rdfs:label": "Male" },
+    { "@id": "sof:FEMALE",      "@type": "sof:Gender", "rdfs:label": "Female" },
+    { "@id": "sof:TRANSGENDER", "@type": "sof:Gender", "rdfs:label": "Transgender" },
+    { "@id": "sof:ANY",         "@type": "sof:Gender", "rdfs:label": "Any", "rdfs:comment": "No gender restriction." },
+
+    { "@id": "sof:CasteCategory", "@type": "rdfs:Class", "rdfs:label": "Caste Category", "rdfs:comment": "Social category under India's reservation framework." },
+    { "@id": "sof:GENERAL", "@type": "sof:CasteCategory", "rdfs:label": "General" },
+    { "@id": "sof:OBC",     "@type": "sof:CasteCategory", "rdfs:label": "Other Backward Class (OBC)" },
+    { "@id": "sof:SC",      "@type": "sof:CasteCategory", "rdfs:label": "Scheduled Caste (SC)" },
+    { "@id": "sof:ST",      "@type": "sof:CasteCategory", "rdfs:label": "Scheduled Tribe (ST)" },
+    { "@id": "sof:EWS",     "@type": "sof:CasteCategory", "rdfs:label": "Economically Weaker Section (EWS)" },
+
+    { "@id": "sof:RationCardType", "@type": "rdfs:Class", "rdfs:label": "Ration Card Type", "rdfs:comment": "Type of ration card held by the household." },
+    { "@id": "sof:BELOW_POVERTY_LINE",  "@type": "sof:RationCardType", "rdfs:label": "Below Poverty Line (BPL)" },
+    { "@id": "sof:ANTYODAYA",           "@type": "sof:RationCardType", "rdfs:label": "Antyodaya Anna Yojana (AAY)" },
+    { "@id": "sof:ABOVE_POVERTY_LINE",  "@type": "sof:RationCardType", "rdfs:label": "Above Poverty Line (APL)" },
+    { "@id": "sof:PRIORITY_HOUSEHOLD",  "@type": "sof:RationCardType", "rdfs:label": "Priority Household (PHH)" },
+    { "@id": "sof:NONE_REQUIRED",       "@type": "sof:RationCardType", "rdfs:label": "None Required", "rdfs:comment": "No ration card required for this scheme." },
+
+    { "@id": "sof:OccupationType", "@type": "rdfs:Class", "rdfs:label": "Occupation Type", "rdfs:comment": "Eligible occupation of the applicant." },
+    { "@id": "sof:FARMER",                "@type": "sof:OccupationType", "rdfs:label": "Farmer" },
+    { "@id": "sof:AGRICULTURAL_LABOURER", "@type": "sof:OccupationType", "rdfs:label": "Agricultural Labourer" },
+    { "@id": "sof:DAIRY_FARMER",          "@type": "sof:OccupationType", "rdfs:label": "Dairy Farmer" },
+    { "@id": "sof:FISHERMAN",             "@type": "sof:OccupationType", "rdfs:label": "Fisherman" },
+    { "@id": "sof:CARPENTER",             "@type": "sof:OccupationType", "rdfs:label": "Carpenter" },
+    { "@id": "sof:ARTISAN",               "@type": "sof:OccupationType", "rdfs:label": "Artisan" },
+    { "@id": "sof:SELF_EMPLOYED",         "@type": "sof:OccupationType", "rdfs:label": "Self-Employed" },
+    { "@id": "sof:DAILY_WAGE_WORKER",     "@type": "sof:OccupationType", "rdfs:label": "Daily Wage Worker" },
+
+    { "@id": "sof:EnterpriseCategory", "@type": "rdfs:Class", "rdfs:label": "Enterprise Category", "rdfs:comment": "Sector category of the enterprise." },
+    { "@id": "sof:AGRICULTURE",         "@type": "sof:EnterpriseCategory", "rdfs:label": "Agriculture" },
+    { "@id": "sof:AGRICULTURE_ALLIED",  "@type": "sof:EnterpriseCategory", "rdfs:label": "Agriculture-Allied" },
+    { "@id": "sof:HORTICULTURE",        "@type": "sof:EnterpriseCategory", "rdfs:label": "Horticulture" },
+    { "@id": "sof:ANIMAL_HUSBANDRY",    "@type": "sof:EnterpriseCategory", "rdfs:label": "Animal Husbandry" },
+    { "@id": "sof:FISHERIES",           "@type": "sof:EnterpriseCategory", "rdfs:label": "Fisheries" },
+    { "@id": "sof:FOOD_PROCESSING",     "@type": "sof:EnterpriseCategory", "rdfs:label": "Food Processing" },
+    { "@id": "sof:RURAL_CRAFTS",        "@type": "sof:EnterpriseCategory", "rdfs:label": "Rural Crafts" },
+    { "@id": "sof:OTHERS",              "@type": "sof:EnterpriseCategory", "rdfs:label": "Others" },
+
+    { "@id": "sof:BenefitType", "@type": "rdfs:Class", "rdfs:label": "Benefit Type", "rdfs:comment": "Primary category of benefit provided by the scheme offer." },
+    { "@id": "sof:CASH_TRANSFER",       "@type": "sof:BenefitType", "rdfs:label": "Cash Transfer" },
+    { "@id": "sof:INSURANCE_COVER",     "@type": "sof:BenefitType", "rdfs:label": "Insurance Cover" },
+    { "@id": "sof:SUBSIDY_PERCENTAGE",  "@type": "sof:BenefitType", "rdfs:label": "Subsidy Percentage" },
+    { "@id": "sof:IN_KIND",             "@type": "sof:BenefitType", "rdfs:label": "In-Kind" },
+    { "@id": "sof:EMPLOYMENT_DAYS",     "@type": "sof:BenefitType", "rdfs:label": "Employment Days" },
+    { "@id": "sof:MIXED",               "@type": "sof:BenefitType", "rdfs:label": "Mixed", "rdfs:comment": "Scheme provides multiple benefit types." },
+
+    { "@id": "sof:BenefitPeriod", "@type": "rdfs:Class", "rdfs:label": "Benefit Period", "rdfs:comment": "Duration over which the benefit is calculated or provided." },
+    { "@id": "sof:PER_EPISODE",  "@type": "sof:BenefitPeriod", "rdfs:label": "Per Episode",  "rdfs:comment": "Benefit applies per qualifying event (e.g., hospitalisation)." },
+    { "@id": "sof:PER_ANNUM",    "@type": "sof:BenefitPeriod", "rdfs:label": "Per Annum",    "rdfs:comment": "Benefit renews annually." },
+    { "@id": "sof:PER_SEASON",   "@type": "sof:BenefitPeriod", "rdfs:label": "Per Season",   "rdfs:comment": "Benefit applies per agricultural season (Kharif/Rabi)." },
+    { "@id": "sof:LIFETIME",     "@type": "sof:BenefitPeriod", "rdfs:label": "Lifetime",     "rdfs:comment": "Benefit is a one-time lifetime entitlement (e.g., housing)." },
+    { "@id": "sof:ONE_TIME",     "@type": "sof:BenefitPeriod", "rdfs:label": "One-Time",     "rdfs:comment": "Benefit is disbursed once only." },
+
+    { "@id": "sof:EducationLevel", "@type": "rdfs:Class", "rdfs:label": "Education Level", "rdfs:comment": "Educational attainment level." },
+    { "@id": "sof:NO_FORMAL_EDUCATION", "@type": "sof:EducationLevel", "rdfs:label": "No Formal Education" },
+    { "@id": "sof:PRIMARY",             "@type": "sof:EducationLevel", "rdfs:label": "Primary (Class 1–5)" },
+    { "@id": "sof:UPPER_PRIMARY",       "@type": "sof:EducationLevel", "rdfs:label": "Upper Primary (Class 6–8)" },
+    { "@id": "sof:SECONDARY",           "@type": "sof:EducationLevel", "rdfs:label": "Secondary (Class 9–10)" },
+    { "@id": "sof:HIGHER_SECONDARY",    "@type": "sof:EducationLevel", "rdfs:label": "Higher Secondary (Class 11–12)" },
+    { "@id": "sof:GRADUATE",            "@type": "sof:EducationLevel", "rdfs:label": "Graduate" },
+    { "@id": "sof:POST_GRADUATE",       "@type": "sof:EducationLevel", "rdfs:label": "Post-Graduate" }
+  ]
+}

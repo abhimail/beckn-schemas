@@ -1,0 +1,108 @@
+openapi: 3.1.1
+info:
+  title: SchemeSettlement — Agri Scheme Discovery
+  version: 2.1.0
+  description: |
+    Extension schema for `Settlement.settlementAttributes` in the Agriculture/Government
+    Scheme Discovery vertical. Models a single government benefit disbursement event:
+    the disbursement date, actual amount disbursed, PFMS transaction reference, installment
+    number, and discharge channel (NEFT/RTGS/etc.).
+
+    New in v2.1 — extracted from SchemeOrderAttributes.DisbursementRecord +
+    SchemeFulfillmentAttributes.disbursementMode (v2). Prefix: sse:
+
+x-jsonld-context: "./context.jsonld"
+x-status: under-review
+x-tags:
+  - agri-schemes
+  - scheme-discovery
+  - government-welfare
+  - settlementAttributes
+
+components:
+  schemas:
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # TOP-LEVEL: SchemeSettlement
+    # Attaches to: Settlement.settlementAttributes
+    # ─────────────────────────────────────────────────────────────────────────
+    SchemeSettlement:
+      type: object
+      x-beckn-container: settlementAttributes
+      x-status: under-review
+      x-tags:
+        - agri-schemes
+        - scheme-discovery
+        - government-welfare
+        - settlementAttributes
+      description: |
+        Metadata for a single government benefit disbursement event. One Settlement object
+        is created per installment tranche, supporting multi-installment schemes.
+        New in v2.1 — extracted from SchemeOrderAttributes.DisbursementRecord and
+        SchemeFulfillmentAttributes.disbursementMode. Prefix: sse:
+      required: []
+      additionalProperties: false
+      properties:
+
+        "sse:disbursementDate":
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the benefit was disbursed.
+          example: "2026-08-01T00:00:00Z"
+          x-jsonld-id: "sse:disbursementDate"
+
+        "sse:disbursedAmount":
+          type: number
+          minimum: 0
+          description: |
+            Actual amount disbursed in this installment. May differ from the total
+            SchemeConsideration.sco:agreedAmount for installment-based schemes.
+          example: 2000
+          x-jsonld-id: "sse:disbursedAmount"
+
+        "sse:disbursedCurrency":
+          type: string
+          description: ISO 4217 currency code for the disbursed amount.
+          example: "INR"
+          x-jsonld-id: "sse:disbursedCurrency"
+
+        "sse:governmentTransactionReference":
+          type: string
+          description: |
+            Government-side transaction reference number for this disbursement event —
+            PFMS transaction ID, DBT reference, or insurance claim settlement number.
+            Used for audit and reconciliation purposes.
+          example: "PFMS2026080100123456"
+          x-jsonld-id: "sse:governmentTransactionReference"
+
+        "sse:disbursementInstallment":
+          type: integer
+          minimum: 1
+          description: |
+            Installment number for this disbursement tranche. For single-disbursement
+            schemes, this is 1.
+          example: 2
+          x-jsonld-id: "sse:disbursementInstallment"
+
+        "sse:totalInstallments":
+          type: integer
+          minimum: 1
+          description: |
+            Total number of disbursement installments for this scheme application.
+            For single-disbursement schemes, this is 1.
+          example: 3
+          x-jsonld-id: "sse:totalInstallments"
+
+        "sse:disbursementMode":
+          type: string
+          description: |
+            Channel through which this disbursement is made to the beneficiary.
+            Migrated from SchemeFulfillmentAttributes.sfa:disbursementMode (v2).
+          enum:
+            - BANK_TRANSFER_NEFT
+            - BANK_TRANSFER_RTGS
+            - DIRECT_BANK_CREDIT
+            - CHEQUE
+            - COMMODITY_IN_KIND
+            - NOT_APPLICABLE
+          x-jsonld-id: "sse:disbursementMode"

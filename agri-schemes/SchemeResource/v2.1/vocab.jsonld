@@ -1,0 +1,93 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "rdfs":  "http://www.w3.org/2000/01/rdf-schema#",
+    "sr":    "https://schema.beckn.io/SchemeResource#"
+  },
+  "@graph": [
+
+    {
+      "@id": "sr:SchemeType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Scheme Type",
+      "rdfs:comment": "Primary classification of a government or NGO welfare scheme."
+    },
+    { "@id": "sr:INSURANCE",             "@type": "sr:SchemeType", "rdfs:label": "Insurance",             "rdfs:comment": "Government-backed or subsidised insurance scheme (crop, health, life, livestock)." },
+    { "@id": "sr:DIRECT_BENEFIT_TRANSFER","@type": "sr:SchemeType","rdfs:label": "Direct Benefit Transfer","rdfs:comment": "Cash or monetary benefit transferred directly to the beneficiary's bank account via DBT." },
+    { "@id": "sr:EMPLOYMENT_GUARANTEE",  "@type": "sr:SchemeType", "rdfs:label": "Employment Guarantee", "rdfs:comment": "Guaranteed days of employment or wage employment (e.g., MGNREGS)." },
+    { "@id": "sr:SUBSIDY",               "@type": "sr:SchemeType", "rdfs:label": "Subsidy",               "rdfs:comment": "Subsidised cost for inputs, services, or infrastructure (e.g., fertiliser subsidy, PM-KUSUM)." },
+    { "@id": "sr:SCHOLARSHIP",           "@type": "sr:SchemeType", "rdfs:label": "Scholarship",           "rdfs:comment": "Educational financial support for eligible students." },
+    { "@id": "sr:PENSION",               "@type": "sr:SchemeType", "rdfs:label": "Pension",               "rdfs:comment": "Periodic payment to eligible retired persons or widows (e.g., PM-SYM, PMVVY)." },
+    { "@id": "sr:IN_KIND_SUPPORT",       "@type": "sr:SchemeType", "rdfs:label": "In-Kind Support",       "rdfs:comment": "Physical goods provided to beneficiaries (seeds, rations, equipment, housing materials)." },
+    { "@id": "sr:HOUSING",               "@type": "sr:SchemeType", "rdfs:label": "Housing",               "rdfs:comment": "Scheme providing housing construction assistance or financial support (e.g., PMAY)." },
+    { "@id": "sr:SKILL_DEVELOPMENT",     "@type": "sr:SchemeType", "rdfs:label": "Skill Development",     "rdfs:comment": "Training and skill development programme with certification." },
+    { "@id": "sr:OTHER",                 "@type": "sr:SchemeType", "rdfs:label": "Other",                 "rdfs:comment": "Scheme type not covered by the above classifications." },
+
+    {
+      "@id": "sr:FundingModel",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Funding Model",
+      "rdfs:comment": "Governance and funding structure of the scheme."
+    },
+    { "@id": "sr:CENTRALLY_SPONSORED",        "@type": "sr:FundingModel", "rdfs:label": "Centrally Sponsored",         "rdfs:comment": "Jointly funded by Central and State governments; implemented by states." },
+    { "@id": "sr:CENTRAL_SECTOR",             "@type": "sr:FundingModel", "rdfs:label": "Central Sector",              "rdfs:comment": "100% funded and implemented by Central Government." },
+    { "@id": "sr:STATE_SPONSORED",            "@type": "sr:FundingModel", "rdfs:label": "State Sponsored",             "rdfs:comment": "Funded and implemented by a State Government." },
+    { "@id": "sr:DISTRICT_LOCAL_BODY",        "@type": "sr:FundingModel", "rdfs:label": "District / Local Body",       "rdfs:comment": "Funded and managed by a District Administration or Local Body." },
+    { "@id": "sr:NGO_FUNDED",                 "@type": "sr:FundingModel", "rdfs:label": "NGO Funded",                  "rdfs:comment": "Funded and implemented by a Non-Governmental Organisation." },
+    { "@id": "sr:PUBLIC_PRIVATE_PARTNERSHIP", "@type": "sr:FundingModel", "rdfs:label": "Public-Private Partnership",  "rdfs:comment": "Jointly funded or implemented by government and private sector entities." },
+
+    {
+      "@id": "sr:BeneficiaryType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Beneficiary Type",
+      "rdfs:comment": "Category of individuals or groups targeted by the scheme."
+    },
+    { "@id": "sr:INDIVIDUAL",            "@type": "sr:BeneficiaryType", "rdfs:label": "Individual",            "rdfs:comment": "Any individual citizen." },
+    { "@id": "sr:FARMER",                "@type": "sr:BeneficiaryType", "rdfs:label": "Farmer",                "rdfs:comment": "Cultivators or landholders engaged in agriculture." },
+    { "@id": "sr:FARMER_GROUP",          "@type": "sr:BeneficiaryType", "rdfs:label": "Farmer Group",          "rdfs:comment": "Farmer Producer Organisations (FPOs), SHGs, or cooperatives." },
+    { "@id": "sr:AGRICULTURAL_LABOURER", "@type": "sr:BeneficiaryType", "rdfs:label": "Agricultural Labourer", "rdfs:comment": "Landless workers engaged in agricultural activities." },
+    { "@id": "sr:WOMAN",                 "@type": "sr:BeneficiaryType", "rdfs:label": "Woman",                 "rdfs:comment": "Female beneficiaries specifically targeted." },
+    { "@id": "sr:CHILD",                 "@type": "sr:BeneficiaryType", "rdfs:label": "Child",                 "rdfs:comment": "Minor beneficiaries (girl child schemes, nutrition programmes)." },
+    { "@id": "sr:SENIOR_CITIZEN",        "@type": "sr:BeneficiaryType", "rdfs:label": "Senior Citizen",        "rdfs:comment": "Elderly individuals (typically aged 60+)." },
+    { "@id": "sr:DIFFERENTLY_ABLED",     "@type": "sr:BeneficiaryType", "rdfs:label": "Differently Abled",     "rdfs:comment": "Persons with disabilities." },
+    { "@id": "sr:ARTISAN",               "@type": "sr:BeneficiaryType", "rdfs:label": "Artisan",               "rdfs:comment": "Traditional craftspeople, weavers, potters, and allied workers." },
+    { "@id": "sr:FISHERMAN",             "@type": "sr:BeneficiaryType", "rdfs:label": "Fisherman",             "rdfs:comment": "Fishing community members." },
+    { "@id": "sr:RURAL_HOUSEHOLD",       "@type": "sr:BeneficiaryType", "rdfs:label": "Rural Household",       "rdfs:comment": "Rural households as a unit (housing, sanitation, ration schemes)." },
+    { "@id": "sr:BELOW_POVERTY_LINE",    "@type": "sr:BeneficiaryType", "rdfs:label": "Below Poverty Line",    "rdfs:comment": "Households classified as BPL by the government." },
+
+    {
+      "@id": "sr:ApplicationMode",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Application Mode",
+      "rdfs:comment": "Channel through which a beneficiary can apply for a scheme."
+    },
+    { "@id": "sr:ONLINE_PORTAL",       "@type": "sr:ApplicationMode", "rdfs:label": "Online Portal",          "rdfs:comment": "Applicant applies via an official government or scheme website." },
+    { "@id": "sr:AGENT_ASSISTED",      "@type": "sr:ApplicationMode", "rdfs:label": "Agent Assisted",          "rdfs:comment": "A registered field agent assists the applicant." },
+    { "@id": "sr:GOVERNMENT_OFFICE",   "@type": "sr:ApplicationMode", "rdfs:label": "Government Office",       "rdfs:comment": "Applicant visits the relevant block/tehsil/district office." },
+    { "@id": "sr:COMMON_SERVICE_CENTER","@type":"sr:ApplicationMode", "rdfs:label": "Common Service Centre",   "rdfs:comment": "Application via GoI's CSC network." },
+    { "@id": "sr:BANK_BRANCH",         "@type": "sr:ApplicationMode", "rdfs:label": "Bank Branch",             "rdfs:comment": "Application via an enrolled bank branch (common for crop insurance)." },
+    { "@id": "sr:MOBILE_APP",          "@type": "sr:ApplicationMode", "rdfs:label": "Mobile App",              "rdfs:comment": "Application via an official or Beckn-enabled mobile application." },
+    { "@id": "sr:OFFLINE_FORM",        "@type": "sr:ApplicationMode", "rdfs:label": "Offline Form",            "rdfs:comment": "Paper-based application form submitted in person or by post." },
+
+    {
+      "@id": "sr:BenefitCategory",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Benefit Category",
+      "rdfs:comment": "Category of welfare benefit provided by the scheme."
+    },
+    { "@id": "sr:CASH_TRANSFER",       "@type": "sr:BenefitCategory", "rdfs:label": "Cash Transfer",        "rdfs:comment": "Direct cash payment to the beneficiary." },
+    { "@id": "sr:CROP_INSURANCE",      "@type": "sr:BenefitCategory", "rdfs:label": "Crop Insurance",       "rdfs:comment": "Insurance cover against crop failure from natural causes." },
+    { "@id": "sr:INCOME_SUPPORT",      "@type": "sr:BenefitCategory", "rdfs:label": "Income Support",       "rdfs:comment": "Periodic income support payment to farm households." },
+    { "@id": "sr:HEALTH_INSURANCE",    "@type": "sr:BenefitCategory", "rdfs:label": "Health Insurance",     "rdfs:comment": "Health and hospitalisation insurance cover." },
+    { "@id": "sr:EMPLOYMENT_GUARANTEE","@type": "sr:BenefitCategory", "rdfs:label": "Employment Guarantee", "rdfs:comment": "Guaranteed days of paid employment." },
+    { "@id": "sr:SKILL_TRAINING",      "@type": "sr:BenefitCategory", "rdfs:label": "Skill Training",       "rdfs:comment": "Vocational skill development and certification." },
+    { "@id": "sr:HOUSING_SUPPORT",     "@type": "sr:BenefitCategory", "rdfs:label": "Housing Support",      "rdfs:comment": "Grant or assistance for housing construction or improvement." },
+    { "@id": "sr:RATION_ENTITLEMENT",  "@type": "sr:BenefitCategory", "rdfs:label": "Ration Entitlement",   "rdfs:comment": "Subsidised food grains via the public distribution system." },
+    { "@id": "sr:PENSION",             "@type": "sr:BenefitCategory", "rdfs:label": "Pension",              "rdfs:comment": "Regular pension payment to eligible persons." },
+    { "@id": "sr:SCHOLARSHIP",         "@type": "sr:BenefitCategory", "rdfs:label": "Scholarship",          "rdfs:comment": "Educational financial support." },
+    { "@id": "sr:DIGITAL_ENTITLEMENT", "@type": "sr:BenefitCategory", "rdfs:label": "Digital Entitlement",  "rdfs:comment": "Digital voucher, token, or e-certificate." },
+    { "@id": "sr:OTHER",               "@type": "sr:BenefitCategory", "rdfs:label": "Other",                "rdfs:comment": "Benefit category not covered by the above." }
+  ]
+}

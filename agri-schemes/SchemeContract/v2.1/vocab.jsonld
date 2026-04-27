@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "rdfs":  "http://www.w3.org/2000/01/rdf-schema#",
+    "scr":   "https://schema.beckn.io/SchemeContract#"
+  },
+  "@graph": [
+    { "@id": "scr:SchemeApplicationStatus", "@type": "rdfs:Class", "rdfs:label": "Scheme Application Status", "rdfs:comment": "Authoritative status of a scheme application as reported by the government scheme authority." },
+    { "@id": "scr:SUBMITTED",           "@type": "scr:SchemeApplicationStatus", "rdfs:label": "Submitted",            "rdfs:comment": "Application has been formally submitted to the scheme authority." },
+    { "@id": "scr:UNDER_REVIEW",        "@type": "scr:SchemeApplicationStatus", "rdfs:label": "Under Review",         "rdfs:comment": "Application is under review by the scheme authority." },
+    { "@id": "scr:APPROVED",           "@type": "scr:SchemeApplicationStatus", "rdfs:label": "Approved",             "rdfs:comment": "Application has been approved; benefit disbursement pending." },
+    { "@id": "scr:REJECTED",           "@type": "scr:SchemeApplicationStatus", "rdfs:label": "Rejected",             "rdfs:comment": "Application was rejected by the scheme authority." },
+    { "@id": "scr:DISBURSED",           "@type": "scr:SchemeApplicationStatus", "rdfs:label": "Disbursed",            "rdfs:comment": "Benefit has been disbursed to the beneficiary." },
+    { "@id": "scr:DISBURSEMENT_FAILED", "@type": "scr:SchemeApplicationStatus", "rdfs:label": "Disbursement Failed",  "rdfs:comment": "Disbursement attempt failed — invalid bank account, technical error, or lapsed claim." },
+    { "@id": "scr:CLOSED",              "@type": "scr:SchemeApplicationStatus", "rdfs:label": "Closed",               "rdfs:comment": "Application has been closed (scheme period ended, withdrawn, or administratively closed)." },
+
+    { "@id": "scr:ExternalEnrollmentIdType", "@type": "rdfs:Class", "rdfs:label": "External Enrollment ID Type", "rdfs:comment": "Type of identifier used to reference an existing government enrollment in UC2 (Status Enquiry)." },
+    { "@id": "scr:FARMER_REGISTRY_ID",         "@type": "scr:ExternalEnrollmentIdType", "rdfs:label": "Farmer Registry ID",          "rdfs:comment": "Unique identifier from the national or state Farmer Registry." },
+    { "@id": "scr:AADHAAR_MASKED",              "@type": "scr:ExternalEnrollmentIdType", "rdfs:label": "Aadhaar (Masked)",            "rdfs:comment": "Masked 12-digit Aadhaar number (last 4 digits visible) as the lookup key." },
+    { "@id": "scr:GOVERNMENT_APPLICATION_ID",   "@type": "scr:ExternalEnrollmentIdType", "rdfs:label": "Government Application ID",    "rdfs:comment": "Official application reference number issued by the government scheme portal." },
+    { "@id": "scr:MOBILE_LINKED_ID",            "@type": "scr:ExternalEnrollmentIdType", "rdfs:label": "Mobile-Linked ID",            "rdfs:comment": "Identifier linked to the applicant's registered mobile number in the scheme database." }
+  ]
+}

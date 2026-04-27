@@ -1,0 +1,41 @@
+{
+  "id": "https://schema.beckn.io/SchemeSettlement/v2.1",
+  "name": "Scheme Settlement",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "description": "A single government benefit disbursement event: date, actual amount disbursed, PFMS transaction reference, installment number, and discharge channel. New in v2.1.",
+  "domain": "agri-schemes",
+  "included_schemas": [
+    "https://schema.beckn.io/SchemeResource/v2.1",
+    "https://schema.beckn.io/SchemeOffer/v2.1",
+    "https://schema.beckn.io/SchemePerformance/v2.1",
+    "https://schema.beckn.io/SchemeContract/v2.1",
+    "https://schema.beckn.io/SchemeConsideration/v2.1",
+    "https://schema.beckn.io/SchemeSettlement/v2.1"
+  ],
+  "discovery_fields": [
+    "beckn:settlementAttributes.sse:disbursementMode"
+  ],
+  "indexable_paths": [
+    "beckn:id",
+    "beckn:settlementAttributes.sse:disbursementDate",
+    "beckn:settlementAttributes.sse:governmentTransactionReference",
+    "beckn:settlementAttributes.sse:disbursementMode",
+    "beckn:settlementAttributes.sse:disbursementInstallment"
+  ],
+  "filterable_paths": [
+    "beckn:settlementAttributes.sse:disbursementDate",
+    "beckn:settlementAttributes.sse:disbursementMode",
+    "beckn:settlementAttributes.sse:disbursementInstallment"
+  ],
+  "sortable_paths": [
+    "beckn:settlementAttributes.sse:disbursementDate",
+    "beckn:settlementAttributes.sse:disbursedAmount"
+  ],
+  "privacy_notes": [
+    "sse:governmentTransactionReference is a financial transaction ID — treat as sensitive financial record.",
+    "sse:disbursedAmount is a financial disbursement record — retain per applicable government financial record retention law.",
+    "Core Settlement fields may reference beneficiary bank account details — treat as sensitive PII per DPDP Act 2023."
+  ]
+}

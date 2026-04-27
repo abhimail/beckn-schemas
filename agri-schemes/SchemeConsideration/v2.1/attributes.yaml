@@ -1,0 +1,94 @@
+openapi: 3.1.1
+info:
+  title: SchemeConsideration — Agri Scheme Discovery
+  version: 2.1.0
+  description: |
+    Extension schema for `Consideration.considerationAttributes` in the Agriculture/Government
+    Scheme Discovery vertical. Models the government's committed benefit obligation per scheme
+    application: the agreed benefit type, amount, and period.
+
+    New in v2.1 — extracted from SchemeOrderAttributes.DisbursementRecord (v2).
+    Prefix: sco:
+
+x-jsonld-context: "./context.jsonld"
+x-status: under-review
+x-tags:
+  - agri-schemes
+  - scheme-discovery
+  - government-welfare
+  - considerationAttributes
+
+components:
+  schemas:
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # TOP-LEVEL: SchemeConsideration
+    # Attaches to: Consideration.considerationAttributes
+    # ─────────────────────────────────────────────────────────────────────────
+    SchemeConsideration:
+      type: object
+      x-beckn-container: considerationAttributes
+      x-status: under-review
+      x-tags:
+        - agri-schemes
+        - scheme-discovery
+        - government-welfare
+        - considerationAttributes
+      description: |
+        The government's committed benefit obligation per scheme application. Records the
+        agreed benefit type, amount, currency, and period at the time the application is
+        confirmed. Actual disbursement events are recorded in SchemeSettlement.
+        New in v2.1 — extracted from SchemeOrderAttributes.DisbursementRecord. Prefix: sco:
+      required: []
+      additionalProperties: false
+      properties:
+
+        "sco:benefitType":
+          type: string
+          description: |
+            The category of benefit committed under this consideration. Should mirror
+            the corresponding offer's sof:benefitQuantum.sof:benefitType.
+          enum:
+            - CASH_TRANSFER
+            - INSURANCE_COVER
+            - SUBSIDY_PERCENTAGE
+            - IN_KIND
+            - EMPLOYMENT_DAYS
+            - MIXED
+          x-jsonld-id: "sco:benefitType"
+
+        "sco:agreedAmount":
+          type: number
+          minimum: 0
+          description: |
+            The total committed monetary benefit amount per application (not per installment).
+            For PM-KISAN (₹6,000/year in 3 installments), this is 6000 — the full annual
+            obligation. Individual installment amounts are recorded in SchemeSettlement.
+          example: 6000
+          x-jsonld-id: "sco:agreedAmount"
+
+        "sco:agreedAmountCurrency":
+          type: string
+          description: ISO 4217 currency code for the agreed benefit amount.
+          example: "INR"
+          x-jsonld-id: "sco:agreedAmountCurrency"
+
+        "sco:benefitPeriod":
+          type: string
+          description: |
+            Duration over which the committed benefit obligation is calculated or valid.
+          enum:
+            - PER_EPISODE
+            - PER_ANNUM
+            - PER_SEASON
+            - LIFETIME
+            - ONE_TIME
+          x-jsonld-id: "sco:benefitPeriod"
+
+        "sco:benefitNote":
+          type: string
+          description: |
+            Human-readable note about the committed benefit — conditions, delivery timeline,
+            or installment structure.
+          example: "₹6,000 per year disbursed in 3 installments of ₹2,000 each directly to Aadhaar-linked bank account."
+          x-jsonld-id: "sco:benefitNote"

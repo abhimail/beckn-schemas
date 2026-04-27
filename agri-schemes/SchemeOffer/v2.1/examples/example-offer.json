@@ -1,0 +1,116 @@
+{
+  "context": {
+    "domain": "agri-schemes",
+    "action": "on_discover",
+    "bapId": "bap-kisaan-app-001",
+    "bppId": "bpp-agri-mah-001",
+    "transactionId": "txn-offer-discover-20260401-001",
+    "messageId": "msg-on-discover-offer-001",
+    "timestamp": "2026-04-01T09:30:00Z",
+    "version": "2.0.0",
+    "ttl": "PT30S",
+    "schemaContext": [
+      "https://schema.beckn.io/SchemeResource/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeOffer/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "catalogs": [
+      {
+        "beckn:id": "cat-nha-pmjay-001",
+        "beckn:descriptor": { "schema:name": "National Health Authority — PM-JAY Catalogue" },
+        "beckn:provider": {
+          "beckn:id": "bpp-nha-pmjay-001",
+          "beckn:descriptor": { "schema:name": "National Health Authority (NHA)" }
+        },
+        "beckn:resources": [
+          {
+            "beckn:id": "resource-pmjay-001",
+            "beckn:isAvailable": true,
+            "beckn:descriptor": {
+              "schema:name": "Ayushman Bharat PM-JAY",
+              "beckn:shortDesc": "Cashless health insurance of ₹5 lakh per family per year for BPL households."
+            },
+            "beckn:resourceAttributes": {
+              "sr:schemeType": "INSURANCE",
+              "sr:fundingModel": "CENTRALLY_SPONSORED",
+              "sr:targetBeneficiaryType": ["BELOW_POVERTY_LINE", "RURAL_HOUSEHOLD"],
+              "sr:sponsoringMinistry": "Ministry of Health and Family Welfare"
+            }
+          }
+        ],
+        "beckn:offers": [
+          {
+            "beckn:id": "offer-pmjay-mah-2026",
+            "beckn:resourceIds": ["resource-pmjay-001"],
+            "beckn:considerationIds": ["cons-pmjay-mah-2026"],
+            "beckn:offerAttributes": {
+              "sof:eligibilityCriteria": {
+                "sof:demographicCriteria": {
+                  "sof:gender": "ANY",
+                  "sof:casteCategory": ["SC", "ST", "OBC", "EWS", "GENERAL"]
+                },
+                "sof:economicCriteria": {
+                  "sof:rationCardType": ["BELOW_POVERTY_LINE", "ANTYODAYA", "PRIORITY_HOUSEHOLD"],
+                  "sof:isTaxpayer": "TAXPAYERS_EXCLUDED"
+                },
+                "sof:identityCriteria": {
+                  "sof:hasAadhaar": "REQUIRED",
+                  "sof:hasSECCRegistration": "REQUIRED"
+                },
+                "sof:residencyCriteria": {
+                  "sof:statesOfResidence": ["IN-MH"]
+                },
+                "sof:additionalCriteria": [
+                  {
+                    "sof:criterionCode": "CT0001TU",
+                    "sof:criterionName": "Has SECC Registration Number",
+                    "sof:criterionValue": "Yes"
+                  }
+                ]
+              },
+              "sof:benefitQuantum": {
+                "sof:benefitType": "INSURANCE_COVER",
+                "sof:monetaryAmount": { "currency": "INR", "value": 500000 },
+                "sof:benefitPeriod": "PER_ANNUM",
+                "sof:benefitNote": "On a family floater basis. Cover resets each policy year. Includes pre- and post-hospitalisation expenses."
+              },
+              "sof:applicationWindowNote": "Enrollment is open year-round for eligible families.",
+              "sof:eligibilityForm": {
+                "sof:formUrl": "https://schemefinder.example.in/eligibility/pmjay/formid/a23f2fdfbbb8ac4",
+                "sof:mimeType": "text/html",
+                "sof:required": false
+              }
+            }
+          },
+          {
+            "beckn:id": "offer-pmfby-mah-kharif-2026",
+            "beckn:resourceIds": ["resource-pmfby-mah-kharif-2026"],
+            "beckn:considerationIds": ["cons-pmfby-mah-kharif-2026"],
+            "beckn:offerAttributes": {
+              "sof:eligibilityCriteria": {
+                "sof:professionalCriteria": {
+                  "sof:occupationType": ["FARMER"],
+                  "sof:enterpriseCategory": ["AGRICULTURE", "HORTICULTURE"]
+                },
+                "sof:economicCriteria": {
+                  "sof:landOwnership": "REQUIRED"
+                },
+                "sof:residencyCriteria": {
+                  "sof:statesOfResidence": ["IN-MH"]
+                }
+              },
+              "sof:benefitQuantum": {
+                "sof:benefitType": "INSURANCE_COVER",
+                "sof:subsidyPaymentPercentage": 98,
+                "sof:benefitPeriod": "PER_SEASON",
+                "sof:benefitNote": "Farmer premium 2% of sum insured for Kharif crops. Balance premium borne by State and Central Governments."
+              },
+              "sof:applicationWindowNote": "Applications open 1 June – 31 July for Kharif 2026 season."
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

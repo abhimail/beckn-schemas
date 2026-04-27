@@ -1,0 +1,177 @@
+openapi: 3.1.1
+info:
+  title: SchemePerformance — Agri Scheme Discovery
+  version: 2.1.0
+  description: |
+    Extension schema for `Performance.performanceAttributes` in the Agriculture/Government
+    Scheme Discovery vertical. Models the execution mechanics of scheme benefit delivery:
+    delivery type, submission mode, document collection, agent assignment, and application
+    lifecycle status.
+
+    Migrated from SchemeFulfillmentAttributes (v2 fulfillmentAttributes). Prefix: spe:
+    Note: disbursementMode has moved to SchemeSettlement.settlementAttributes.
+
+x-jsonld-context: "./context.jsonld"
+x-status: under-review
+x-tags:
+  - agri-schemes
+  - scheme-discovery
+  - government-welfare
+  - performanceAttributes
+
+components:
+  schemas:
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # TOP-LEVEL: SchemePerformance
+    # Attaches to: Performance.performanceAttributes
+    # ─────────────────────────────────────────────────────────────────────────
+    SchemePerformance:
+      type: object
+      x-beckn-container: performanceAttributes
+      x-status: under-review
+      x-tags:
+        - agri-schemes
+        - scheme-discovery
+        - government-welfare
+        - performanceAttributes
+      description: |
+        Execution-layer metadata for a scheme benefit delivery Performance unit. Captures
+        the scheme delivery type, application submission mode, document collection channel,
+        assigned agent, and domain-specific application lifecycle status.
+        Migrated from SchemeFulfillmentAttributes (v2). Prefix: spe:
+      required: []
+      additionalProperties: false
+      properties:
+
+        "spe:schemeDeliveryType":
+          type: string
+          description: |
+            The primary mechanism by which the government or NGO scheme benefit reaches the
+            beneficiary. Complements core Performance.mode with domain-specific granularity.
+          enum:
+            - DBT_BANK_TRANSFER
+            - SUBSIDIZED_SERVICE
+            - EMPLOYMENT_PLACEMENT
+            - IN_KIND_COMMODITY
+            - INSURANCE_CLAIM_SETTLEMENT
+            - AGENT_ASSISTED_APPLICATION
+            - DIGITAL_ENTITLEMENT
+          x-jsonld-id: "spe:schemeDeliveryType"
+
+        "spe:submissionMode":
+          type: string
+          description: |
+            Channel through which the scheme application is submitted to the government authority.
+          enum:
+            - SELF_ONLINE
+            - SELF_OFFLINE
+            - AGENT_ASSISTED
+            - GOVERNMENT_OFFICE
+            - BANK_BRANCH
+            - COMMON_SERVICE_CENTER
+          x-jsonld-id: "spe:submissionMode"
+
+        "spe:documentCollectionMode":
+          type: string
+          description: |
+            How required application documents are collected from the beneficiary.
+          enum:
+            - PHYSICAL_DOORSTEP_COLLECTION
+            - PHYSICAL_OFFICE_SUBMISSION
+            - DIGITAL_UPLOAD
+            - DIGILOCKER_PULL
+            - NOT_REQUIRED
+          x-jsonld-id: "spe:documentCollectionMode"
+
+        "spe:applicationStatus":
+          type: string
+          description: |
+            Granular lifecycle status of the scheme application as tracked by the BPP/scheme
+            portal. Complements core Performance.status with domain-specific states covering
+            the full arc from booking through disbursement.
+          enum:
+            - BOOKING_CONFIRMED
+            - AGENT_ASSIGNED
+            - DOCUMENTS_REQUESTED
+            - DOCUMENTS_COLLECTED
+            - DOCUMENTS_INVALID
+            - APPLICATION_INITIATED
+            - APPLICATION_SUBMITTED
+            - UNDER_REVIEW
+            - APPROVED
+            - REJECTED
+            - DISBURSEMENT_INITIATED
+            - BENEFIT_DISBURSED
+            - CLAIM_SETTLED
+            - BENEFIT_FAILED
+          x-jsonld-id: "spe:applicationStatus"
+
+        "spe:statusNote":
+          type: string
+          description: |
+            Human-readable note elaborating on the current applicationStatus — reason for
+            rejection, next steps, or disbursement timeline.
+          example: "Documents are under review at block office. Expected completion: 5 working days."
+          x-jsonld-id: "spe:statusNote"
+
+        "spe:agentDetails":
+          $ref: "#/components/schemas/AgentDetails"
+          description: |
+            Details of the assigned field agent, if the scheme delivery involves
+            agent-assisted application (spe:schemeDeliveryType = AGENT_ASSISTED_APPLICATION).
+          x-jsonld-id: "spe:agentDetails"
+
+        "spe:applicationPortalReference":
+          type: string
+          description: |
+            BPP or scheme portal's internal reference number for the application on its
+            own system. Distinct from the official government application ID in
+            SchemeContract.scr:governmentApplicationId.
+          example: "PORTAL-REF-2026-MH-0042193"
+          x-jsonld-id: "spe:applicationPortalReference"
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # SUB-SCHEMA: AgentDetails
+    # ─────────────────────────────────────────────────────────────────────────
+    AgentDetails:
+      type: object
+      description: |
+        Details of the field agent assigned to assist the beneficiary with their
+        scheme application. Populated when spe:schemeDeliveryType = AGENT_ASSISTED_APPLICATION.
+      additionalProperties: false
+      properties:
+        "spe:agentName":
+          type: string
+          description: Full name of the assigned field agent.
+          example: "Suresh Kumar"
+          x-jsonld-id: "spe:agentName"
+
+        "spe:agentContact":
+          type: string
+          description: Mobile phone number of the assigned agent.
+          example: "+91-98765-43210"
+          x-jsonld-id: "spe:agentContact"
+
+        "spe:agentOrganization":
+          type: string
+          description: Name of the organisation the agent belongs to (CSC, NGO, bank, government body).
+          example: "Janaagraha CSC Partner Network"
+          x-jsonld-id: "spe:agentOrganization"
+
+        "spe:agentOrganizationCode":
+          type: string
+          description: Official code of the agent's organisation in the network registry.
+          example: "CSC-MH-NAG-0042"
+          x-jsonld-id: "spe:agentOrganizationCode"
+
+        "spe:agentType":
+          type: string
+          description: Category of agent.
+          enum:
+            - CSC_OPERATOR
+            - BANK_CORRESPONDENT
+            - NGO_FIELD_WORKER
+            - GOVERNMENT_OFFICER
+            - PRIVATE_AGENT
+          x-jsonld-id: "spe:agentType"

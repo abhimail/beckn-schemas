@@ -1,0 +1,115 @@
+{
+  "context": {
+    "domain": "agri-schemes",
+    "action": "on_discover",
+    "bapId": "bap-aarogyasetu-001",
+    "bppId": "bpp-nha-pmjay-001",
+    "bapUri": "https://aarogyasetu-app.example.in/beckn",
+    "bppUri": "https://pmjay.gov.in/beckn",
+    "transactionId": "txn-pmjay-discover-20260401-002",
+    "messageId": "msg-on-discover-pmjay-001",
+    "timestamp": "2026-04-01T10:00:00Z",
+    "version": "2.0.0",
+    "ttl": "PT30S",
+    "schemaContext": [
+      "https://schema.beckn.io/SchemeResource/v2.1/context.jsonld",
+      "https://schema.beckn.io/SchemeOffer/v2.1/context.jsonld"
+    ]
+  },
+  "message": {
+    "catalogs": [
+      {
+        "beckn:id": "cat-nha-pmjay-001",
+        "beckn:descriptor": {
+          "schema:name": "National Health Authority — PM-JAY Scheme Catalogue"
+        },
+        "beckn:provider": {
+          "beckn:id": "bpp-nha-pmjay-001",
+          "beckn:descriptor": {
+            "schema:name": "National Health Authority (NHA)"
+          }
+        },
+        "beckn:resources": [
+          {
+            "beckn:id": "resource-pmjay-001",
+            "beckn:isAvailable": true,
+            "beckn:descriptor": {
+              "schema:name": "Ayushman Bharat PM-JAY",
+              "beckn:shortDesc": "Cashless health insurance of ₹5 lakh per family per year for economically vulnerable households.",
+              "beckn:longDesc": "Pradhan Mantri Jan Arogya Yojana (PM-JAY) provides health cover of ₹5 lakh per family per year for secondary and tertiary care hospitalisation to the bottom 40% of India's population. Covers pre- and post-hospitalisation expenses. Cashless and paperless access at empanelled hospitals."
+            },
+            "beckn:resourceAttributes": {
+              "sr:officialSchemeCode": "PMJAY-2018",
+              "sr:schemeType": "INSURANCE",
+              "sr:fundingModel": "CENTRALLY_SPONSORED",
+              "sr:targetBeneficiaryType": ["BELOW_POVERTY_LINE", "RURAL_HOUSEHOLD", "INDIVIDUAL"],
+              "sr:sponsoringMinistry": "Ministry of Health and Family Welfare",
+              "sr:officialPortalUrl": "https://pmjay.gov.in",
+              "sr:applicationModes": [
+                "ONLINE_PORTAL",
+                "COMMON_SERVICE_CENTER",
+                "GOVERNMENT_OFFICE"
+              ],
+              "sr:availableLanguages": ["hi", "en", "mr", "ta", "te", "kn", "ml", "bn", "gu"],
+              "sr:requiredDocuments": [
+                {
+                  "sr:documentCode": "POI",
+                  "sr:documentName": "Proof of Identity",
+                  "sr:documentExample": "Aadhaar Card",
+                  "sr:mandatory": true
+                },
+                {
+                  "sr:documentCode": "SECC",
+                  "sr:documentName": "SECC Registration Number",
+                  "sr:documentExample": "Socio-Economic Caste Census enrollment number",
+                  "sr:mandatory": true
+                },
+                {
+                  "sr:documentCode": "RAT",
+                  "sr:documentName": "Ration Card",
+                  "sr:documentExample": "BPL, Antyodaya, or Priority Household ration card",
+                  "sr:mandatory": false
+                }
+              ],
+              "sr:schemeBenefits": [
+                {
+                  "sr:benefitCategory": "HEALTH_INSURANCE",
+                  "sr:benefitDescription": "Cashless secondary and tertiary care hospitalisation cover on a family floater basis. Includes pre-existing conditions from day one. Cover resets each policy year."
+                }
+              ]
+            }
+          }
+        ],
+        "beckn:offers": [
+          {
+            "beckn:id": "offer-pmjay-mah-2026",
+            "beckn:resourceIds": ["resource-pmjay-001"],
+            "beckn:considerationIds": ["cons-pmjay-mah-2026"],
+            "beckn:offerAttributes": {
+              "sof:eligibilityCriteria": {
+                "sof:economicCriteria": {
+                  "sof:rationCardType": ["BELOW_POVERTY_LINE", "ANTYODAYA", "PRIORITY_HOUSEHOLD"],
+                  "sof:isTaxpayer": "TAXPAYERS_EXCLUDED"
+                },
+                "sof:identityCriteria": {
+                  "sof:hasAadhaar": "REQUIRED",
+                  "sof:hasSECCRegistration": "REQUIRED"
+                },
+                "sof:residencyCriteria": {
+                  "sof:statesOfResidence": ["IN-MH"]
+                }
+              },
+              "sof:benefitQuantum": {
+                "sof:benefitType": "INSURANCE_COVER",
+                "sof:monetaryAmount": { "currency": "INR", "value": 500000 },
+                "sof:benefitPeriod": "PER_ANNUM",
+                "sof:benefitNote": "On a family floater basis. Cover resets each policy year."
+              },
+              "sof:applicationWindowNote": "Enrollment is open year-round for eligible families."
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

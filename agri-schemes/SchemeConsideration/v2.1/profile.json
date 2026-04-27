@@ -1,0 +1,38 @@
+{
+  "id": "https://schema.beckn.io/SchemeConsideration/v2.1",
+  "name": "Scheme Consideration",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "description": "The government's committed benefit obligation per scheme application: agreed benefit type, amount, currency, and period. New in v2.1 — extracted from SchemeOrderAttributes.DisbursementRecord.",
+  "domain": "agri-schemes",
+  "included_schemas": [
+    "https://schema.beckn.io/SchemeResource/v2.1",
+    "https://schema.beckn.io/SchemeOffer/v2.1",
+    "https://schema.beckn.io/SchemePerformance/v2.1",
+    "https://schema.beckn.io/SchemeContract/v2.1",
+    "https://schema.beckn.io/SchemeConsideration/v2.1",
+    "https://schema.beckn.io/SchemeSettlement/v2.1"
+  ],
+  "discovery_fields": [
+    "beckn:considerationAttributes.sco:benefitType"
+  ],
+  "indexable_paths": [
+    "beckn:id",
+    "beckn:considerationAttributes.sco:benefitType",
+    "beckn:considerationAttributes.sco:agreedAmount",
+    "beckn:considerationAttributes.sco:agreedAmountCurrency",
+    "beckn:considerationAttributes.sco:benefitPeriod"
+  ],
+  "filterable_paths": [
+    "beckn:considerationAttributes.sco:benefitType",
+    "beckn:considerationAttributes.sco:benefitPeriod"
+  ],
+  "sortable_paths": [
+    "beckn:considerationAttributes.sco:agreedAmount"
+  ],
+  "privacy_notes": [
+    "sco:agreedAmount is the committed government benefit amount — not applicant PII but financial record.",
+    "Core Consideration fields (beckn:amount) may contain monetary values — treat per applicable financial data retention requirements."
+  ]
+}

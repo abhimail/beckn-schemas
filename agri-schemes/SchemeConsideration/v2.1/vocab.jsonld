@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "rdfs":  "http://www.w3.org/2000/01/rdf-schema#",
+    "sco":   "https://schema.beckn.io/SchemeConsideration#"
+  },
+  "@graph": [
+    { "@id": "sco:SchemeBenefitType", "@type": "rdfs:Class", "rdfs:label": "Scheme Benefit Type", "rdfs:comment": "Category of benefit committed to the beneficiary under the scheme consideration." },
+    { "@id": "sco:CASH_TRANSFER",      "@type": "sco:SchemeBenefitType", "rdfs:label": "Cash Transfer",      "rdfs:comment": "Direct cash transfer to beneficiary's bank account." },
+    { "@id": "sco:INSURANCE_COVER",    "@type": "sco:SchemeBenefitType", "rdfs:label": "Insurance Cover",    "rdfs:comment": "Insurance coverage against a defined risk event." },
+    { "@id": "sco:SUBSIDY_PERCENTAGE", "@type": "sco:SchemeBenefitType", "rdfs:label": "Subsidy Percentage", "rdfs:comment": "Percentage subsidy on cost or premium." },
+    { "@id": "sco:IN_KIND",            "@type": "sco:SchemeBenefitType", "rdfs:label": "In-Kind",            "rdfs:comment": "Physical goods or services provided directly." },
+    { "@id": "sco:EMPLOYMENT_DAYS",    "@type": "sco:SchemeBenefitType", "rdfs:label": "Employment Days",    "rdfs:comment": "Guaranteed days of paid employment." },
+    { "@id": "sco:MIXED",              "@type": "sco:SchemeBenefitType", "rdfs:label": "Mixed",              "rdfs:comment": "Multiple benefit types provided together." },
+
+    { "@id": "sco:SchemeBenefitPeriod", "@type": "rdfs:Class", "rdfs:label": "Scheme Benefit Period", "rdfs:comment": "Duration over which the committed benefit is valid or calculated." },
+    { "@id": "sco:PER_EPISODE", "@type": "sco:SchemeBenefitPeriod", "rdfs:label": "Per Episode", "rdfs:comment": "Benefit applies per qualifying event." },
+    { "@id": "sco:PER_ANNUM",   "@type": "sco:SchemeBenefitPeriod", "rdfs:label": "Per Annum",   "rdfs:comment": "Annual benefit obligation." },
+    { "@id": "sco:PER_SEASON",  "@type": "sco:SchemeBenefitPeriod", "rdfs:label": "Per Season",  "rdfs:comment": "Per agricultural season (Kharif/Rabi)." },
+    { "@id": "sco:LIFETIME",    "@type": "sco:SchemeBenefitPeriod", "rdfs:label": "Lifetime",    "rdfs:comment": "One-time lifetime entitlement." },
+    { "@id": "sco:ONE_TIME",    "@type": "sco:SchemeBenefitPeriod", "rdfs:label": "One-Time",    "rdfs:comment": "Single disbursement, no recurrence." }
+  ]
+}
