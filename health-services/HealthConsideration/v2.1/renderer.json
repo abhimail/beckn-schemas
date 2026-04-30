@@ -1,0 +1,8 @@
+{
+  "schema": "HealthConsideration",
+  "version": "2.1.0",
+  "card_template": "{{netAmount}} {{currency}} | {{payerArchetype}}{{#if entitlementRef}} | Entitlement{{/if}}",
+  "detail_template": "Amount: {{netAmount}} {{currency}}\nPayer: {{payerArchetype}}\nPayment: {{selectedPaymentMethod}}\n{{#if entitlementRef}}Entitlement: {{entitlementRef}}{{/if}}{{#if perPatientAmount}}\nPer Patient: {{perPatientAmount}} {{currency}}{{/if}}",
+  "html": "<div class=\"health-consideration-card\"><span class=\"price\">{{netAmount}}<span class=\"currency\">{{currency}}</span></span><span class=\"payer badge\">{{payerArchetype}}</span>{{#if entitlementRef}}<span class=\"badge entitlement\">Entitlement</span>{{/if}}</div>",
+  "html_detail": "<div class=\"health-consideration-detail\"><h3>Pricing &amp; Payment</h3><dl><dt>Price per Unit</dt><dd>{{pricePerUnit}} {{currency}}</dd><dt>Gross Total</dt><dd>{{totalAmount}} {{currency}}</dd>{{#if discountRef}}<dt>Discount</dt><dd>{{discountRef}}</dd>{{/if}}<dt>Net Payable</dt><dd><strong>{{netAmount}} {{currency}}</strong></dd><dt>Payer</dt><dd>{{payerArchetype}}</dd><dt>Payment Method</dt><dd>{{selectedPaymentMethod}}</dd>{{#if entitlementRef}}<dt>Entitlement Ref</dt><dd>{{entitlementRef}}</dd>{{/if}}{{#if perPatientAmount}}<dt>Per Patient</dt><dd>{{perPatientAmount}} {{currency}}</dd>{{/if}}{{#if campCashCollectionRef}}<dt>Camp Cash Ledger</dt><dd>{{campCashCollectionRef}}</dd>{{/if}}</dl></div>"
+}

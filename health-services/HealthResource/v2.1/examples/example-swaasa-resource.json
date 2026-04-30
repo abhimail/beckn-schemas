@@ -1,0 +1,58 @@
+{
+  "_comment": "Swaasa AI cough analysis resource (DIAGNOSTIC_ANALYTICS)",
+  "context": {
+    "action": "on_discover",
+    "schemaContext": ["https://schema.beckn.io/HealthResource/v2.1/context.jsonld"]
+  },
+  "message": {
+    "catalogs": [{
+      "beckn:id": "catalog-swaasa-001",
+      "beckn:descriptor": {"schema:name": "Swaasa Health Services Catalog"},
+      "beckn:provider": {"beckn:id": "provider-np-swaasa-001"},
+      "beckn:resources": [{
+        "@type": "beckn:Resource",
+        "beckn:id": "res-swaasa-cough-v2",
+        "beckn:resourceAttributes": {
+          "@type": "hr:HealthResource",
+          "healthServiceType": "DIAGNOSTIC_ANALYTICS",
+          "serviceUnit": "ANALYSIS",
+          "coverageArea": ["IN-KA", "IN-TN", "IN-AP"],
+          "capacityPerDay": 500,
+          "capacityPerWeek": 3000,
+          "minimumBookingAdvanceHours": 0,
+          "languagesSupported": ["en", "hi", "kn", "ta", "te"],
+          "clinicalValidation": {
+            "accreditationBody": "CDSCO",
+            "registrationNumber": "MD-2024-AI-DIAG-00123",
+            "specialty": "AI-Assisted Pulmonary Diagnostics",
+            "validUntil": "2027-12-31"
+          },
+          "servicePrerequisites": [
+            {
+              "prerequisiteType": "DEVICE",
+              "description": "Smartphone with microphone, minimum 8kHz sampling rate",
+              "mandatory": true
+            },
+            {
+              "prerequisiteType": "SAMPLE",
+              "description": "3 voluntary cough recordings of 5–10 seconds each in a quiet environment",
+              "mandatory": true
+            },
+            {
+              "prerequisiteType": "DOCUMENT",
+              "description": "Signed patient consent (HealthConsent/v1)",
+              "mandatory": true
+            }
+          ],
+          "analyticsEngineSpecs": {
+            "modelName": "Swaasa-CoughAI",
+            "modelVersion": "2.4.1",
+            "confidenceThreshold": 0.75,
+            "supportedInputFormats": ["audio/wav", "audio/mp4", "audio/mpeg"],
+            "regulatoryApproval": "CDSCO-MD-2024-AI-DIAG-00123"
+          }
+        }
+      }]
+    }]
+  }
+}

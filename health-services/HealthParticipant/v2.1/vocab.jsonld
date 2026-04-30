@@ -1,0 +1,22 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "hpa": "https://schema.beckn.io/HealthParticipant#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {"@id": "hpa:ParticipantRole", "@type": "rdfs:Class", "rdfs:label": "ParticipantRole"},
+    {"@id": "hpa:PATIENT",              "@type": "hpa:ParticipantRole", "rdfs:label": "Patient — individual receiving the service"},
+    {"@id": "hpa:CARE_GIVER",           "@type": "hpa:ParticipantRole", "rdfs:label": "Care Giver — guardian or carer acting for the patient"},
+    {"@id": "hpa:SPECIALIST",           "@type": "hpa:ParticipantRole", "rdfs:label": "Specialist — licensed health practitioner delivering the service"},
+    {"@id": "hpa:FIELD_WORKER",         "@type": "hpa:ParticipantRole", "rdfs:label": "Field Worker — ASHA or community health worker facilitating engagement"},
+    {"@id": "hpa:PAYER",                "@type": "hpa:ParticipantRole", "rdfs:label": "Payer — entity bearing the cost"},
+    {"@id": "hpa:IMPLEMENTING_AGENCY",  "@type": "hpa:ParticipantRole", "rdfs:label": "Implementing Agency — organisation that procured the capacity"},
+
+    {"@id": "hpa:Gender", "@type": "rdfs:Class", "rdfs:label": "Gender"},
+    {"@id": "hpa:MALE",              "@type": "hpa:Gender", "rdfs:label": "Male"},
+    {"@id": "hpa:FEMALE",            "@type": "hpa:Gender", "rdfs:label": "Female"},
+    {"@id": "hpa:OTHER",             "@type": "hpa:Gender", "rdfs:label": "Other"},
+    {"@id": "hpa:PREFER_NOT_TO_SAY", "@type": "hpa:Gender", "rdfs:label": "Prefer not to say"}
+  ]
+}

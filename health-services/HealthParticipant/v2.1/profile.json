@@ -1,0 +1,21 @@
+{
+  "id": "https://schema.beckn.io/HealthParticipant/v2.1",
+  "name": "HealthParticipant",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["HealthParticipant"],
+  "discovery_fields": ["participantRole"],
+  "indexable_paths": ["participantRole", "abhaId"],
+  "filterable_paths": ["participantRole", "gender", "primaryLanguage"],
+  "sortable_paths": [],
+  "list_fields": ["participantRole"],
+  "detail_fields": ["participantRole", "abhaId", "gender", "primaryLanguage", "specialistAccreditation", "payerDetails"],
+  "privacy_notes": [
+    "abhaId is a national health identifier — treat as sensitive PII, never index or expose in list views",
+    "dateOfBirth is PII — restrict to contract parties",
+    "gender is PII — restrict to contract parties",
+    "specialistAccreditation.registrationNumber is professional PII",
+    "payerDetails.payerId may identify insurance or government scheme membership — restrict to contract parties"
+  ]
+}

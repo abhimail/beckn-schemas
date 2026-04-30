@@ -1,0 +1,27 @@
+{
+  "id": "https://schema.beckn.io/HealthContract/v2.1",
+  "name": "HealthContract",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["HealthContract"],
+  "discovery_fields": ["healthServiceType", "bookingChannel"],
+  "indexable_paths": ["healthServiceType", "bookingChannel", "facilitatorId", "campId"],
+  "filterable_paths": ["healthServiceType", "bookingChannel", "facilitatorId", "campId"],
+  "sortable_paths": ["reminderSentAt", "consent.consentedAt"],
+  "list_fields": ["healthServiceType", "bookingChannel", "facilitatorId"],
+  "detail_fields": [
+    "healthServiceType", "bookingChannel", "clientNotes", "cancellationReason",
+    "facilitatorId", "reminderSentAt", "campId",
+    "consent.consentId", "consent.consentDocRef", "consent.consentStandard",
+    "consent.consentedAt", "consent.consentedBy", "consent.purposeOfCollection",
+    "consent.dataRetentionDays", "consent.withdrawnAt"
+  ],
+  "privacy_notes": [
+    "clientNotes may contain patient-identifiable information — restrict to contract parties",
+    "facilitatorId identifies a field worker — treat as PII",
+    "consent.consentDocRef links to a signed consent artifact — restrict to contract parties and auditors",
+    "consent.patientParticipantId is a patient identifier — treat as PHI",
+    "consent.consentedBy may identify a field worker — treat as PII"
+  ]
+}

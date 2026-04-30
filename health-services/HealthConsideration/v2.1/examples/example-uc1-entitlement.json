@@ -1,0 +1,26 @@
+{
+  "_comment": "UC1 single-patient engagement funded by entitlement drawdown",
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-uc1-001",
+      "beckn:consideration": [{
+        "@type": "beckn:Consideration",
+        "beckn:id": "cons-uc1-001",
+        "beckn:considerationAttributes": {
+          "@type": "hcn:HealthConsideration",
+          "pricePerUnit": 250,
+          "currency": "INR",
+          "totalAmount": 250,
+          "netAmount": 250,
+          "payerArchetype": "GOVERNMENT",
+          "entitlementRef": "ent-550e8400-e29b-41d4-a716-446655440000"
+        }
+      }]
+    }
+  }
+}

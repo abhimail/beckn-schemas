@@ -1,0 +1,47 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "he": "https://schema.beckn.io/HealthEntitlement#",
+    "se": "https://schema.beckn.io/ServiceEntitlement#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "HealthEntitlement": "he:HealthEntitlement",
+    "HealthServiceType": "he:HealthServiceType",
+    "CampStatus": "he:CampStatus",
+
+    "ServiceEntitlement": "se:ServiceEntitlement",
+    "EntitlementState": "se:EntitlementState",
+
+    "healthServiceType": {"@id": "he:healthServiceType"},
+    "campCommitment": {"@id": "he:campCommitment"},
+    "campId": {"@id": "he:campId"},
+    "campDate": {"@id": "he:campDate"},
+    "campLocation": {"@id": "he:campLocation"},
+    "committedPatients": {"@id": "he:committedPatients"},
+    "confirmedPatients": {"@id": "he:confirmedPatients"},
+    "campStatus": {"@id": "he:campStatus"},
+
+    "entitlementId": {"@id": "se:entitlementId"},
+    "issuerId": {"@id": "se:issuerId"},
+    "holderId": {"@id": "se:holderId"},
+    "serviceScope": {"@id": "se:serviceScope", "@container": "@list"},
+    "totalCapacity": {"@id": "se:totalCapacity"},
+    "usedCapacity": {"@id": "se:usedCapacity"},
+    "remainingCapacity": {"@id": "se:remainingCapacity"},
+    "validFrom": {"@id": "se:validFrom"},
+    "validUntil": {"@id": "se:validUntil"},
+    "geographyScope": {"@id": "se:geographyScope", "@container": "@list"},
+    "counterpartyScope": {"@id": "se:counterpartyScope", "@container": "@list"},
+    "redemptionRules": {"@id": "se:redemptionRules"},
+    "minPerRedemption": {"@id": "se:minPerRedemption"},
+    "maxPerRedemption": {"@id": "se:maxPerRedemption"},
+    "cooldownHours": {"@id": "se:cooldownHours"},
+    "refundRules": {"@id": "se:refundRules"},
+    "forfeitureRules": {"@id": "se:forfeitureRules"},
+    "lockedTermsSnapshot": {"@id": "se:lockedTermsSnapshot"},
+    "grievanceRef": {"@id": "se:grievanceRef"},
+    "state": {"@id": "se:state"}
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "hcn": "https://schema.beckn.io/HealthConsideration#",
+    "scn": "https://schema.beckn.io/ServiceConsideration#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "HealthConsideration": "hcn:HealthConsideration",
+
+    "ServiceConsideration": "scn:ServiceConsideration",
+    "PaymentMethod": "scn:PaymentMethod",
+    "PayerArchetype": "scn:PayerArchetype",
+
+    "perPatientAmount": {"@id": "hcn:perPatientAmount"},
+    "campCashCollectionRef": {"@id": "hcn:campCashCollectionRef"},
+
+    "pricePerUnit": {"@id": "scn:pricePerUnit"},
+    "currency": {"@id": "scn:currency"},
+    "totalAmount": {"@id": "scn:totalAmount"},
+    "discountRef": {"@id": "scn:discountRef"},
+    "netAmount": {"@id": "scn:netAmount"},
+    "paymentMethodsAccepted": {"@id": "scn:paymentMethodsAccepted", "@container": "@list"},
+    "selectedPaymentMethod": {"@id": "scn:selectedPaymentMethod"},
+    "transactionRef": {"@id": "scn:transactionRef"},
+    "payerArchetype": {"@id": "scn:payerArchetype"},
+    "paymentSchedule": {"@id": "scn:paymentSchedule", "@container": "@list"},
+    "milestoneId": {"@id": "scn:milestoneId"},
+    "dueDate": {"@id": "scn:dueDate"},
+    "paid": {"@id": "scn:paid"},
+    "paidAt": {"@id": "scn:paidAt"},
+    "paymentAuthorisation": {"@id": "scn:paymentAuthorisation"},
+    "authCode": {"@id": "scn:authCode"},
+    "authProvider": {"@id": "scn:authProvider"},
+    "authTimestamp": {"@id": "scn:authTimestamp"},
+    "authAmount": {"@id": "scn:authAmount"},
+    "entitlementRef": {"@id": "scn:entitlementRef"}
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "hct": "https://schema.beckn.io/HealthContract#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {"@id": "hct:HealthServiceType", "@type": "rdfs:Class", "rdfs:label": "HealthServiceType",
+     "rdfs:comment": "Discriminator for the category of health service being contracted"},
+    {"@id": "hct:DIAGNOSTIC_ANALYTICS",  "@type": "hct:HealthServiceType", "rdfs:label": "Diagnostic Analytics — AI-driven analysis of patient samples or media"},
+    {"@id": "hct:TELECONSULTATION",       "@type": "hct:HealthServiceType", "rdfs:label": "Teleconsultation — remote consultation with a licensed practitioner"},
+    {"@id": "hct:PHYSICAL_CONSULTATION",  "@type": "hct:HealthServiceType", "rdfs:label": "Physical Consultation — in-person consultation (direct or referred)"},
+    {"@id": "hct:RADIOLOGY",              "@type": "hct:HealthServiceType", "rdfs:label": "Radiology — imaging and radiology report interpretation"},
+    {"@id": "hct:LAB_TEST",               "@type": "hct:HealthServiceType", "rdfs:label": "Lab Test — pathology or laboratory diagnostic test"},
+
+    {"@id": "hct:CollectionPurpose", "@type": "rdfs:Class", "rdfs:label": "CollectionPurpose",
+     "rdfs:comment": "Purposes for which patient data and samples may be collected and used"},
+    {"@id": "hct:DIAGNOSTIC",               "@type": "hct:CollectionPurpose", "rdfs:label": "Diagnostic — primary purpose of generating a clinical report for the patient"},
+    {"@id": "hct:QUALITY_ASSURANCE",        "@type": "hct:CollectionPurpose", "rdfs:label": "Quality Assurance — internal validation of model or service performance"},
+    {"@id": "hct:ANONYMISED_RESEARCH",      "@type": "hct:CollectionPurpose", "rdfs:label": "Anonymised Research — use of de-identified data for research purposes"},
+    {"@id": "hct:PUBLIC_HEALTH_REPORTING",  "@type": "hct:CollectionPurpose", "rdfs:label": "Public Health Reporting — aggregate reporting to public health bodies"},
+
+    {"@id": "hct:ArtifactType", "@type": "rdfs:Class", "rdfs:label": "ArtifactType", "rdfs:comment": "Types of clinical input artifacts submitted by the patient or field worker"},
+    {"@id": "hct:AUDIO_SAMPLE",    "@type": "hct:ArtifactType", "rdfs:label": "Audio Sample — recorded audio (e.g. cough recording)"},
+    {"@id": "hct:IMAGING_SCAN",    "@type": "hct:ArtifactType", "rdfs:label": "Imaging Scan — radiological or photographic image"},
+    {"@id": "hct:LAB_REPORT",      "@type": "hct:ArtifactType", "rdfs:label": "Lab Report — prior laboratory test result document"},
+    {"@id": "hct:PRESCRIPTION",    "@type": "hct:ArtifactType", "rdfs:label": "Prescription — prior prescription or medication record"},
+    {"@id": "hct:REFERRAL",        "@type": "hct:ArtifactType", "rdfs:label": "Referral — referral letter or document from a treating or referring physician"},
+    {"@id": "hct:PHOTO",           "@type": "hct:ArtifactType", "rdfs:label": "Photo — clinical photograph"},
+    {"@id": "hct:OTHER",           "@type": "hct:ArtifactType", "rdfs:label": "Other — any other clinical input artifact"}
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "https://schema.beckn.io/HealthSettlement/v2.1",
+  "name": "HealthSettlement",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["HealthSettlement"],
+  "discovery_fields": [],
+  "indexable_paths": ["receiptRef", "finalSettlementRef", "entitlementRef", "disputeRef"],
+  "filterable_paths": ["paymentReceivedByProvider", "adjustmentType", "entitlementRef"],
+  "sortable_paths": ["paymentRecordedAt", "adjustedAt"],
+  "list_fields": ["paymentReceivedByProvider", "adjustmentType", "entitlementRef"],
+  "detail_fields": ["paymentReceivedByProvider", "paymentRecordedAt", "receiptRef", "paymentNotes", "adjustmentType", "adjustmentAmount", "adjustmentReason", "adjustedAt", "partialCompletionFraction", "finalSettlementRef", "disputeRef", "entitlementRef", "entitlementCreditBack", "campLedgerRef"],
+  "privacy_notes": [
+    "receiptRef and finalSettlementRef are financial records — restrict to contract parties",
+    "adjustmentAmount reveals financial terms — restrict to contract parties and NFO",
+    "entitlementRef links to procurement contract — restrict to contract parties",
+    "campLedgerRef links to field cash records — restrict to contract parties",
+    "disputeRef links to grievance records — restrict to contract parties and NFO"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "hr": "https://schema.beckn.io/HealthResource#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {"@id": "hr:ClinicalDeliveryUnit", "@type": "rdfs:Class", "rdfs:label": "ClinicalDeliveryUnit",
+     "rdfs:comment": "Clinical unit of delivery for health services — distinct from the billing serviceUnit (billing units live in ServiceResource)"},
+    {"@id": "hr:ANALYSIS",     "@type": "hr:ClinicalDeliveryUnit", "rdfs:label": "Analysis — AI or automated analytical output"},
+    {"@id": "hr:CONSULTATION", "@type": "hr:ClinicalDeliveryUnit", "rdfs:label": "Consultation — practitioner consultation"},
+    {"@id": "hr:SCREENING",    "@type": "hr:ClinicalDeliveryUnit", "rdfs:label": "Screening — systematic multi-patient screening"},
+    {"@id": "hr:REPORT",       "@type": "hr:ClinicalDeliveryUnit", "rdfs:label": "Report — interpreted report delivery"},
+    {"@id": "hr:SESSION",      "@type": "hr:ClinicalDeliveryUnit", "rdfs:label": "Session — time-bounded service session"},
+    {"@id": "hr:TEST",         "@type": "hr:ClinicalDeliveryUnit", "rdfs:label": "Test — laboratory or pathology test"},
+
+    {"@id": "hr:PrerequisiteType", "@type": "rdfs:Class", "rdfs:label": "PrerequisiteType"},
+    {"@id": "hr:DEVICE",            "@type": "hr:PrerequisiteType", "rdfs:label": "Device — hardware or connectivity requirement"},
+    {"@id": "hr:DOCUMENT",          "@type": "hr:PrerequisiteType", "rdfs:label": "Document — document to bring or upload"},
+    {"@id": "hr:PHYSICAL_CONDITION","@type": "hr:PrerequisiteType", "rdfs:label": "Physical Condition — patient state required (e.g. fasting)"},
+    {"@id": "hr:SAMPLE",            "@type": "hr:PrerequisiteType", "rdfs:label": "Sample — biological sample to provide"},
+    {"@id": "hr:REFERRAL",          "@type": "hr:PrerequisiteType", "rdfs:label": "Referral — referral letter or prior authorisation"},
+    {"@id": "hr:OTHER",             "@type": "hr:PrerequisiteType", "rdfs:label": "Other"}
+  ]
+}

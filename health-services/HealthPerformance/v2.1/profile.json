@@ -1,0 +1,22 @@
+{
+  "id": "https://schema.beckn.io/HealthPerformance/v2.1",
+  "name": "HealthPerformance",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["HealthPerformance"],
+  "discovery_fields": [],
+  "indexable_paths": ["healthServiceType", "followupRecommendationCode"],
+  "filterable_paths": ["healthServiceType", "providerConfirmedCompletion", "clientConfirmedCompletion", "followupRecommendationCode"],
+  "sortable_paths": ["confirmedAppointmentTime", "followupDate"],
+  "list_fields": ["healthServiceType", "confirmedAppointmentTime", "providerConfirmedCompletion", "followupRecommendationCode"],
+  "detail_fields": ["healthServiceType", "appointmentWindowStart", "appointmentWindowEnd", "confirmedAppointmentTime", "serviceLocation", "providerConfirmedCompletion", "clientConfirmedCompletion", "serviceNotes", "followupRecommendationCode", "followupDate", "provisionalDiagnosis", "artifactsGenerated", "clinicalInterpretation"],
+  "privacy_notes": [
+    "serviceNotes contains clinical notes — sensitive health data, restrict to contract parties",
+    "provisionalDiagnosis is health data — restrict to contract parties",
+    "clinicalInterpretation contains diagnostic outputs — restrict to contract parties",
+    "artifactsGenerated are references to clinical documents — restrict to contract parties",
+    "deletionAttestation is a compliance record — restrict to contract parties and NFO",
+    "serviceLocation may identify patient visit patterns — treat as PII-adjacent"
+  ]
+}

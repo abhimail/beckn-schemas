@@ -1,0 +1,47 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "hpe": "https://schema.beckn.io/HealthPerformance#",
+    "spm": "https://schema.beckn.io/ServicePerformance#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "HealthPerformance": "hpe:HealthPerformance",
+    "HealthServiceType": "hpe:HealthServiceType",
+    "FollowupRecommendationCode": "hpe:FollowupRecommendationCode",
+
+    "ServicePerformance": "spm:ServicePerformance",
+    "ServiceLocation": "spm:ServiceLocation",
+
+    "healthServiceType": {"@id": "hpe:healthServiceType"},
+    "followupRecommendationCode": {"@id": "hpe:followupRecommendationCode"},
+    "provisionalDiagnosis": {"@id": "hpe:provisionalDiagnosis"},
+    "artifactsGenerated": {"@id": "hpe:artifactsGenerated", "@container": "@list"},
+    "deletionAttestation": {"@id": "hpe:deletionAttestation"},
+    "attestedAt": {"@id": "hpe:attestedAt"},
+    "attestedBy": {"@id": "hpe:attestedBy"},
+    "attestationDocRef": {"@id": "hpe:attestationDocRef"},
+    "clinicalInterpretation": {"@id": "hpe:clinicalInterpretation"},
+    "confidence": {"@id": "hpe:confidence"},
+    "flaggedFindings": {"@id": "hpe:flaggedFindings", "@container": "@list"},
+    "modelOutputRef": {"@id": "hpe:modelOutputRef"},
+    "reviewedBySpecialist": {"@id": "hpe:reviewedBySpecialist"},
+    "specialistReviewAt": {"@id": "hpe:specialistReviewAt"},
+
+    "appointmentWindowStart": {"@id": "spm:appointmentWindowStart"},
+    "appointmentWindowEnd": {"@id": "spm:appointmentWindowEnd"},
+    "confirmedAppointmentTime": {"@id": "spm:confirmedAppointmentTime"},
+    "serviceLocation": {"@id": "spm:serviceLocation"},
+    "providerConfirmedCompletion": {"@id": "spm:providerConfirmedCompletion"},
+    "clientConfirmedCompletion": {"@id": "spm:clientConfirmedCompletion"},
+    "serviceNotes": {"@id": "spm:serviceNotes"},
+    "followUpRequired": {"@id": "spm:followUpRequired"},
+    "followUpDate": {"@id": "spm:followUpDate"},
+    "address": {"@id": "spm:address"},
+    "pincode": {"@id": "spm:pincode"},
+    "locationLandmark": {"@id": "spm:locationLandmark"},
+    "geo": {"@id": "spm:geo"},
+    "coordinates": {"@id": "spm:coordinates", "@container": "@list"}
+  }
+}

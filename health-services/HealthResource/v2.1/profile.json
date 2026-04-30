@@ -1,0 +1,18 @@
+{
+  "id": "https://schema.beckn.io/HealthResource/v2.1",
+  "name": "HealthResource",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["HealthResource"],
+  "discovery_fields": ["healthServiceType", "serviceUnit", "coverageArea", "languagesSupported"],
+  "indexable_paths": ["healthServiceType", "serviceUnit", "coverageArea"],
+  "filterable_paths": ["healthServiceType", "serviceUnit", "coverageArea", "languagesSupported", "capacityPerDay"],
+  "sortable_paths": ["capacityPerDay", "capacityPerWeek", "minimumBookingAdvanceHours"],
+  "list_fields": ["healthServiceType", "serviceUnit", "coverageArea", "capacityPerDay", "languagesSupported"],
+  "detail_fields": ["healthServiceType", "serviceUnit", "coverageArea", "capacityPerDay", "capacityPerWeek", "availabilitySchedule", "minimumBookingAdvanceHours", "languagesSupported", "clinicalValidation", "servicePrerequisites", "analyticsEngineSpecs"],
+  "privacy_notes": [
+    "clinicalValidation.registrationNumber is professional PII — do not expose in discovery responses",
+    "analyticsEngineSpecs.regulatoryApproval may be commercially sensitive"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "hpa": "https://schema.beckn.io/HealthParticipant#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "HealthParticipant": "hpa:HealthParticipant",
+    "ParticipantRole": "hpa:ParticipantRole",
+    "Gender": "hpa:Gender",
+
+    "participantRole": {"@id": "hpa:participantRole"},
+    "abhaId": {"@id": "hpa:abhaId"},
+    "dateOfBirth": {"@id": "hpa:dateOfBirth"},
+    "gender": {"@id": "hpa:gender"},
+    "primaryLanguage": {"@id": "hpa:primaryLanguage"},
+    "specialistAccreditation": {"@id": "hpa:specialistAccreditation"},
+    "accreditationBody": {"@id": "hpa:accreditationBody"},
+    "registrationNumber": {"@id": "hpa:registrationNumber"},
+    "specialty": {"@id": "hpa:specialty"},
+    "validUntil": {"@id": "hpa:validUntil"},
+    "payerDetails": {"@id": "hpa:payerDetails"},
+    "payerType": {"@id": "hpa:payerType"},
+    "payerName": {"@id": "hpa:payerName"},
+    "payerId": {"@id": "hpa:payerId"},
+    "schemeId": {"@id": "hpa:schemeId"}
+  }
+}

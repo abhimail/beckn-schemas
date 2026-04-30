@@ -1,0 +1,14 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "he": "https://schema.beckn.io/HealthEntitlement#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {"@id": "he:CampStatus", "@type": "rdfs:Class", "rdfs:label": "CampStatus"},
+    {"@id": "he:SCHEDULED",  "@type": "he:CampStatus", "rdfs:label": "Scheduled"},
+    {"@id": "he:ACTIVE",     "@type": "he:CampStatus", "rdfs:label": "Active — camp in progress"},
+    {"@id": "he:COMPLETED",  "@type": "he:CampStatus", "rdfs:label": "Completed — camp concluded"},
+    {"@id": "he:CANCELLED",  "@type": "he:CampStatus", "rdfs:label": "Cancelled"}
+  ]
+}

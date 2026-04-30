@@ -1,0 +1,8 @@
+{
+  "schema": "HealthOffer",
+  "version": "2.1.0",
+  "card_template": "{{healthServiceType}} | {{offerType}}{{#if minimumQuantity}} | min {{minimumQuantity}}{{/if}}{{#if bulkDiscountAvailable}} | Bulk discount available{{/if}}",
+  "detail_template": "Service Type: {{healthServiceType}}\nOffer Type: {{offerType}}\n{{#if minimumQuantity}}Min Quantity: {{minimumQuantity}}\n{{/if}}{{#if maximumQuantity}}Max Quantity: {{maximumQuantity}}\n{{/if}}{{#if eligibilityCriteria}}Eligibility: {{#each eligibilityCriteria}}{{this}}; {{/each}}{{/if}}",
+  "html": "<div class=\"health-offer-card\"><span class=\"service-type badge\">{{healthServiceType}}</span><span class=\"offer-type badge\">{{offerType}}</span>{{#if bulkDiscountAvailable}}<span class=\"badge discount\">Bulk Discount</span>{{/if}}</div>",
+  "html_detail": "<div class=\"health-offer-detail\"><h3>Health Offer</h3><dl><dt>Service Type</dt><dd>{{healthServiceType}}</dd><dt>Offer Type</dt><dd>{{offerType}}</dd>{{#if minimumQuantity}}<dt>Min Quantity</dt><dd>{{minimumQuantity}}</dd>{{/if}}{{#if maximumQuantity}}<dt>Max Quantity</dt><dd>{{maximumQuantity}}</dd>{{/if}}{{#if validityPeriodDays}}<dt>Validity Period</dt><dd>{{validityPeriodDays}} days</dd>{{/if}}{{#if requiresAdvanceBooking}}<dt>Advance Booking</dt><dd>Required</dd>{{/if}}{{#if eligibilityCriteria}}<dt>Eligibility</dt><dd>{{#each eligibilityCriteria}}<span class=\"badge\">{{this}}</span> {{/each}}</dd>{{/if}}{{#if cancellationPolicies}}<dt>Cancellation Policy</dt><dd>{{#each cancellationPolicies}}<div>≤{{hoursBeforeService}}h before: {{refundFraction}} refund</div>{{/each}}</dd>{{/if}}</dl></div>"
+}

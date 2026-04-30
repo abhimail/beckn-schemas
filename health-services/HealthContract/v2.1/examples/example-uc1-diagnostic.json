@@ -1,0 +1,32 @@
+{
+  "_comment": "UC1 single-patient diagnostic analytics contract (Swaasa cough analysis) — consent is a required sub-object for DIAGNOSTIC_ANALYTICS",
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/HealthContract/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-uc1-001",
+      "beckn:status": {"code": "ACTIVE"},
+      "beckn:contractAttributes": {
+        "@type": "hct:HealthContract",
+        "healthServiceType": "DIAGNOSTIC_ANALYTICS",
+        "bookingChannel": "APP",
+        "facilitatorId": "flw-asha-karna-001",
+        "clientNotes": "Patient reports cough for 3 weeks, non-smoker",
+        "reminderSentAt": "2026-06-01T08:00:00+05:30",
+        "consent": {
+          "consentId": "c3f8a1b2-7d4e-4a2f-9c01-5e6f7a8b9c0d",
+          "consentDocRef": "consent-uc1-001",
+          "patientParticipantId": "participant-patient-ravi-001",
+          "consentStandard": "HealthConsent/v1",
+          "consentedAt": "2026-06-01T07:45:00+05:30",
+          "consentedBy": "flw-asha-karna-001",
+          "purposeOfCollection": ["DIAGNOSTIC", "QUALITY_ASSURANCE"],
+          "dataRetentionDays": 90
+        }
+      }
+    }
+  }
+}

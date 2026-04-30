@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "hpe": "https://schema.beckn.io/HealthPerformance#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {"@id": "hpe:FollowupRecommendationCode", "@type": "rdfs:Class", "rdfs:label": "FollowupRecommendationCode"},
+    {"@id": "hpe:NONE",      "@type": "hpe:FollowupRecommendationCode", "rdfs:label": "None — no follow-up required"},
+    {"@id": "hpe:ROUTINE",   "@type": "hpe:FollowupRecommendationCode", "rdfs:label": "Routine — follow up at next scheduled visit"},
+    {"@id": "hpe:SOON",      "@type": "hpe:FollowupRecommendationCode", "rdfs:label": "Soon — follow up within 1–4 weeks"},
+    {"@id": "hpe:URGENT",    "@type": "hpe:FollowupRecommendationCode", "rdfs:label": "Urgent — follow up within 48–72 hours"},
+    {"@id": "hpe:EMERGENCY", "@type": "hpe:FollowupRecommendationCode", "rdfs:label": "Emergency — immediate referral required"}
+  ]
+}

@@ -1,0 +1,129 @@
+openapi: 3.1.1
+$id: "https://schema.beckn.io/HealthParticipant/v2.1/attributes.yaml"
+info:
+  title: HealthParticipant Schema
+  version: "2.1.0"
+  description: >
+    Participant-level attributes for individuals and organisations involved in a
+    health service engagement on the ONHS network. Covers patients, field workers,
+    specialists, payers, and implementing agencies.
+  x-beckn-container: participantAttributes
+
+components:
+  schemas:
+    HealthParticipant:
+      type: object
+      x-beckn-container: participantAttributes
+      x-status: under-review
+      x-tags:
+        - health
+        - health-service
+        - participant
+      x-jsonld:
+        "@context": "https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld"
+        "@type": "hpa:HealthParticipant"
+      required:
+        - participantRole
+      properties:
+        participantRole:
+          type: string
+          enum:
+            - PATIENT
+            - CARE_GIVER
+            - SPECIALIST
+            - FIELD_WORKER
+            - PAYER
+            - IMPLEMENTING_AGENCY
+          description: >
+            Role of this participant in the health service engagement.
+            PATIENT: the individual receiving the service.
+            CARE_GIVER: guardian or carer acting on behalf of the patient.
+            SPECIALIST: licensed health practitioner delivering the service.
+            FIELD_WORKER: community health worker or ASHA facilitating engagement.
+            PAYER: entity bearing the cost (individual or organisational).
+            IMPLEMENTING_AGENCY: organisation that procured the service capacity.
+          x-jsonld-id: "hpa:participantRole"
+        abhaId:
+          type: string
+          description: >
+            Ayushman Bharat Health Account (ABHA) identifier for the participant.
+            Present for PATIENT role where ABHA has been issued.
+          x-jsonld-id: "hpa:abhaId"
+        dateOfBirth:
+          type: string
+          format: date
+          description: Date of birth of the participant (ISO 8601). Applicable to PATIENT role.
+          x-jsonld-id: "hpa:dateOfBirth"
+        gender:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+            - OTHER
+            - PREFER_NOT_TO_SAY
+          description: Gender of the participant. Applicable to PATIENT role.
+          x-jsonld-id: "hpa:gender"
+        primaryLanguage:
+          type: string
+          description: Primary language of the participant as a BCP 47 language tag (e.g. en, hi, kn)
+          x-jsonld-id: "hpa:primaryLanguage"
+        specialistAccreditation:
+          type: object
+          description: >
+            Professional accreditation details. Required when participantRole is SPECIALIST.
+          x-jsonld-id: "hpa:specialistAccreditation"
+          properties:
+            accreditationBody:
+              type: string
+              description: Name of the licensing or accreditation body (e.g. MCI, NMC, AERB)
+            registrationNumber:
+              type: string
+              description: Professional registration or licence number
+            specialty:
+              type: string
+              description: Clinical specialty (e.g. Pulmonology, Radiology, General Medicine)
+            validUntil:
+              type: string
+              format: date
+              description: Expiry date of the registration or licence (ISO 8601)
+        payerDetails:
+          type: object
+          description: >
+            Payer identification and scheme details. Required when participantRole is PAYER.
+          x-jsonld-id: "hpa:payerDetails"
+          properties:
+            payerType:
+              type: string
+              enum:
+                - SELF
+                - INSTITUTIONAL
+                - INSURANCE
+                - NGO
+                - GOVERNMENT
+              description: Category of the payer
+            payerName:
+              type: string
+              description: Name of the payer organisation or individual
+            payerId:
+              type: string
+              description: Unique identifier of the payer (TPA ID, insurer ID, or scheme ID)
+            schemeId:
+              type: string
+              description: >
+                Government scheme identifier (e.g. PMJAY scheme code) if payment
+                is through a public health scheme
+
+      # Role-based conditional requirements
+      if:
+        properties:
+          participantRole:
+            const: SPECIALIST
+      then:
+        required: [specialistAccreditation]
+
+      if:
+        properties:
+          participantRole:
+            const: PAYER
+      then:
+        required: [payerDetails]

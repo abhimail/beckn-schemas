@@ -1,0 +1,19 @@
+{
+  "id": "https://schema.beckn.io/HealthEntitlement/v2.1",
+  "name": "HealthEntitlement",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["HealthEntitlement"],
+  "discovery_fields": ["healthServiceType", "state", "validFrom", "validUntil"],
+  "indexable_paths": ["entitlementId", "issuerId", "holderId", "healthServiceType", "state"],
+  "filterable_paths": ["healthServiceType", "state", "issuerId", "holderId", "validFrom", "validUntil"],
+  "sortable_paths": ["validUntil", "remainingCapacity"],
+  "list_fields": ["entitlementId", "healthServiceType", "state", "remainingCapacity", "validUntil"],
+  "detail_fields": ["entitlementId", "issuerId", "holderId", "healthServiceType", "serviceScope", "totalCapacity", "usedCapacity", "remainingCapacity", "validFrom", "validUntil", "geographyScope", "redemptionRules", "state", "campCommitment"],
+  "privacy_notes": [
+    "holderId identifies the procuring organisation — treat as business-sensitive",
+    "lockedTermsSnapshot may contain pricing — restrict to contract parties",
+    "grievanceRef links to dispute records — restrict to contract parties and NFO"
+  ]
+}

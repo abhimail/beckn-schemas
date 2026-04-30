@@ -1,0 +1,21 @@
+{
+  "id": "https://schema.beckn.io/HealthConsideration/v2.1",
+  "name": "HealthConsideration",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["HealthConsideration"],
+  "discovery_fields": ["currency", "payerArchetype"],
+  "indexable_paths": ["currency", "payerArchetype", "entitlementRef"],
+  "filterable_paths": ["currency", "selectedPaymentMethod", "payerArchetype"],
+  "sortable_paths": ["totalAmount", "netAmount"],
+  "list_fields": ["netAmount", "currency", "payerArchetype", "selectedPaymentMethod"],
+  "detail_fields": ["pricePerUnit", "currency", "totalAmount", "discountRef", "netAmount", "paymentMethodsAccepted", "selectedPaymentMethod", "transactionRef", "payerArchetype", "paymentSchedule", "perPatientAmount", "entitlementRef"],
+  "privacy_notes": [
+    "transactionRef is a payment record — restrict to contract parties",
+    "netAmount and totalAmount reveal pricing — restrict in public list views",
+    "authCode and authProvider in paymentAuthorisation are payment-sensitive — never index",
+    "entitlementRef links to procurement contract — restrict to contract parties",
+    "campCashCollectionRef links to field cash ledger — restrict to contract parties"
+  ]
+}

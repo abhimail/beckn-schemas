@@ -1,0 +1,30 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/context.jsonld#generalised",
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "hof": "https://schema.beckn.io/HealthOffer#",
+    "sof": "https://schema.beckn.io/ServiceOffer#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "HealthOffer": "hof:HealthOffer",
+    "HealthServiceType": "hof:HealthServiceType",
+    "OfferType": "hof:OfferType",
+
+    "ServiceOffer": "sof:ServiceOffer",
+
+    "healthServiceType": {"@id": "hof:healthServiceType"},
+    "offerType": {"@id": "hof:offerType"},
+
+    "minimumQuantity": {"@id": "sof:minimumQuantity"},
+    "maximumQuantity": {"@id": "sof:maximumQuantity"},
+    "requiresAdvanceBooking": {"@id": "sof:requiresAdvanceBooking"},
+    "bulkDiscountAvailable": {"@id": "sof:bulkDiscountAvailable"},
+    "eligibilityCriteria": {"@id": "sof:eligibilityCriteria", "@container": "@list"},
+    "validityPeriodDays": {"@id": "sof:validityPeriodDays"},
+    "cancellationPolicies": {"@id": "sof:cancellationPolicies", "@container": "@list"},
+    "hoursBeforeService": {"@id": "sof:hoursBeforeService"},
+    "refundFraction": {"@id": "sof:refundFraction"},
+    "cancellationPolicyDescription": {"@id": "sof:cancellationPolicyDescription"}
+  }
+}

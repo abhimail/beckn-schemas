@@ -1,0 +1,37 @@
+{
+  "_comment": "UC1 — completed Swaasa cough analysis with clinical interpretation",
+  "context": {
+    "action": "on_status",
+    "schemaContext": ["https://schema.beckn.io/HealthPerformance/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-uc1-001",
+      "beckn:performance": [{
+        "@type": "beckn:Performance",
+        "beckn:id": "perf-uc1-001",
+        "beckn:status": {"code": "COMPLETE"},
+        "beckn:performanceAttributes": {
+          "@type": "hpe:HealthPerformance",
+          "healthServiceType": "DIAGNOSTIC_ANALYTICS",
+          "confirmedAppointmentTime": "2026-06-01T09:10:00+05:30",
+          "providerConfirmedCompletion": true,
+          "clientConfirmedCompletion": true,
+          "serviceNotes": "Patient cooperative. All 3 cough samples captured successfully.",
+          "followupRecommendationCode": "URGENT",
+          "followUpDate": "2026-06-03",
+          "provisionalDiagnosis": "Probable pulmonary tuberculosis",
+          "artifactsGenerated": ["swaasa-report-uc1-001"],
+          "clinicalInterpretation": {
+            "confidence": 0.89,
+            "flaggedFindings": ["Probable TB", "Abnormal cough pattern", "Crackling sound detected"],
+            "modelOutputRef": "swaasa-raw-output-uc1-001",
+            "reviewedBySpecialist": true,
+            "specialistReviewAt": "2026-06-01T11:30:00+05:30"
+          }
+        }
+      }]
+    }
+  }
+}

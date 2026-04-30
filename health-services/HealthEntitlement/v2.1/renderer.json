@@ -1,0 +1,8 @@
+{
+  "schema": "HealthEntitlement",
+  "version": "2.1.0",
+  "card_template": "{{healthServiceType}} Entitlement | {{remainingCapacity}}/{{totalCapacity}} remaining | {{state}} | until {{validUntil}}",
+  "detail_template": "ID: {{entitlementId}}\nType: {{healthServiceType}}\nState: {{state}}\nCapacity: {{remainingCapacity}} / {{totalCapacity}}\nValid: {{validFrom}} → {{validUntil}}\n{{#if campCommitment}}Camp: {{campCommitment.campId}} on {{campCommitment.campDate}} ({{campCommitment.campStatus}}){{/if}}",
+  "html": "<div class=\"health-entitlement-card\"><span class=\"service-type badge\">{{healthServiceType}}</span><span class=\"state badge state-{{state}}\">{{state}}</span><span class=\"capacity\">{{remainingCapacity}}/{{totalCapacity}}</span><span class=\"validity\">until {{validUntil}}</span></div>",
+  "html_detail": "<div class=\"health-entitlement-detail\"><h3>Health Entitlement</h3><dl><dt>ID</dt><dd>{{entitlementId}}</dd><dt>Service Type</dt><dd>{{healthServiceType}}</dd><dt>State</dt><dd><span class=\"badge state-{{state}}\">{{state}}</span></dd><dt>Capacity</dt><dd>{{usedCapacity}} used / {{remainingCapacity}} remaining / {{totalCapacity}} total</dd><dt>Valid</dt><dd>{{validFrom}} → {{validUntil}}</dd>{{#if geographyScope}}<dt>Geography</dt><dd>{{#each geographyScope}}<span class=\"badge\">{{this}}</span> {{/each}}</dd>{{/if}}{{#if campCommitment}}<dt>Camp</dt><dd>{{campCommitment.campId}} — {{campCommitment.campDate}} at {{campCommitment.campLocation}}</dd><dt>Camp Status</dt><dd>{{campCommitment.campStatus}}</dd><dt>Patients Committed</dt><dd>{{campCommitment.committedPatients}}{{#if campCommitment.confirmedPatients}} / {{campCommitment.confirmedPatients}} seen{{/if}}</dd>{{/if}}</dl></div>"
+}

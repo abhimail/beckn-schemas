@@ -1,0 +1,45 @@
+{
+  "_comment": "Teleconsultation resource — shows servicePrerequisites applying to a different service type",
+  "context": {
+    "action": "on_discover",
+    "schemaContext": ["https://schema.beckn.io/HealthResource/v2.1/context.jsonld"]
+  },
+  "message": {
+    "catalogs": [{
+      "beckn:id": "catalog-teleconsult-001",
+      "beckn:descriptor": {"schema:name": "Teleconsultation Services"},
+      "beckn:provider": {"beckn:id": "provider-np-telemed-001"},
+      "beckn:resources": [{
+        "@type": "beckn:Resource",
+        "beckn:id": "res-teleconsult-gp-001",
+        "beckn:resourceAttributes": {
+          "@type": "hr:HealthResource",
+          "healthServiceType": "TELECONSULTATION",
+          "serviceUnit": "CONSULTATION",
+          "coverageArea": ["IN-KA", "IN-MH"],
+          "capacityPerDay": 20,
+          "minimumBookingAdvanceHours": 2,
+          "languagesSupported": ["en", "hi", "kn"],
+          "clinicalValidation": {
+            "accreditationBody": "NMC",
+            "registrationNumber": "KAR-MED-2018-04521",
+            "specialty": "General Medicine",
+            "validUntil": "2028-12-31"
+          },
+          "servicePrerequisites": [
+            {
+              "prerequisiteType": "DEVICE",
+              "description": "Device with camera and microphone, stable internet (min 1 Mbps)",
+              "mandatory": true
+            },
+            {
+              "prerequisiteType": "DOCUMENT",
+              "description": "Previous prescriptions or test reports if follow-up consultation",
+              "mandatory": false
+            }
+          ]
+        }
+      }]
+    }]
+  }
+}

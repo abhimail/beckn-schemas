@@ -1,0 +1,35 @@
+{
+  "_comment": "UC2 camp engagement — per-patient cash payment at counter, camp ledger reference",
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-uc2-patient-042",
+      "beckn:consideration": [{
+        "@type": "beckn:Consideration",
+        "beckn:id": "cons-uc2-042",
+        "beckn:considerationAttributes": {
+          "@type": "hcn:HealthConsideration",
+          "pricePerUnit": 50,
+          "currency": "INR",
+          "totalAmount": 50,
+          "netAmount": 50,
+          "paymentMethodsAccepted": ["CASH"],
+          "selectedPaymentMethod": "CASH",
+          "payerArchetype": "SELF",
+          "perPatientAmount": 50,
+          "campCashCollectionRef": "camp-ledger-yelahanka-20260601-042",
+          "paymentAuthorisation": {
+            "authCode": "CASH-CAMP-042",
+            "authProvider": "CAMP_COUNTER",
+            "authTimestamp": "2026-06-01T10:22:00+05:30",
+            "authAmount": 50
+          }
+        }
+      }]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "https://schema.beckn.io/HealthOffer/v2.1",
+  "name": "HealthOffer",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["HealthOffer"],
+  "discovery_fields": ["healthServiceType", "offerType", "bulkDiscountAvailable"],
+  "indexable_paths": ["healthServiceType", "offerType"],
+  "filterable_paths": ["healthServiceType", "offerType", "requiresAdvanceBooking", "bulkDiscountAvailable"],
+  "sortable_paths": ["minimumQuantity", "maximumQuantity", "validityPeriodDays"],
+  "list_fields": ["healthServiceType", "offerType", "minimumQuantity", "maximumQuantity", "bulkDiscountAvailable"],
+  "detail_fields": ["healthServiceType", "offerType", "minimumQuantity", "maximumQuantity", "requiresAdvanceBooking", "cancellationPolicies", "bulkDiscountAvailable", "eligibilityCriteria", "validityPeriodDays"],
+  "privacy_notes": []
+}

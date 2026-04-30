@@ -1,0 +1,51 @@
+{
+  "_comment": "Three participants in a UC1 diagnostic engagement: patient, specialist, field worker",
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-uc1-001",
+      "beckn:participants": [
+        {
+          "@type": "beckn:Participant",
+          "beckn:id": "patient-001",
+          "beckn:participantAttributes": {
+            "@type": "hpa:HealthParticipant",
+            "participantRole": "PATIENT",
+            "abhaId": "91-1234-5678-9012",
+            "dateOfBirth": "1985-04-12",
+            "gender": "FEMALE",
+            "primaryLanguage": "kn"
+          }
+        },
+        {
+          "@type": "beckn:Participant",
+          "beckn:id": "specialist-001",
+          "beckn:participantAttributes": {
+            "@type": "hpa:HealthParticipant",
+            "participantRole": "SPECIALIST",
+            "primaryLanguage": "en",
+            "specialistAccreditation": {
+              "accreditationBody": "NMC",
+              "registrationNumber": "KAR-MED-2018-04521",
+              "specialty": "Pulmonology",
+              "validUntil": "2028-12-31"
+            }
+          }
+        },
+        {
+          "@type": "beckn:Participant",
+          "beckn:id": "flw-001",
+          "beckn:participantAttributes": {
+            "@type": "hpa:HealthParticipant",
+            "participantRole": "FIELD_WORKER",
+            "primaryLanguage": "kn"
+          }
+        }
+      ]
+    }
+  }
+}

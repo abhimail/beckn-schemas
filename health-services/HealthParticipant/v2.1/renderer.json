@@ -1,0 +1,8 @@
+{
+  "schema": "HealthParticipant",
+  "version": "2.1.0",
+  "card_template": "{{participantRole}}{{#if specialty}} — {{specialty}}{{/if}}",
+  "detail_template": "Role: {{participantRole}}\n{{#if abhaId}}ABHA: {{abhaId}}\n{{/if}}{{#if gender}}Gender: {{gender}}\n{{/if}}{{#if primaryLanguage}}Language: {{primaryLanguage}}\n{{/if}}{{#if specialistAccreditation}}Accreditation: {{specialistAccreditation.accreditationBody}} — {{specialistAccreditation.registrationNumber}} ({{specialistAccreditation.specialty}}){{/if}}",
+  "html": "<div class=\"health-participant-card\"><span class=\"role badge role-{{participantRole}}\">{{participantRole}}</span>{{#if specialistAccreditation}}<span class=\"specialty\">{{specialistAccreditation.specialty}}</span>{{/if}}</div>",
+  "html_detail": "<div class=\"health-participant-detail\"><h3>Participant</h3><dl><dt>Role</dt><dd><span class=\"badge\">{{participantRole}}</span></dd>{{#if abhaId}}<dt>ABHA ID</dt><dd>{{abhaId}}</dd>{{/if}}{{#if gender}}<dt>Gender</dt><dd>{{gender}}</dd>{{/if}}{{#if primaryLanguage}}<dt>Language</dt><dd>{{primaryLanguage}}</dd>{{/if}}{{#if specialistAccreditation}}<dt>Accreditation Body</dt><dd>{{specialistAccreditation.accreditationBody}}</dd><dt>Registration No.</dt><dd>{{specialistAccreditation.registrationNumber}}</dd><dt>Specialty</dt><dd>{{specialistAccreditation.specialty}}</dd><dt>Valid Until</dt><dd>{{specialistAccreditation.validUntil}}</dd>{{/if}}{{#if payerDetails}}<dt>Payer Type</dt><dd>{{payerDetails.payerType}}</dd><dt>Payer Name</dt><dd>{{payerDetails.payerName}}</dd>{{/if}}</dl></div>"
+}

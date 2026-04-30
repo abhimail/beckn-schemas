@@ -1,0 +1,13 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "hof": "https://schema.beckn.io/HealthOffer#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {"@id": "hof:OfferType", "@type": "rdfs:Class", "rdfs:label": "OfferType"},
+    {"@id": "hof:SINGLE_EVENT",      "@type": "hof:OfferType", "rdfs:label": "Single Event — one engagement for one patient"},
+    {"@id": "hof:BULK_PROCUREMENT",  "@type": "hof:OfferType", "rdfs:label": "Bulk Procurement — pre-purchase of multiple units"},
+    {"@id": "hof:CAMP",              "@type": "hof:OfferType", "rdfs:label": "Camp — fixed-date multi-patient camp engagement"}
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "_comment": "UC2 camp commitment — entitlement with campCommitment sub-object (50-patient eye screening camp)",
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/HealthEntitlement/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-uc2-camp-001",
+      "beckn:status": {"code": "ACTIVE"},
+      "beckn:contractAttributes": {
+        "@type": "he:HealthEntitlement",
+        "entitlementId": "ent-camp-7a8b9c0d-1e2f-3456-7890-abcdef012345",
+        "issuerId": "provider-np-eyecare-001",
+        "holderId": "implementing-agency-ngo-sight-001",
+        "healthServiceType": "DIAGNOSTIC_ANALYTICS",
+        "serviceScope": ["res-eye-screening-v1"],
+        "totalCapacity": 50,
+        "usedCapacity": 0,
+        "remainingCapacity": 50,
+        "validFrom": "2026-06-01",
+        "validUntil": "2026-06-01",
+        "geographyScope": ["IN-KA-BLR-YELAHANKA"],
+        "state": "ACTIVE",
+        "campCommitment": {
+          "campId": "camp-yelahanka-20260601",
+          "campDate": "2026-06-01",
+          "campLocation": "Yelahanka Community Hall, Bangalore North",
+          "committedPatients": 50,
+          "campStatus": "SCHEDULED"
+        }
+      }
+    }
+  }
+}
