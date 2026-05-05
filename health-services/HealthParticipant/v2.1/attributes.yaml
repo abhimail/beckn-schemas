@@ -56,7 +56,7 @@ components:
                   PATIENT — ABHA (India), NHS number (UK), MRN (facility-issued)
                   SPECIALIST — NMC registration (India), NPI (USA), GMC number (UK)
                   FIELD_WORKER — ASHA worker ID, State HID (Karnataka)
-                  PAYER — TPA ID, insurer registration, scheme code
+                  PAYER — TPA ID, insurer registration, scheme code (e.g. PMJAY)
                   IMPLEMENTING_AGENCY — NGO registration, HFR facility ID
                 The `system` field names the issuing registry; agreed values are
                 deployment-specific.
@@ -70,7 +70,8 @@ components:
                     type: string
                     description: >
                       Name of the issuing registry or identifier system.
-                      Examples: ABHA, NMC, HFR, NPI, GMC, NHS, ASHA-ID, State-HID-KA
+                      Examples: ABHA, NMC, HFR, NPI, GMC, NHS, ASHA-ID, State-HID-KA,
+                      PMJAY, IRDAI, TPA-REG, NGO-REG
                     example: "ABHA"
                   value:
                     type: string
@@ -124,35 +125,6 @@ components:
                   type: string
                   format: date
                   description: Expiry date of the registration or licence (ISO 8601)
-            payerDetails:
-              type: object
-              description: >
-                Payer identification and scheme details. Required when participantRole is PAYER.
-              x-jsonld-id: "hpa:payerDetails"
-              required:
-                - payerType
-                - payerName
-              properties:
-                payerType:
-                  type: string
-                  enum:
-                    - SELF
-                    - INSTITUTIONAL
-                    - INSURANCE
-                    - NGO
-                    - GOVERNMENT
-                  description: Category of the payer
-                payerName:
-                  type: string
-                  description: Name of the payer organisation or individual
-                payerId:
-                  type: string
-                  description: Unique identifier of the payer (TPA ID, insurer ID, or scheme ID)
-                schemeId:
-                  type: string
-                  description: >
-                    Government scheme identifier (e.g. PMJAY scheme code) if payment
-                    is through a public health scheme
 
           # Role-based conditional requirements
           allOf:
@@ -162,9 +134,3 @@ components:
                     const: SPECIALIST
               then:
                 required: [specialistAccreditation]
-            - if:
-                properties:
-                  participantRole:
-                    const: PAYER
-              then:
-                required: [payerDetails]

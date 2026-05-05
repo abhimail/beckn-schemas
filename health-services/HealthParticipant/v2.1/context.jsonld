@@ -22,11 +22,6 @@
     "registrationNumber": {"@id": "hpa:registrationNumber"},
     "specialty": {"@id": "hpa:specialty"},
     "validUntil": {"@id": "hpa:validUntil"},
-    "payerDetails": {"@id": "hpa:payerDetails"},
-    "payerType": {"@id": "hpa:payerType"},
-    "payerName": {"@id": "hpa:payerName"},
-    "payerId": {"@id": "hpa:payerId"},
-    "schemeId": {"@id": "hpa:schemeId"},
 
     "credentialRefs": {"@id": "sp:credentialRefs", "@container": "@list"}
   }

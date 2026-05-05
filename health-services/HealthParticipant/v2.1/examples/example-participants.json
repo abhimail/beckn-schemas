@@ -15,7 +15,9 @@
           "beckn:participantAttributes": {
             "@type": "hpa:HealthParticipant",
             "participantRole": "PATIENT",
-            "abhaId": "91-1234-5678-9012",
+            "healthIds": [
+              {"system": "ABHA", "value": "91-1234-5678-9012"}
+            ],
             "dateOfBirth": "1985-04-12",
             "gender": "FEMALE",
             "primaryLanguage": "kn"
@@ -27,13 +29,24 @@
           "beckn:participantAttributes": {
             "@type": "hpa:HealthParticipant",
             "participantRole": "SPECIALIST",
+            "healthIds": [
+              {"system": "NMC", "value": "KAR-MED-2018-04521"}
+            ],
             "primaryLanguage": "en",
             "specialistAccreditation": {
               "accreditationBody": "NMC",
               "registrationNumber": "KAR-MED-2018-04521",
               "specialty": "Pulmonology",
               "validUntil": "2028-12-31"
-            }
+            },
+            "credentialRefs": [
+              {
+                "label": "NMC Registration Certificate",
+                "url": "https://storage.example.com/creds/dr-sharma-nmc.pdf",
+                "mimeType": "application/pdf",
+                "standard": "MedicalLicence"
+              }
+            ]
           }
         },
         {
@@ -42,7 +55,26 @@
           "beckn:participantAttributes": {
             "@type": "hpa:HealthParticipant",
             "participantRole": "FIELD_WORKER",
+            "healthIds": [
+              {"system": "ASHA-ID", "value": "KA-2021-0042"}
+            ],
             "primaryLanguage": "kn"
+          }
+        },
+        {
+          "_comment": "PAYER participant: identity via Participant.descriptor.name + healthIds; payer type via payerArchetype in HealthConsideration",
+          "@type": "beckn:Participant",
+          "beckn:id": "payer-001",
+          "beckn:descriptor": {
+            "name": "Karnataka Health & Family Welfare Department"
+          },
+          "beckn:participantAttributes": {
+            "@type": "hpa:HealthParticipant",
+            "participantRole": "PAYER",
+            "healthIds": [
+              {"system": "PMJAY", "value": "KA-SCHEME-2023-001"},
+              {"system": "GOV-REG", "value": "KHFW-GOI-2018"}
+            ]
           }
         }
       ]

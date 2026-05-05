@@ -6,16 +6,16 @@
   "semantic_model": "generalised",
   "included_schemas": ["HealthParticipant"],
   "discovery_fields": ["participantRole"],
-  "indexable_paths": ["participantRole", "abhaId"],
+  "indexable_paths": ["participantRole", "healthIds.system"],
   "filterable_paths": ["participantRole", "gender", "primaryLanguage"],
   "sortable_paths": [],
   "list_fields": ["participantRole"],
-  "detail_fields": ["participantRole", "abhaId", "gender", "primaryLanguage", "specialistAccreditation", "payerDetails"],
+  "detail_fields": ["participantRole", "healthIds", "gender", "primaryLanguage", "specialistAccreditation", "credentialRefs"],
   "privacy_notes": [
-    "abhaId is a national health identifier — treat as sensitive PII, never index or expose in list views",
+    "healthIds values are sector-specific identifiers (ABHA, NMC, PMJAY etc.) — treat as sensitive PII, never expose in list views",
     "dateOfBirth is PII — restrict to contract parties",
     "gender is PII — restrict to contract parties",
     "specialistAccreditation.registrationNumber is professional PII",
-    "payerDetails.payerId may identify insurance or government scheme membership — restrict to contract parties"
+    "credentialRefs may contain W3C VCs with PII in credentialSubject — access-control document URLs"
   ]
 }
