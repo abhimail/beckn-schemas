@@ -9,7 +9,7 @@
 
 ## Overview
 
-HealthSettlement captures payment settlement details for health service engagements on the ONHS network. It inherits the full ServiceSettlement field set — receipt confirmation, adjustment type, partial completion fraction, dispute tracking — and adds three health-specific fields that close the financial loop on the procurement and camp models: entitlement traceability, credit-back unit count, and camp cash ledger linkage.
+HealthSettlement captures payment settlement details for health service engagements on the ONHS network. It inherits the full ServiceSettlement field set — receipt confirmation, adjustment type, dispute tracking — and adds three health-specific fields that close the financial loop on the procurement and camp models: entitlement traceability, credit-back unit count, and camp cash ledger linkage.
 
 ## Attachment Points
 
@@ -23,7 +23,7 @@ Attaches to `Settlement.settlementAttributes` inside `Contract.settlements[]`. P
 
 - **`campLedgerRef`** — For UC2 camps with field cash collection, the settlement record links to the camp cash ledger maintained by the implementing agency. This allows the agency to reconcile field-collected cash against the settled network transaction without merging two separate financial systems.
 
-- **On-actuals reconciliation flow** — The full UC2 settlement sequence uses `adjustmentType: ON_ACTUALS`, `partialCompletionFraction` (delivered / committed), `adjustmentAmount` (negative credit for undelivered units), `entitlementCreditBack` (units returned), and `finalSettlementRef` (post-adjustment transaction reference). All of these fields except `entitlementCreditBack` and `campLedgerRef` are inherited from ServiceSettlement.
+- **On-actuals reconciliation flow** — The full UC2 settlement sequence uses `adjustmentType: ON_ACTUALS`, `adjustmentAmount` (negative credit for undelivered units), `entitlementCreditBack` (units returned), and `finalSettlementRef` (post-adjustment transaction reference). All fields except `entitlementCreditBack` and `campLedgerRef` are inherited from ServiceSettlement.
 
 ## Non-Goals
 

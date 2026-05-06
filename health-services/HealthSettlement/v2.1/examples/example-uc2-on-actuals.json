@@ -21,7 +21,6 @@
           "adjustmentAmount": -400,
           "adjustmentReason": "42 patients screened of 50 committed; 8 unit credit returned to entitlement",
           "adjustedAt": "2026-06-01T19:30:00+05:30",
-          "partialCompletionFraction": 0.84,
           "finalSettlementRef": "RCP-CAMP-FINAL-YELAHANKA-20260601",
           "entitlementRef": "ent-camp-7a8b9c0d-1e2f-3456-7890-abcdef012345",
           "entitlementCreditBack": 8,

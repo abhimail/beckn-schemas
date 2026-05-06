@@ -7,7 +7,7 @@ info:
     Settlement attributes for a health service engagement on the ONHS network.
     Extends ServiceSettlement/v2.1, inheriting all base fields (paymentReceivedByProvider,
     paymentRecordedAt, receiptRef, paymentNotes, adjustmentType, adjustmentAmount,
-    adjustmentReason, adjustedAt, partialCompletionFraction, finalSettlementRef, disputeRef).
+    adjustmentReason, adjustedAt, finalSettlementRef, disputeRef).
     Adds health-specific entitlement traceability and camp cash ledger reference.
   x-beckn-container: settlementAttributes
 

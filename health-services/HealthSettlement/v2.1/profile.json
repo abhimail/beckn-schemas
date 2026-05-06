@@ -10,7 +10,7 @@
   "filterable_paths": ["paymentReceivedByProvider", "adjustmentType", "entitlementRef"],
   "sortable_paths": ["paymentRecordedAt", "adjustedAt"],
   "list_fields": ["paymentReceivedByProvider", "adjustmentType", "entitlementRef"],
-  "detail_fields": ["paymentReceivedByProvider", "paymentRecordedAt", "receiptRef", "paymentNotes", "adjustmentType", "adjustmentAmount", "adjustmentReason", "adjustedAt", "partialCompletionFraction", "finalSettlementRef", "disputeRef", "entitlementRef", "entitlementCreditBack", "campLedgerRef"],
+  "detail_fields": ["paymentReceivedByProvider", "paymentRecordedAt", "receiptRef", "paymentNotes", "adjustmentType", "adjustmentAmount", "adjustmentReason", "adjustedAt", "finalSettlementRef", "disputeRef", "entitlementRef", "entitlementCreditBack", "campLedgerRef"],
   "privacy_notes": [
     "receiptRef and finalSettlementRef are financial records — restrict to contract parties",
     "adjustmentAmount reveals financial terms — restrict to contract parties and NFO",

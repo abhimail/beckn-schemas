@@ -20,7 +20,6 @@
 
 At end-of-camp:
 1. `adjustmentType` = ON_ACTUALS
-2. `partialCompletionFraction` = actual patients / committed patients
-3. `adjustmentAmount` = negative value (credit/refund for undelivered units)
-4. `entitlementCreditBack` = units returned to the HealthEntitlement's `remainingCapacity`
-5. `finalSettlementRef` records the final settled transaction
+2. `adjustmentAmount` = negative value (credit/refund for undelivered units)
+3. `entitlementCreditBack` = units returned to the HealthEntitlement's `remainingCapacity`
+4. `finalSettlementRef` records the final settled transaction
