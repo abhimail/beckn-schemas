@@ -21,7 +21,6 @@
           "adjustmentAmount": -2000,
           "adjustmentReason": "42 patients screened against 50 committed; 8 unit credit returned to entitlement",
           "adjustedAt": "2026-06-01T19:00:00+05:30",
-          "partialCompletionFraction": 0.84,
           "finalSettlementRef": "RCP-CAMP-FINAL-2026060100001",
           "paymentNotes": "End-of-camp reconciliation. Entitlement ent-550e8400 credited 8 units."
         }

@@ -20,6 +20,5 @@ Initial release of the ServiceSettlement schema targeting the v2.1 generalised m
 - Settlement notes (`paymentNotes`)
 - Post-completion adjustment type: NONE, ON_ACTUALS, PARTIAL, FULL_REFUND (`adjustmentType`)
 - Adjustment amount, reason, and timestamp (`adjustmentAmount`, `adjustmentReason`, `adjustedAt`)
-- Partial completion fraction for on-actuals reconciliation (`partialCompletionFraction`)
 - Final settlement reference after all adjustments are applied (`finalSettlementRef`)
 - Dispute/grievance reference linking to active or resolved disputes (`disputeRef`)

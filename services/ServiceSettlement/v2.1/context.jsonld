@@ -16,7 +16,6 @@
     "adjustmentAmount": {"@id": "ssl:adjustmentAmount"},
     "adjustmentReason": {"@id": "ssl:adjustmentReason"},
     "adjustedAt": {"@id": "ssl:adjustedAt"},
-    "partialCompletionFraction": {"@id": "ssl:partialCompletionFraction"},
     "finalSettlementRef": {"@id": "ssl:finalSettlementRef"},
     "disputeRef": {"@id": "ssl:disputeRef"}
   }

@@ -72,15 +72,6 @@ components:
           format: date-time
           description: Timestamp when the adjustment was recorded (ISO 8601)
           x-jsonld-id: "ssl:adjustedAt"
-        partialCompletionFraction:
-          type: number
-          minimum: 0
-          maximum: 1
-          description: >
-            Fraction of the committed service actually delivered, expressed as a
-            decimal between 0 and 1 (e.g. 0.8 = 80% of patients screened in a camp).
-            Used to calculate on-actuals adjustment.
-          x-jsonld-id: "ssl:partialCompletionFraction"
         finalSettlementRef:
           type: string
           description: >
