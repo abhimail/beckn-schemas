@@ -1,0 +1,168 @@
+{
+  "id": "uc2-onhs-dev-env-v1",
+  "name": "ONHS Dev",
+  "_postman_variable_scope": "environment",
+  "values": [
+    {
+      "key": "bpp_uri",
+      "value": "",
+      "enabled": true,
+      "description": "BPP sandbox endpoint — set before running"
+    },
+    {
+      "key": "bap_uri",
+      "value": "",
+      "enabled": true,
+      "description": "BAP sandbox callback endpoint — set before running"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "enabled": true,
+      "description": "Network-issued JWT — set before running"
+    },
+    {
+      "key": "domain",
+      "value": "onhs:health",
+      "enabled": true
+    },
+    {
+      "key": "network_id",
+      "value": "onhs.in/health",
+      "enabled": true,
+      "description": "Confirm exact value with network registry team"
+    },
+    {
+      "key": "seeker_np_id",
+      "value": "seeker-np-arogyalink-001",
+      "enabled": true
+    },
+    {
+      "key": "provider_np_id",
+      "value": "provider-np-swaasa-001",
+      "enabled": true
+    },
+    {
+      "key": "transaction_id_a",
+      "value": "660f9511-f3ac-52e5-b827-557766551120",
+      "enabled": true,
+      "description": "Scenario A transaction UUID"
+    },
+    {
+      "key": "contract_id_a",
+      "value": "660f9511-f3ac-52e5-b827-557766551121",
+      "enabled": true,
+      "description": "Scenario A contract UUID (BPP assigns at on_select)"
+    },
+    {
+      "key": "transaction_id_b",
+      "value": "660f9511-f3ac-52e5-b827-557766551122",
+      "enabled": true,
+      "description": "Scenario B transaction UUID"
+    },
+    {
+      "key": "contract_id_b",
+      "value": "660f9511-f3ac-52e5-b827-557766551123",
+      "enabled": true,
+      "description": "Scenario B contract UUID"
+    },
+    {
+      "key": "transaction_id_c",
+      "value": "660f9511-f3ac-52e5-b827-557766551124",
+      "enabled": true,
+      "description": "Scenario C transaction UUID"
+    },
+    {
+      "key": "contract_id_c",
+      "value": "660f9511-f3ac-52e5-b827-557766551125",
+      "enabled": true,
+      "description": "Scenario C contract UUID"
+    },
+    {
+      "key": "transaction_id_d",
+      "value": "660f9511-f3ac-52e5-b827-557766551126",
+      "enabled": true,
+      "description": "Scenario D transaction UUID"
+    },
+    {
+      "key": "contract_id_d",
+      "value": "660f9511-f3ac-52e5-b827-557766551127",
+      "enabled": true,
+      "description": "Scenario D contract UUID"
+    },
+    {
+      "key": "resource_id",
+      "value": "res-swaasa-cough-v2",
+      "enabled": true
+    },
+    {
+      "key": "offer_id_camp",
+      "value": "offer-swaasa-camp",
+      "enabled": true
+    },
+    {
+      "key": "catalog_id",
+      "value": "catalog-swaasa-001",
+      "enabled": true
+    },
+    {
+      "key": "consideration_id_a",
+      "value": "cons-uc2a-001",
+      "enabled": true
+    },
+    {
+      "key": "consideration_id_b",
+      "value": "cons-uc2b-001",
+      "enabled": true
+    },
+    {
+      "key": "consideration_id_c",
+      "value": "cons-uc2c-001",
+      "enabled": true
+    },
+    {
+      "key": "agency_participant_id",
+      "value": "participant-agency-swk-001",
+      "enabled": true,
+      "description": "Same as UC0/UC1 — carry forward"
+    },
+    {
+      "key": "camp_coordinator_id",
+      "value": "participant-flw-meena-002",
+      "enabled": true,
+      "description": "ASHA camp coordinator (FIELD_WORKER role)"
+    },
+    {
+      "key": "camp_id",
+      "value": "camp-swk-ka-20260615-001",
+      "enabled": true
+    },
+    {
+      "key": "camp_batch_consent_id",
+      "value": "c4f9b2a3-8e5d-4b3f-9d02-6e7f8a9b0c1d",
+      "enabled": true
+    },
+    {
+      "key": "entitlement_id",
+      "value": "f7a8b9c0-d1e2-3456-fa78-bc9012345ef6",
+      "enabled": true,
+      "description": "Set to the value issued at UC0 on_confirm before running Scenarios A/C/D"
+    },
+    {
+      "key": "payment_ref_b",
+      "value": "NEFT-UTR-SWK-CAMP-20260615-001",
+      "enabled": true
+    },
+    {
+      "key": "camp_ledger_ref",
+      "value": "cash-ledger-camp-swk-20260615-001",
+      "enabled": true
+    },
+    {
+      "key": "agency_cert_checksum",
+      "value": "",
+      "enabled": true,
+      "description": "SHA256 checksum of NGO-Darpan cert"
+    }
+  ]
+}
