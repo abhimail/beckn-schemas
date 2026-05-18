@@ -12,7 +12,7 @@ AgriServiceOffer extends ServiceOffer with agriculture-specific fields for speci
 
 ## Extension Details
 
-Extends: ServiceOffer (../../../generic-service/ServiceOffer/v2.1/attributes.yaml)
+Extends: ServiceOffer (../../services/ServiceOffer/v2.1/attributes.yaml)
 
 Additional fields:
 - inputBrandOrVariety: Brand name or crop variety for agricultural input services

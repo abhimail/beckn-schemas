@@ -15,7 +15,7 @@ AgriServicePerformance extends ServicePerformance with agriculture-specific fiel
 Extends: ServicePerformance (../../../generic-service/ServicePerformance/v2.1/attributes.yaml)
 
 Additional fields:
-- farmLocation: Hierarchical location (village, ward, county, country, GPS, landmark)
+- farmLocation: Hierarchical location (village, ward, county, country, geo (GeoJSON Point), landmark)
 - livestockCount: Number of animals serviced
 - livestockType: Type of livestock (poultry, cattle, goat, sheep, pig, other)
 

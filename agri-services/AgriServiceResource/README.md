@@ -12,7 +12,7 @@ AgriServiceResource extends ServiceResource with agriculture-specific fields for
 
 ## Extension Details
 
-Extends: ServiceResource (../../../generic-service/ServiceResource/v2.1/attributes.yaml)
+Extends: ServiceResource (../../services/ServiceResource/v2.1/attributes.yaml)
 
 Additional fields:
 - serviceCategory: VACCINATION, BROODING, INCUBATION, AGRI_INPUT, ADVISORY, SCREENING

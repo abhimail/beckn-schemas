@@ -17,5 +17,5 @@ Extension of ServicePerformance for agriculture-specific service delivery. Adds 
 - Farm location with hierarchical detail (village, ward, county)
 - Livestock count tracking
 - Livestock type specification
-- GPS coordinates for farm location
+- GeoJSON Point location (`geo` field) for farm coordinates
 - Extends all base ServicePerformance fields (appointment time, completion status, follow-up)
