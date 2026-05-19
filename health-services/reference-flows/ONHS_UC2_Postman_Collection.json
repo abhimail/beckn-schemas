@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "ONHS UC2 \u2014 Camp Engagement",
+    "name": "ONHS UC2 — Camp Engagement",
     "_postman_id": "uc2-onhs-camp-v1-0",
-    "description": "## ONHS UC2 \u2014 Camp Engagement\n\n**Scenario:** Swastha Karnataka Foundation (NGO) books a Swaasa AI cough analysis camp for 30 patients at Kanakapur Village Hall on 15 June 2026. Two payment paths and two edge-case variants are included.\n\n**Protocol:** Beckn v2.0.0 + Health* schema pack v2.1\n**Service:** Swaasa AI Cough Analysis (DIAGNOSTIC_ANALYTICS) | **Offer type:** CAMP | **Planned quantity:** 30 patients\n\n### Quick-start: environment setup\n\n1. Import **ONHS_UC2_Dev_Environment.json** into Postman (Environments \u2192 Import).\n2. Select the **ONHS Dev** environment from the environment picker.\n3. Set `bpp_uri`, `bap_uri`, and `auth_token` to your sandbox endpoints.\n4. `network_id` is currently `onhs.in/health` (placeholder) \u2014 confirm with the network registry team.\n5. UUID variable defaults are pre-filled; regenerate for separate test runs if needed.\n6. **Scenario A/C:** set `entitlement_id` to the value issued at UC0 `on_confirm` (`f7a8b9c0-d1e2-3456-fa78-bc9012345ef6` pre-filled as default).\n\n### Scenarios\n\n**Scenario A \u2014 Entitlement Drawdown, 30 patients (60 steps: select \u2192 on_update)**\nSwastha Karnataka Foundation draws down 30 units from the HealthEntitlement issued in UC0. No advance cash; `entitlementRef` in consideration signals the drawdown. Camp starts at `select` (no discover \u2014 seeker knows the provider from the entitlement record). End-of-camp update: 22 patients screened, 8 units credited back to entitlement.\n\n**Scenario B \u2014 On-the-spot Payment, 30 patients (12 steps: discover \u2192 on_update)**\nCamp organiser pays Rs.7500 upfront by NEFT \u2014 no prior entitlement. Full discover \u2192 on_discover lifecycle. `paymentAuthorisation` at confirm. End-of-camp: 22 patients screened; Rs.2000 on-actuals refund processed via `settlements[]`.\n\n**Scenario C \u2014 Partial Completion (8 steps: select \u2192 on_update)**\nScenario A variant. Device failure halts camp after 15 patients. `update` carries partial headcount (15 of 30); `on_update` credits back 15 entitlement units and records `partialCompletionFraction=0.5`. Deletion attestation issued for unscreened patients (no artifact captured).\n\n**Scenario D \u2014 Capacity Insufficient (2 steps: select \u2192 on_select)**\nBAP commits 30 patients; entitlement only has 20 units remaining. BPP returns CANCELLED contract at `on_select` with `refusalReason=INSUFFICIENT_CAPACITY`.\n\n### UC2-specific offer type\n\nOffer type `CAMP` (per `HealthOffer.offerType` enum) distinguishes this engagement from `SINGLE_EVENT` (UC1) and `BULK_PROCUREMENT` (UC0). The CAMP offer carries `minimumQuantity`, `maximumQuantity`, and `requiresAdvanceBooking: true`.\n\n### Bifurcation rule\n\nA UC2 engagement carries exactly one of `{entitlementRef, paymentAuthorisation}` \u2014 never both.\n- Scenarios A/C: consideration carries `entitlementRef` \u2192 no `paymentAuthorisation`\n- Scenario B: consideration carries `paymentAuthorisation` \u2192 no `entitlementRef`\n\n### HealthEntitlement campCommitment sub-object\n\nAt `on_confirm` (Scenarios A/C), `contractAttributes` carries the updated HealthEntitlement with a `campCommitment` sub-object (campId, campDate, campLocation, committedPatients, confirmedPatients, campStatus). campStatus lifecycle: ACTIVE (on_confirm) \u2192 ACTIVE (on_status mid-camp) \u2192 COMPLETED (on_update).\n\n### Structural conventions (per core beckn.yaml v2.0.0)\n\n- `select` carries a DRAFT `Contract` object (`SelectAction.contract` per core spec); BAP originates without `id`; BPP assigns `contract.id` at `on_select`\n- `schemaContext` only on `discover`/`on_discover` (Scenario B); absent from all negotiation messages\n- `OFFER_CAMP_REF` always includes `resourceIds: [\\u007b\\u007bresource_id\\u007d\\u007d]` (required per spec)\n- `status` uses `message.contract {id, commitments[]}` \u2014 not a flat `contractId`\n- `billingDetails`, `paymentInstructions`, `invoiceDetails` are banned from `Contract` (`additionalProperties: false`)\n- Participant PII absent at `select`; full details from `init` onward\n- `HealthContract.consent` present at `init`/`confirm` (BAP-initiated messages only) per IG \u00a78.3; camp-batch consent recorded at `init` with `consentedBy: {{camp_coordinator_id}}`; BPP responses are exempt\n\n### Consideration lifecycle\n\n| Call | status.code | pricePerUnit | totalAmount | netAmount |\n|---|---|---|---|---|\n| catalog (on_discover, B only) | *(none)* | Rs.250 | \u2014 | \u2014 |\n| select | DRAFT | \u2014 | \u2014 | \u2014 |\n| on_select | PENDING | Rs.200 (A/C) / Rs.250 (B) | Rs.6000 / Rs.7500 | same |\n| init | PENDING | echoed | echoed | echoed |\n| on_init | QUOTED | Rs.200 / Rs.250 | Rs.6000 / Rs.7500 | same |\n| confirm | ACTIVE | \u2014 | echoed | echoed |\n| on_confirm \u2192 on_status | ACTIVE | \u2014 | planned total | planned total |\n| on_update (full completion) | ACTIVE | \u2014 | 22\u00d7rate (A: Rs.4400, B: Rs.5500) | same |\n| on_update (partial, C) | ACTIVE | \u2014 | 15\u00d7Rs.200 = Rs.3000 | same |\n\n### End-of-camp settlement\n\n| Scenario | Settlement key fields |\n|---|---|\n| A (full) | `entitlementRef`, `entitlementCreditBack: 8` |\n| B (full) | `campLedgerRef`, `adjustmentType: DEBIT`, `adjustmentAmount: 2000` |\n| C (partial) | `entitlementRef`, `entitlementCreditBack: 15` |\n\n### Entitlement unit mechanics\n\n**Entitlement unit = one patient analysis.** The entitlement pool (procured in UC0) is denominated in individual patient analyses \u2014 not in camps. One camp consuming 22 patients draws 22 units, not one \"camp slot\". The camp contract introduces a two-phase drawdown: the `select`\u2192`on_confirm` cycle locks the planned quantity (30 units) against the entitlement's capacity at booking time, reducing `remainingCapacity` by 30; the `update`\u2192`on_update` cycle reconciles actuals and releases unused units back, adjusting `usedCapacity` to the real headcount and restoring the unspent units to `remainingCapacity`. No money moves at either phase \u2014 the pool was pre-paid under UC0.\n\nThis keeps the entitlement pool fungible \u2014 the same UC0 pool serves any mix of individual UC1 engagements and UC2 camps without separate per-modality procurement. Locking at `select`\u2192`on_confirm` also prevents race conditions when multiple camps draw concurrently: the BPP can reject a second camp's `on_select` if the combined committed quantity would exceed remaining capacity. And by establishing a ceiling at booking time, it gives the implementing agency an organisational boundary \u2014 no single camp can inadvertently consume the whole pool, which supports allocation planning across a programme.\n\n### Cross-collection variable chaining\n\n`entitlement_id` (`f7a8b9c0-d1e2-3456-fa78-bc9012345ef6`) is issued at UC0 `on_confirm` and consumed here in Scenarios A/C as the drawdown reference. Set this variable to the actual value returned by your UC0 run before executing Scenarios A/C.\n",
+    "description": "## ONHS UC2 — Camp Engagement\n\n**Scenario:** Swastha Karnataka Foundation (NGO) books a Swaasa AI cough analysis camp for 30 patients at Kanakapur Village Hall on 15 June 2026. Two payment paths and two edge-case variants are included.\n\n**Protocol:** Beckn v2.0.0 + Health* schema pack v2.1\n**Service:** Swaasa AI Cough Analysis (DIAGNOSTIC_ANALYTICS) | **Offer type:** CAMP | **Planned quantity:** 30 patients\n\n### Quick-start: environment setup\n\n1. Import **ONHS_UC2_Dev_Environment.json** into Postman (Environments → Import).\n2. Select the **ONHS Dev** environment from the environment picker.\n3. Set `bpp_uri`, `bap_uri`, and `auth_token` to your sandbox endpoints.\n4. `network_id` is currently `onhs.in/health` (placeholder) — confirm with the network registry team.\n5. UUID variable defaults are pre-filled; regenerate for separate test runs if needed.\n6. **Scenario A/C:** set `entitlement_id` to the value issued at UC0 `on_confirm` (`f7a8b9c0-d1e2-3456-fa78-bc9012345ef6` pre-filled as default).\n\n### Scenarios\n\n**Scenario A — Entitlement Drawdown, 30 patients (60 steps: select → on_update)**\nSwastha Karnataka Foundation draws down 30 units from the HealthEntitlement issued in UC0. No advance cash; `entitlementRef` in consideration signals the drawdown. Camp starts at `select` (no discover — seeker knows the provider from the entitlement record). End-of-camp update: 22 patients screened, 8 units credited back to entitlement.\n\n**Scenario B — On-the-spot Payment, 30 patients (12 steps: discover → on_update)**\nCamp organiser pays Rs.7500 upfront by NEFT — no prior entitlement. Full discover → on_discover lifecycle. `paymentAuthorisation` at confirm. End-of-camp: 22 patients screened; Rs.2000 on-actuals refund processed via `settlements[]`.\n\n**Scenario C — Partial Completion (8 steps: select → on_update)**\nScenario A variant. Device failure halts camp after 15 patients. `update` carries partial headcount (15 of 30); `on_update` credits back 15 entitlement units and records `partialCompletionFraction=0.5`. Deletion attestation issued for unscreened patients (no artifact captured).\n\n**Scenario D — Capacity Insufficient (2 steps: select → on_select)**\nBAP commits 30 patients; entitlement only has 20 units remaining. BPP returns CANCELLED contract at `on_select` with `refusalReason=INSUFFICIENT_CAPACITY`.\n\n### UC2-specific offer type\n\nOffer type `CAMP` (per `HealthOffer.offerType` enum) distinguishes this engagement from `SINGLE_EVENT` (UC1) and `BULK_PROCUREMENT` (UC0). The CAMP offer carries `minimumQuantity`, `maximumQuantity`, and `requiresAdvanceBooking: true`.\n\n### Bifurcation rule\n\nA UC2 engagement carries exactly one of `{entitlementRef, paymentAuthorisation}` — never both.\n- Scenarios A/C: consideration carries `entitlementRef` → no `paymentAuthorisation`\n- Scenario B: consideration carries `paymentAuthorisation` → no `entitlementRef`\n\n### HealthEntitlement campCommitment sub-object\n\nAt `on_confirm` (Scenarios A/C), `contractAttributes` carries the updated HealthEntitlement with a `campCommitment` sub-object (campId, campDate, campLocation, committedPatients, confirmedPatients, campStatus). campStatus lifecycle: ACTIVE (on_confirm) → ACTIVE (on_status mid-camp) → COMPLETED (on_update).\n\n### Structural conventions (per core beckn.yaml v2.0.0)\n\n- `select` carries a DRAFT `Contract` object (`SelectAction.contract` per core spec); BAP originates without `id`; BPP assigns `contract.id` at `on_select`\n- `schemaContext` only on `discover`/`on_discover` (Scenario B); absent from all negotiation messages\n- `OFFER_CAMP_REF` always includes `resourceIds: [\\u007b\\u007bresource_id\\u007d\\u007d]` (required per spec)\n- `status` uses `message.contract {id, commitments[]}` — not a flat `contractId`\n- `billingDetails`, `paymentInstructions`, `invoiceDetails` are banned from `Contract` (`additionalProperties: false`)\n- Participant PII absent at `select`; full details from `init` onward\n- `HealthContract.consent` present at `init`/`confirm` (BAP-initiated messages only) per IG §8.3; camp-batch consent recorded at `init` with `consentedBy: {{camp_coordinator_id}}`; BPP responses are exempt\n\n### Consideration lifecycle\n\n| Call | status.code | pricePerUnit | totalAmount | netAmount |\n|---|---|---|---|---|\n| catalog (on_discover, B only) | *(none)* | Rs.250 | — | — |\n| select | DRAFT | — | — | — |\n| on_select | PENDING | Rs.200 (A/C) / Rs.250 (B) | Rs.6000 / Rs.7500 | same |\n| init | PENDING | echoed | echoed | echoed |\n| on_init | QUOTED | Rs.200 / Rs.250 | Rs.6000 / Rs.7500 | same |\n| confirm | ACTIVE | — | echoed | echoed |\n| on_confirm → on_status | ACTIVE | — | planned total | planned total |\n| on_update (full completion) | ACTIVE | — | 22×rate (A: Rs.4400, B: Rs.5500) | same |\n| on_update (partial, C) | ACTIVE | — | 15×Rs.200 = Rs.3000 | same |\n\n### End-of-camp settlement\n\n| Scenario | Settlement key fields |\n|---|---|\n| A (full) | `entitlementRef`, `entitlementCreditBack: 8` |\n| B (full) | `campLedgerRef`, `adjustmentType: DEBIT`, `adjustmentAmount: 2000` |\n| C (partial) | `entitlementRef`, `entitlementCreditBack: 15` |\n\n### Entitlement unit mechanics\n\n**Entitlement unit = one patient analysis.** The entitlement pool (procured in UC0) is denominated in individual patient analyses — not in camps. One camp consuming 22 patients draws 22 units, not one \"camp slot\". The camp contract introduces a two-phase drawdown: the `select`→`on_confirm` cycle locks the planned quantity (30 units) against the entitlement's capacity at booking time, reducing `remainingCapacity` by 30; the `update`→`on_update` cycle reconciles actuals and releases unused units back, adjusting `usedCapacity` to the real headcount and restoring the unspent units to `remainingCapacity`. No money moves at either phase — the pool was pre-paid under UC0.\n\nThis keeps the entitlement pool fungible — the same UC0 pool serves any mix of individual UC1 engagements and UC2 camps without separate per-modality procurement. Locking at `select`→`on_confirm` also prevents race conditions when multiple camps draw concurrently: the BPP can reject a second camp's `on_select` if the combined committed quantity would exceed remaining capacity. And by establishing a ceiling at booking time, it gives the implementing agency an organisational boundary — no single camp can inadvertently consume the whole pool, which supports allocation planning across a programme.\n\n### Cross-collection variable chaining\n\n`entitlement_id` (`f7a8b9c0-d1e2-3456-fa78-bc9012345ef6`) is issued at UC0 `on_confirm` and consumed here in Scenarios A/C as the drawdown reference. Set this variable to the actual value returned by your UC0 run before executing Scenarios A/C.\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -10,19 +10,19 @@
       "key": "bpp_uri",
       "value": "https://swaasa.onhs.in/beckn",
       "type": "string",
-      "description": "Provider NP (BPP) \u2014 target for select, init, confirm, status, update"
+      "description": "Provider NP (BPP) — target for select, init, confirm, status, update"
     },
     {
       "key": "bap_uri",
       "value": "https://arogyalink.onhs.in/beckn",
       "type": "string",
-      "description": "Seeker NP (BAP) \u2014 target for on_* callback simulations"
+      "description": "Seeker NP (BAP) — target for on_* callback simulations"
     },
     {
       "key": "auth_token",
       "value": "",
       "type": "string",
-      "description": "Network-issued JWT \u2014 set before running"
+      "description": "Network-issued JWT — set before running"
     },
     {
       "key": "domain",
@@ -102,7 +102,7 @@
       "key": "offer_id_camp",
       "value": "offer-swaasa-camp",
       "type": "string",
-      "description": "CAMP offer \u2014 offerType: CAMP, used in Scenarios A/B/C/D"
+      "description": "CAMP offer — offerType: CAMP, used in Scenarios A/B/C/D"
     },
     {
       "key": "catalog_id",
@@ -128,19 +128,19 @@
       "key": "agency_participant_id",
       "value": "participant-agency-swk-001",
       "type": "string",
-      "description": "IMPLEMENTING_AGENCY \u2014 Swastha Karnataka Foundation (same as UC0/UC1)"
+      "description": "IMPLEMENTING_AGENCY — Swastha Karnataka Foundation (same as UC0/UC1)"
     },
     {
       "key": "camp_coordinator_id",
       "value": "participant-flw-meena-002",
       "type": "string",
-      "description": "FIELD_WORKER \u2014 ASHA camp coordinator (Meena Devi)"
+      "description": "FIELD_WORKER — ASHA camp coordinator (Meena Devi)"
     },
     {
       "key": "camp_id",
       "value": "camp-swk-ka-20260615-001",
       "type": "string",
-      "description": "Unique camp identifier \u2014 used in contractAttributes.campId and campCommitment.campId"
+      "description": "Unique camp identifier — used in contractAttributes.campId and campCommitment.campId"
     },
     {
       "key": "camp_batch_consent_id",
@@ -158,28 +158,28 @@
       "key": "payment_ref_b",
       "value": "NEFT-UTR-SWK-CAMP-20260615-001",
       "type": "string",
-      "description": "Scenario B \u2014 NEFT payment UTR from camp organiser"
+      "description": "Scenario B — NEFT payment UTR from camp organiser"
     },
     {
       "key": "camp_ledger_ref",
       "value": "cash-ledger-camp-swk-20260615-001",
       "type": "string",
-      "description": "Scenario B \u2014 seeker-side cash collection ledger reference"
+      "description": "Scenario B — seeker-side cash collection ledger reference"
     },
     {
       "key": "agency_cert_checksum",
       "value": "",
       "type": "string",
-      "description": "SHA256 checksum of NGO-Darpan certificate \u2014 set before running Scenario A/B/C/D select"
+      "description": "SHA256 checksum of NGO-Darpan certificate — set before running Scenario A/B/C/D select"
     }
   ],
   "item": [
     {
-      "name": "Scenario A \u2014 Entitlement Drawdown (Batch Redemption)",
+      "name": "Scenario A — Entitlement Drawdown (Batch Redemption)",
       "description": "Swastha Karnataka Foundation draws down 30 units from the NGO HealthEntitlement (UC0). No advance cash payment; consideration carries entitlementRef. End-of-camp reconciliation: 22 patients screened, 8 units credited back. One unit = one patient analysis; the select cycle locks 30, the update cycle releases 8 back to the pool.",
       "item": [
         {
-          "name": "01 \u2014 select",
+          "name": "01 — select",
           "item": [
             {
               "name": "select",
@@ -214,7 +214,7 @@
           ]
         },
         {
-          "name": "02 \u2014 on_select",
+          "name": "02 — on_select",
           "item": [
             {
               "name": "on_select",
@@ -249,7 +249,7 @@
           ]
         },
         {
-          "name": "03 \u2014 init",
+          "name": "03 — init",
           "item": [
             {
               "name": "init",
@@ -284,7 +284,7 @@
           ]
         },
         {
-          "name": "04 \u2014 on_init",
+          "name": "04 — on_init",
           "item": [
             {
               "name": "on_init",
@@ -319,7 +319,7 @@
           ]
         },
         {
-          "name": "05 \u2014 confirm",
+          "name": "05 — confirm",
           "item": [
             {
               "name": "confirm",
@@ -354,7 +354,7 @@
           ]
         },
         {
-          "name": "06 \u2014 on_confirm  \u2605 Camp Engagement Active",
+          "name": "06 — on_confirm  ★ Camp Engagement Active",
           "item": [
             {
               "name": "on_confirm",
@@ -389,7 +389,7 @@
           ]
         },
         {
-          "name": "07 \u2014 status",
+          "name": "07 — status",
           "item": [
             {
               "name": "status",
@@ -424,7 +424,7 @@
           ]
         },
         {
-          "name": "08 \u2014 on_status  \u2605 Camp In Progress",
+          "name": "08 — on_status  ★ Camp In Progress",
           "item": [
             {
               "name": "on_status",
@@ -459,7 +459,7 @@
           ]
         },
         {
-          "name": "09 \u2014 update (end-of-camp reconciliation)",
+          "name": "09 — update (end-of-camp reconciliation)",
           "item": [
             {
               "name": "update",
@@ -494,7 +494,7 @@
           ]
         },
         {
-          "name": "10 \u2014 on_update  \u2605 Camp Complete",
+          "name": "10 — on_update  ★ Camp Complete",
           "item": [
             {
               "name": "on_update",
@@ -531,11 +531,11 @@
       ]
     },
     {
-      "name": "Scenario B \u2014 On-the-spot Payment",
-      "description": "Camp organiser pays Rs.7500 upfront (NEFT). Full discover\u2192on_update lifecycle. End-of-camp: 22 patients screened, Rs.2000 on-actuals refund to be processed.",
+      "name": "Scenario B — On-the-spot Payment",
+      "description": "Camp organiser pays Rs.7500 upfront (NEFT). Full discover→on_update lifecycle. End-of-camp: 22 patients screened, Rs.2000 on-actuals refund to be processed.",
       "item": [
         {
-          "name": "01 \u2014 discover",
+          "name": "01 — discover",
           "item": [
             {
               "name": "discover",
@@ -570,7 +570,7 @@
           ]
         },
         {
-          "name": "02 \u2014 on_discover",
+          "name": "02 — on_discover",
           "item": [
             {
               "name": "on_discover",
@@ -605,7 +605,7 @@
           ]
         },
         {
-          "name": "03 \u2014 select",
+          "name": "03 — select",
           "item": [
             {
               "name": "select",
@@ -640,7 +640,7 @@
           ]
         },
         {
-          "name": "04 \u2014 on_select",
+          "name": "04 — on_select",
           "item": [
             {
               "name": "on_select",
@@ -675,7 +675,7 @@
           ]
         },
         {
-          "name": "05 \u2014 init",
+          "name": "05 — init",
           "item": [
             {
               "name": "init",
@@ -710,7 +710,7 @@
           ]
         },
         {
-          "name": "06 \u2014 on_init",
+          "name": "06 — on_init",
           "item": [
             {
               "name": "on_init",
@@ -745,7 +745,7 @@
           ]
         },
         {
-          "name": "07 \u2014 confirm",
+          "name": "07 — confirm",
           "item": [
             {
               "name": "confirm",
@@ -780,7 +780,7 @@
           ]
         },
         {
-          "name": "08 \u2014 on_confirm  \u2605 Camp Engagement Active",
+          "name": "08 — on_confirm  ★ Camp Engagement Active",
           "item": [
             {
               "name": "on_confirm",
@@ -815,7 +815,7 @@
           ]
         },
         {
-          "name": "09 \u2014 status",
+          "name": "09 — status",
           "item": [
             {
               "name": "status",
@@ -850,7 +850,7 @@
           ]
         },
         {
-          "name": "10 \u2014 on_status  \u2605 Camp In Progress",
+          "name": "10 — on_status  ★ Camp In Progress",
           "item": [
             {
               "name": "on_status",
@@ -885,7 +885,7 @@
           ]
         },
         {
-          "name": "11 \u2014 update (end-of-camp reconciliation)",
+          "name": "11 — update (end-of-camp reconciliation)",
           "item": [
             {
               "name": "update",
@@ -920,7 +920,7 @@
           ]
         },
         {
-          "name": "12 \u2014 on_update  \u2605 Camp Complete",
+          "name": "12 — on_update  ★ Camp Complete",
           "item": [
             {
               "name": "on_update",
@@ -957,11 +957,11 @@
       ]
     },
     {
-      "name": "Scenario C \u2014 Partial Completion (Device Failure)",
+      "name": "Scenario C — Partial Completion (Device Failure)",
       "description": "Scenario A (entitlement drawdown) variant. Device failure halts camp after 15 patients. update carries partial headcount; on_update credits back 15 units. One unit = one patient analysis; 30 locked at select, 15 released at update (partialCompletionFraction=0.5).",
       "item": [
         {
-          "name": "01 \u2014 select",
+          "name": "01 — select",
           "item": [
             {
               "name": "select",
@@ -996,7 +996,7 @@
           ]
         },
         {
-          "name": "02 \u2014 on_select",
+          "name": "02 — on_select",
           "item": [
             {
               "name": "on_select",
@@ -1031,7 +1031,7 @@
           ]
         },
         {
-          "name": "03 \u2014 init",
+          "name": "03 — init",
           "item": [
             {
               "name": "init",
@@ -1066,7 +1066,7 @@
           ]
         },
         {
-          "name": "04 \u2014 on_init",
+          "name": "04 — on_init",
           "item": [
             {
               "name": "on_init",
@@ -1101,7 +1101,7 @@
           ]
         },
         {
-          "name": "05 \u2014 confirm",
+          "name": "05 — confirm",
           "item": [
             {
               "name": "confirm",
@@ -1136,7 +1136,7 @@
           ]
         },
         {
-          "name": "06 \u2014 on_confirm  \u2605 Camp Engagement Active",
+          "name": "06 — on_confirm  ★ Camp Engagement Active",
           "item": [
             {
               "name": "on_confirm",
@@ -1171,7 +1171,7 @@
           ]
         },
         {
-          "name": "07 \u2014 update (partial completion \u2014 device failure)",
+          "name": "07 — update (partial completion — device failure)",
           "item": [
             {
               "name": "update",
@@ -1206,7 +1206,7 @@
           ]
         },
         {
-          "name": "08 \u2014 on_update  \u2605 Partial Completion",
+          "name": "08 — on_update  ★ Partial Completion",
           "item": [
             {
               "name": "on_update",
@@ -1243,11 +1243,11 @@
       ]
     },
     {
-      "name": "Scenario D \u2014 Capacity Insufficient (Failure Path)",
+      "name": "Scenario D — Capacity Insufficient (Failure Path)",
       "description": "BAP attempts to commit 30 patients; entitlement only has 20 units remaining. BPP returns CANCELLED contract at on_select with refusalReason=INSUFFICIENT_CAPACITY.",
       "item": [
         {
-          "name": "01 \u2014 select",
+          "name": "01 — select",
           "item": [
             {
               "name": "select",
@@ -1282,7 +1282,7 @@
           ]
         },
         {
-          "name": "02 \u2014 on_select (error \u2014 capacity insufficient)",
+          "name": "02 — on_select (error — capacity insufficient)",
           "item": [
             {
               "name": "on_select",
@@ -1301,7 +1301,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_d}}\",\n    \"messageId\": \"2c3d4e5f-a6b7-8901-c2d3-e4f5a6b78901\",\n    \"timestamp\": \"2026-06-15T08:30:08+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id_d}}\",\n      \"status\": {\n        \"code\": \"CANCELLED\"\n      },\n      \"descriptor\": {\n        \"name\": \"Camp Booking Rejected \\u2014 Insufficient Entitlement Capacity\",\n        \"shortDesc\": \"Entitlement has only 20 units remaining; requested camp size of 30 exceeds available capacity. Reduce camp size or procure additional capacity under UC0.\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2d-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"CLOSED\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{resource_id}}\",\n              \"quantity\": {\n                \"count\": 30\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{offer_id_camp}}\",\n            \"resourceIds\": [\n              \"{{resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthEntitlement/v2.1/context.jsonld\",\n        \"@type\": \"he:HealthEntitlement\",\n        \"entitlementId\": \"{{entitlement_id}}\",\n        \"healthServiceType\": \"DIAGNOSTIC_ANALYTICS\",\n        \"remainingCapacity\": 20,\n        \"state\": \"ACTIVE\",\n        \"refusalReason\": \"INSUFFICIENT_CAPACITY\",\n        \"refusalDetail\": \"Requested 30 units; only 20 remain. Reduce camp size to \\u226420 or top up via UC0 procurement.\"\n      }\n    }\n  }\n}",
+                  "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_d}}\",\n    \"messageId\": \"2c3d4e5f-a6b7-8901-c2d3-e4f5a6b78901\",\n    \"timestamp\": \"2026-06-15T08:30:08+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id_d}}\",\n      \"status\": {\n        \"code\": \"CANCELLED\"\n      },\n      \"descriptor\": {\n        \"name\": \"Camp Booking Rejected — Insufficient Entitlement Capacity\",\n        \"shortDesc\": \"Entitlement has only 20 units remaining; requested camp size of 30 exceeds available capacity. Reduce camp size or procure additional capacity under UC0.\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2d-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"CLOSED\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{resource_id}}\",\n              \"quantity\": {\n                \"count\": 30\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{offer_id_camp}}\",\n            \"resourceIds\": [\n              \"{{resource_id}}\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
                   "options": {
                     "raw": {
                       "language": "json"

@@ -30,6 +30,21 @@ components:
         "@type": "hpe:HealthPerformance"
       allOf:
         - $ref: "https://schema.beckn.io/ServicePerformance/v2.1/attributes.yaml#/components/schemas/ServicePerformance"
+        # Conditional field requirements by healthServiceType.
+        # Both if/then conditions must live inside allOf[] — YAML does not allow
+        # duplicate mapping keys (if, then) at the same schema level.
+        - if:
+            properties:
+              healthServiceType:
+                const: DIAGNOSTIC_ANALYTICS
+          then:
+            required: [clinicalInterpretation, artifactsGenerated]
+        - if:
+            properties:
+              healthServiceType:
+                enum: [PHYSICAL_CONSULTATION, LAB_TEST]
+          then:
+            required: [serviceLocation]
       required:
         - healthServiceType
       properties:
@@ -123,18 +138,3 @@ components:
               format: date-time
               description: Timestamp of specialist review (ISO 8601)
 
-      # DIAGNOSTIC_ANALYTICS requires clinicalInterpretation and artifactsGenerated
-      if:
-        properties:
-          healthServiceType:
-            const: DIAGNOSTIC_ANALYTICS
-      then:
-        required: [clinicalInterpretation, artifactsGenerated]
-
-      # PHYSICAL_CONSULTATION and LAB_TEST require serviceLocation (inherited field)
-      if:
-        properties:
-          healthServiceType:
-            enum: [PHYSICAL_CONSULTATION, LAB_TEST]
-      then:
-        required: [serviceLocation]
