@@ -1,17 +1,27 @@
 openapi: 3.1.1
+$id: "https://schema.beckn.io/AgriServiceResource/v2.1/attributes.yaml"
 info:
   title: AgriServiceResource Schema
   version: "2.1.0"
-  description: Extension schema for agriculture-specific service resources in the generalised Beckn Protocol model
+  description: >
+    Extension schema for agriculture-specific service resources in the generalised
+    Beckn Protocol model. Extends ServiceResource with agricultural service
+    categorisation, provider typing, livestock scope, and both free-text and
+    typed machine-filterable geographic coverage.
   x-beckn-container: resourceAttributes
 
 components:
   schemas:
     AgriServiceResource:
       allOf:
-        - $ref: "../../services/ServiceResource/v2.1/attributes.yaml#/components/schemas/ServiceResource"
+        - $ref: "../../../generic-service/ServiceResource/v2.1/attributes.yaml#/components/schemas/ServiceResource"
       type: object
       x-beckn-container: resourceAttributes
+      x-status: under-review
+      x-tags:
+        - service
+        - agri-services-ext
+        - resource
       x-jsonld:
         "@context": "https://schema.beckn.io/AgriServiceResource/v2.1/context.jsonld"
         "@type": "asr:AgriServiceResource"
@@ -25,7 +35,17 @@ components:
             - AGRI_INPUT
             - ADVISORY
             - SCREENING
-          description: Category of agricultural service provided
+            - DIGITAL_ADVISORY
+          description: >
+            Category of agricultural service provided.
+            VACCINATION: livestock vaccination camp or on-farm visit.
+            BROODING: poultry brooding management service.
+            INCUBATION: egg incubation service.
+            AGRI_INPUT: supply of seeds, fertilisers, pesticides, or equipment.
+            ADVISORY: in-person extension advisory or consultancy visit.
+            SCREENING: animal health screening or diagnostic service.
+            DIGITAL_ADVISORY: advisory delivered entirely through digital channels
+              (app push, SMS, IVR, WhatsApp, dashboard) — no physical visit required.
           x-jsonld-id: "asr:serviceCategory"
         providerType:
           type: string
@@ -35,7 +55,19 @@ components:
             - EXTENSION_OFFICER
             - AGRI_INPUT_DEALER
             - AGRI_TRAINER
-          description: Type of agricultural service provider
+            - DIGITAL_ADVISORY_PLATFORM
+            - WEATHER_DATA_PROVIDER
+            - MARKET_INFO_SERVICE
+          description: >
+            Type of agricultural service provider.
+            VET: licensed veterinarian.
+            AGROVET: agro-veterinary shop or dispensary.
+            EXTENSION_OFFICER: government or NGO agricultural extension officer.
+            AGRI_INPUT_DEALER: supplier of agricultural inputs.
+            AGRI_TRAINER: farmer training or capacity-building organisation.
+            DIGITAL_ADVISORY_PLATFORM: technology platform delivering advisory digitally.
+            WEATHER_DATA_PROVIDER: meteorological data and forecast service.
+            MARKET_INFO_SERVICE: commodity price and market intelligence service.
           x-jsonld-id: "asr:providerType"
         livestockTypes:
           type: array
@@ -52,12 +84,42 @@ components:
           x-jsonld-id: "asr:livestockTypes"
         serviceAreaHierarchy:
           $ref: "#/components/schemas/AgriServiceAreaHierarchy"
-          description: Hierarchical geographic coverage for the agricultural service
+          description: >
+            Free-text hierarchical geographic coverage for human display and
+            legacy compatibility. For machine-filterable geographic scoping,
+            prefer coverageAreaCodes.
           x-jsonld-id: "asr:serviceAreaHierarchy"
+        coverageAreaCodes:
+          type: array
+          description: >
+            Machine-filterable geographic coverage expressed as typed coded values
+            from administrative coding authorities (e.g. India LGD, Kenya KNBS/IEBC,
+            India Post PIN codes). Each entry is a CodedValue triple:
+              @context — authority URI
+              @type    — code class within the authority
+              code     — the actual code string
+
+            Multiple entries are OR-combined: the resource is available in any of
+            the listed zones. Entries may mix granularities (district + sub-district)
+            and authorities (LGD + India Post).
+
+            Examples:
+              {"@context":"https://lgdirectory.gov.in","@type":"LGDDistrict","code":"507","display":"Nashik"}
+              {"@context":"https://www.knbs.or.ke","@type":"KenyaCounty","code":"022","display":"Kiambu"}
+              {"@context":"https://www.indiapost.gov.in","@type":"PINCode","code":"422001"}
+
+            Networks SHOULD publish their canonical authority URI and @type vocabulary
+            in their network policy documentation.
+          items:
+            $ref: "../../../generic-service/generic-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+          x-jsonld-id: "asr:coverageAreaCodes"
 
     AgriServiceAreaHierarchy:
       type: object
-      description: Hierarchical geographic coverage area for agricultural services
+      description: >
+        Free-text hierarchical geographic coverage area for agricultural services.
+        Human-readable display only. Use coverageAreaCodes for machine-filterable
+        geographic scoping.
       properties:
         village:
           type: string

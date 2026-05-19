@@ -122,11 +122,41 @@ components:
           description: Human-readable description of forfeiture conditions (e.g. on expiry)
           x-jsonld-id: "se:forfeitureRules"
         lockedTermsSnapshot:
-          type: string
+          type: object
           description: >
-            JSON-serialised snapshot of the offer terms at the time of procurement commit.
-            Provides an immutable reference for dispute resolution.
+            Structured snapshot of the offer terms locked at procurement commit.
+            Provides an immutable, machine-readable reference for dispute resolution.
+            All fields reflect the values agreed at the time the entitlement was issued
+            and must not be mutated after on_confirm.
           x-jsonld-id: "se:lockedTermsSnapshot"
+          properties:
+            offerId:
+              type: string
+              description: ID of the offer whose terms were locked
+              x-jsonld-id: "se:lts_offerId"
+            pricePerUnit:
+              type: number
+              minimum: 0
+              description: Agreed price per unit at time of lock
+              x-jsonld-id: "se:lts_pricePerUnit"
+            currency:
+              type: string
+              description: ISO 4217 currency code
+              x-jsonld-id: "se:lts_currency"
+            discountRef:
+              type: string
+              description: Reference to the discount scheme applied at lock time (if any)
+              x-jsonld-id: "se:lts_discountRef"
+            totalCapacity:
+              type: integer
+              minimum: 1
+              description: Total units locked under this entitlement
+              x-jsonld-id: "se:lts_totalCapacity"
+            lockedAt:
+              type: string
+              format: date-time
+              description: Timestamp when these terms were locked (ISO 8601)
+              x-jsonld-id: "se:lts_lockedAt"
         grievanceRef:
           type: string
           description: Reference ID for any active grievance or dispute raised against this entitlement

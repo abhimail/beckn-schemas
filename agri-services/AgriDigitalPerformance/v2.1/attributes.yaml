@@ -1,0 +1,116 @@
+openapi: 3.1.1
+$id: "https://schema.beckn.io/AgriDigitalPerformance/v2.1/attributes.yaml"
+info:
+  title: AgriDigitalPerformance Schema
+  version: "2.1.0"
+  description: >
+    Extension schema for digital/remote agricultural service delivery in the
+    generalised Beckn Protocol model. Extends ServicePerformance (not
+    AgriServicePerformance, which models physical on-farm visits) to capture
+    how advisory content was delivered through digital channels, which language
+    was used, the geographic scope the advisory was generated for, and how the
+    content can be accessed.
+
+    Applicable to DIGITAL_ADVISORY service category resources: crop advisories,
+    weather forecasts, commodity price alerts, pest/disease bulletins delivered
+    via app, SMS, IVR, WhatsApp, or dashboard.
+  x-beckn-container: performanceAttributes
+
+components:
+  schemas:
+    AgriDigitalPerformance:
+      allOf:
+        - $ref: "../../../generic-service/ServicePerformance/v2.1/attributes.yaml#/components/schemas/ServicePerformance"
+      type: object
+      x-beckn-container: performanceAttributes
+      x-status: under-review
+      x-tags:
+        - service
+        - agri-services-ext
+        - performance
+        - digital
+      x-jsonld:
+        "@context": "https://schema.beckn.io/AgriDigitalPerformance/v2.1/context.jsonld"
+        "@type": "adp:AgriDigitalPerformance"
+      properties:
+        deliveryMode:
+          type: string
+          enum:
+            - APP
+            - SMS
+            - WHATSAPP
+            - IVR
+            - EMAIL
+            - DASHBOARD
+            - PUSH_NOTIFICATION
+            - OTHER
+          description: >
+            Channel through which the advisory content was delivered to the farmer
+            or Seeker NP.
+            APP: in-app notification or content page.
+            SMS: plain-text SMS message.
+            WHATSAPP: WhatsApp message (text, image, or document).
+            IVR: Interactive Voice Response audio advisory.
+            EMAIL: email delivery.
+            DASHBOARD: content available on a web/app dashboard.
+            PUSH_NOTIFICATION: mobile push notification.
+            OTHER: any other delivery channel.
+          x-jsonld-id: "adp:deliveryMode"
+        requestedLanguage:
+          type: string
+          description: >
+            BCP 47 language tag requested by the Seeker NP or farmer for the
+            advisory content. Examples: "hi" (Hindi), "kn" (Kannada), "sw" (Swahili),
+            "en" (English), "mr" (Marathi).
+          x-jsonld-id: "adp:requestedLanguage"
+        deliveredLanguage:
+          type: string
+          description: >
+            BCP 47 language tag of the language actually used for content delivery.
+            May differ from requestedLanguage if the requested language was unavailable.
+          x-jsonld-id: "adp:deliveredLanguage"
+        contentAccessUrl:
+          type: string
+          format: uri
+          description: >
+            URL through which the delivered advisory content can be accessed or
+            retrieved. May be a deep link into an app, a web URL, or a signed
+            pre-authenticated URL for time-limited access.
+          x-jsonld-id: "adp:contentAccessUrl"
+        contentAccessExpiry:
+          type: string
+          format: date-time
+          description: >
+            ISO 8601 date-time after which contentAccessUrl is no longer valid.
+            Omit for permanently accessible content.
+          x-jsonld-id: "adp:contentAccessExpiry"
+        targetLocation:
+          description: >
+            The geographic scope for which the advisory content was generated,
+            expressed as a typed coded value from an administrative coding authority.
+            Allows Seeker NPs and farmers to confirm the advisory is relevant to
+            their location.
+            Example: {"@context":"https://lgdirectory.gov.in","@type":"LGDDistrict","code":"507","display":"Nashik"}
+          $ref: "../../../generic-service/generic-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+          x-jsonld-id: "adp:targetLocation"
+        contentRef:
+          type: string
+          description: >
+            Internal reference ID assigned by the Provider NP to the advisory
+            content object. Used for traceability, re-fetch, and grievance linkage.
+          x-jsonld-id: "adp:contentRef"
+        deliveredAt:
+          type: string
+          format: date-time
+          description: >
+            ISO 8601 timestamp when the advisory content was dispatched or made
+            available to the farmer or Seeker NP.
+          x-jsonld-id: "adp:deliveredAt"
+        deliveryConfirmed:
+          type: boolean
+          default: false
+          description: >
+            Whether delivery of the advisory to the end recipient has been
+            confirmed (e.g. SMS delivery report, WhatsApp read receipt, app
+            open event). False means dispatched but delivery unconfirmed.
+          x-jsonld-id: "adp:deliveryConfirmed"
