@@ -23,13 +23,16 @@ components:
         "@context": "https://schema.beckn.io/ServiceEntitlement/v2.1/context.jsonld"
         "@type": "se:ServiceEntitlement"
       required:
-        - entitlementId
-        - issuerId
-        - holderId
         - totalCapacity
         - validFrom
         - validUntil
-        - state
+      if:
+        properties:
+          state:
+            const: ACTIVE
+        required: [state]
+      then:
+        required: [entitlementId, issuerId, holderId, state]
       properties:
         entitlementId:
           type: string

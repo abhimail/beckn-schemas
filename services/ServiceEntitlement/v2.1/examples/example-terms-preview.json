@@ -1,0 +1,31 @@
+{
+  "_comment": "Terms-preview payload (on_select / on_init) — entitlement not yet issued. Identity fields (entitlementId, issuerId, holderId) are absent because the entitlement does not exist until on_confirm. Only capacity, validity, and scope terms are communicated at this stage.",
+  "context": {
+    "action": "on_select",
+    "schemaContext": ["https://schema.beckn.io/ServiceEntitlement/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-procure-draft-001",
+      "beckn:status": {"code": "DRAFT"},
+      "beckn:contractAttributes": {
+        "@type": "se:ServiceEntitlement",
+        "state": "DRAFT",
+        "totalCapacity": 1000,
+        "validFrom": "2026-06-01",
+        "validUntil": "2027-05-31",
+        "serviceScope": ["res-cough-analysis-v2"],
+        "geographyScope": ["IN-KA-BLR", "IN-KA-MYS"],
+        "counterpartyScope": ["provider-np-swaasa-001"],
+        "redemptionRules": {
+          "minPerRedemption": 1,
+          "maxPerRedemption": 50,
+          "cooldownHours": 0
+        },
+        "refundRules": "Unused capacity refundable at 80% of face value within 30 days of expiry",
+        "forfeitureRules": "Capacity not redeemed by validUntil date is forfeited with no refund"
+      }
+    }
+  }
+}
