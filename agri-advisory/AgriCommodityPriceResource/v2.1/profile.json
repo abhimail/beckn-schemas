@@ -1,0 +1,29 @@
+{
+  "id": "https://schema.beckn.io/AgriCommodityPriceResource/v1",
+  "name": "AgriCommodityPriceResource",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["AgriServiceResource"],
+  "discovery_fields": [
+    "resourceAttributes.acpr:commodities",
+    "resourceAttributes.acpr:marketCodes",
+    "resourceAttributes.acpr:priceDataTypes",
+    "resourceAttributes.acpr:priceUpdateFrequencyHours",
+    "resourceAttributes.acpr:includesTradingAdvice"
+  ],
+  "indexable_paths": [
+    "resourceAttributes.acpr:commodities",
+    "resourceAttributes.acpr:marketCodes",
+    "resourceAttributes.acpr:priceDataTypes"
+  ],
+  "filterable_paths": [
+    "resourceAttributes.acpr:commodities",
+    "resourceAttributes.acpr:marketCodes",
+    "resourceAttributes.acpr:priceDataTypes",
+    "resourceAttributes.acpr:priceUpdateFrequencyHours",
+    "resourceAttributes.acpr:includesTradingAdvice"
+  ],
+  "sortable_paths": [],
+  "privacy_notes": []
+}

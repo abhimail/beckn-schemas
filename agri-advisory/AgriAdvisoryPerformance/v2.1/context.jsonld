@@ -1,0 +1,42 @@
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "aap": "https://schema.beckn.io/AgriAdvisoryPerformance#",
+
+    "AgriAdvisoryPerformance": "aap:AgriAdvisoryPerformance",
+
+    "advisoryId": {
+      "@id": "aap:advisoryId",
+      "@type": "schema:Text"
+    },
+    "advisoryType": {
+      "@id": "aap:advisoryType",
+      "@type": "@vocab"
+    },
+    "generatedAt": {
+      "@id": "aap:generatedAt",
+      "@type": "schema:DateTime"
+    },
+    "cropSeasonRef": {
+      "@id": "aap:cropSeasonRef",
+      "@type": "schema:Text"
+    },
+    "validityWindowHours": {
+      "@id": "aap:validityWindowHours",
+      "@type": "schema:Integer"
+    },
+    "farmersReached": {
+      "@id": "aap:farmersReached",
+      "@type": "schema:Integer"
+    },
+    "cropTypes": {
+      "@id": "aap:cropTypes",
+      "@container": "@set"
+    },
+    "dataSnapshotRef": {
+      "@id": "aap:dataSnapshotRef",
+      "@type": "schema:Text"
+    }
+  }
+}

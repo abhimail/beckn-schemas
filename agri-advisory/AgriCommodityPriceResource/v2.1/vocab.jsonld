@@ -1,0 +1,57 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "acpr": "https://schema.beckn.io/AgriCommodityPriceResource#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "acpr:AgriCommodityPriceResource",
+      "@type": "rdfs:Class",
+      "rdfs:label": "AgriCommodityPriceResource",
+      "rdfs:comment": "A Beckn resource representing a commodity market information service that delivers mandi/APMC prices, arrival volumes, price trends, and related market intelligence to farmers and Seeker NPs."
+    },
+    {
+      "@id": "acpr:PriceDataType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "PriceDataType",
+      "rdfs:comment": "Enumeration of commodity price data categories that an AgriCommodityPriceResource can deliver."
+    },
+    {
+      "@id": "acpr:SPOT_PRICE",
+      "@type": "acpr:PriceDataType",
+      "rdfs:label": "Spot Price",
+      "rdfs:comment": "Current market price at which a commodity is traded for immediate delivery at a specific market or mandi."
+    },
+    {
+      "@id": "acpr:MODAL_PRICE",
+      "@type": "acpr:PriceDataType",
+      "rdfs:label": "Modal Price",
+      "rdfs:comment": "The most frequently occurring price in a set of transactions at a given market on a given date; the standard price reported by Agmarknet for APMC markets."
+    },
+    {
+      "@id": "acpr:ARRIVAL_VOLUME",
+      "@type": "acpr:PriceDataType",
+      "rdfs:label": "Arrival Volume",
+      "rdfs:comment": "Total quantity of a commodity arriving at a market or mandi during a specified period, typically reported in quintals or metric tonnes."
+    },
+    {
+      "@id": "acpr:FUTURES_PRICE",
+      "@type": "acpr:PriceDataType",
+      "rdfs:label": "Futures Price",
+      "rdfs:comment": "Price of a commodity for delivery at a specified future date, as traded on commodity exchanges such as NCDEX or MCX."
+    },
+    {
+      "@id": "acpr:PRICE_TREND",
+      "@type": "acpr:PriceDataType",
+      "rdfs:label": "Price Trend",
+      "rdfs:comment": "Historical price trend data showing price movement over time for a commodity at one or more markets, used for seasonal and inter-market analysis."
+    },
+    {
+      "@id": "acpr:PRICE_FORECAST",
+      "@type": "acpr:PriceDataType",
+      "rdfs:label": "Price Forecast",
+      "rdfs:comment": "Forward-looking price projection for a commodity generated using statistical or machine learning models, covering a specified forecast horizon."
+    }
+  ]
+}

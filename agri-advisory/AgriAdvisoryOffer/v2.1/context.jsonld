@@ -1,0 +1,38 @@
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "aao": "https://schema.beckn.io/AgriAdvisoryOffer#",
+
+    "AgriAdvisoryOffer": "aao:AgriAdvisoryOffer",
+
+    "bundledResourceTypes": {
+      "@id": "aao:bundledResourceTypes",
+      "@container": "@set"
+    },
+    "languageOptions": {
+      "@id": "aao:languageOptions",
+      "@container": "@set"
+    },
+    "subscriptionPeriodDays": {
+      "@id": "aao:subscriptionPeriodDays",
+      "@type": "schema:Integer"
+    },
+    "advisoriesPerSubscription": {
+      "@id": "aao:advisoriesPerSubscription",
+      "@type": "schema:Integer"
+    },
+    "entitlementEligible": {
+      "@id": "aao:entitlementEligible",
+      "@type": "schema:Boolean"
+    },
+    "targetBeneficiaryType": {
+      "@id": "aao:targetBeneficiaryType",
+      "@type": "@vocab"
+    },
+    "deliveryChannels": {
+      "@id": "aao:deliveryChannels",
+      "@container": "@set"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "awr": "https://schema.beckn.io/AgriWeatherResource#",
+
+    "AgriWeatherResource": "awr:AgriWeatherResource",
+
+    "forecastHorizonDays": {
+      "@id": "awr:forecastHorizonDays",
+      "@type": "xsd:integer"
+    },
+    "forecastResolutionHours": {
+      "@id": "awr:forecastResolutionHours",
+      "@type": "xsd:integer"
+    },
+    "weatherParameters": {
+      "@id": "awr:weatherParameters",
+      "@container": "@set"
+    },
+    "spatialResolution": {
+      "@id": "awr:spatialResolution",
+      "@type": "xsd:string"
+    },
+    "dataSourceRef": {
+      "@id": "awr:dataSourceRef",
+      "@type": "xsd:string"
+    },
+    "supportsAgroAdvisory": {
+      "@id": "awr:supportsAgroAdvisory",
+      "@type": "xsd:boolean"
+    },
+    "updateFrequencyHours": {
+      "@id": "awr:updateFrequencyHours",
+      "@type": "xsd:integer"
+    }
+  }
+}

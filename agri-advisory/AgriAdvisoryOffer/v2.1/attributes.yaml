@@ -1,0 +1,119 @@
+openapi: 3.1.1
+$id: "https://schema.beckn.io/AgriAdvisoryOffer/v2.1/attributes.yaml"
+info:
+  title: AgriAdvisoryOffer Schema
+  version: "2.1.0"
+  description: >
+    Schema for agri advisory offer attributes in the Beckn agri advisory network.
+    Extends ServiceOffer directly (NOT AgriServiceOffer, which adds only
+    inputBrandOrVariety — irrelevant for digital advisory) with advisory-specific
+    offer terms: bundled resource types, language options, subscription periods,
+    and entitlement eligibility for government bulk procurement flows.
+  x-beckn-container: offerAttributes
+
+components:
+  schemas:
+    AgriAdvisoryOffer:
+      allOf:
+        - $ref: "https://schema.beckn.io/ServiceOffer/v2.1/attributes.yaml#/components/schemas/ServiceOffer"
+      type: object
+      x-beckn-container: offerAttributes
+      x-status: under-review
+      x-tags:
+        - agri-advisory
+        - offer
+      x-jsonld:
+        "@context": "https://schema.beckn.io/AgriAdvisoryOffer/v2.1/context.jsonld"
+        "@type": "aao:AgriAdvisoryOffer"
+
+      # Inherited from ServiceOffer:
+      #   minimumQuantity, maximumQuantity — units of advisory (e.g. farmer-seasons)
+      #   requiresAdvanceBooking
+      #   bulkDiscountAvailable — for large government/NGO procurements
+      #   eligibilityCriteria   — e.g. "Registered implementing agency", "State MOU signed"
+      #   validityPeriodDays    — e.g. 180 for a kharif-season advisory subscription
+      #   cancellationPolicies
+
+      properties:
+        bundledResourceTypes:
+          type: array
+          description: >
+            Advisory resource types included in this offer when multiple resource
+            types are bundled together (e.g. crop advisory + weather forecast).
+            Values correspond to x-tags of the included resource schemas.
+          items:
+            type: string
+            enum:
+              - CROP_ADVISORY
+              - WEATHER_FORECAST
+              - COMMODITY_PRICE
+          x-jsonld-id: "aao:bundledResourceTypes"
+        languageOptions:
+          type: array
+          description: >
+            BCP 47 language tags in which this offer can be fulfilled. Seeker NPs
+            select their preferred language at init/confirm using
+            AgriAdvisoryPerformance.requestedLanguage.
+            Examples: ["hi", "kn", "mr", "en", "ta", "te", "sw"]
+          items:
+            type: string
+          x-jsonld-id: "aao:languageOptions"
+        subscriptionPeriodDays:
+          type: integer
+          minimum: 1
+          description: >
+            Duration of the advisory subscription in days. For seasonal offers,
+            this corresponds to the crop season length.
+            Examples: 120 (kharif season), 180 (rabi season), 365 (annual).
+          x-jsonld-id: "aao:subscriptionPeriodDays"
+        advisoriesPerSubscription:
+          type: integer
+          minimum: 1
+          description: >
+            Total number of advisory deliveries included in one subscription unit.
+            Use with minimumQuantity/maximumQuantity (from ServiceOffer) to express
+            bulk procurement terms (e.g. 10,000 farmer-subscriptions × 30 advisories).
+          x-jsonld-id: "aao:advisoriesPerSubscription"
+        entitlementEligible:
+          type: boolean
+          default: false
+          description: >
+            Whether this offer can be funded via a ServiceEntitlement (pre-purchased
+            government/NGO capacity) rather than per-transaction payment. When true,
+            the Seeker NP may use entitlementRef in ServiceConsideration at confirm
+            to draw down against a pre-issued entitlement.
+          x-jsonld-id: "aao:entitlementEligible"
+        targetBeneficiaryType:
+          type: string
+          enum:
+            - INDIVIDUAL_FARMER
+            - FARMER_GROUP
+            - FPO
+            - GOVERNMENT_SCHEME
+            - NGO_PROGRAMME
+          description: >
+            Type of end beneficiary this offer is designed for.
+            INDIVIDUAL_FARMER: single farmer household.
+            FARMER_GROUP: informal farmer collective or SHG.
+            FPO: Farmer Producer Organisation.
+            GOVERNMENT_SCHEME: state or central government scheme beneficiaries.
+            NGO_PROGRAMME: NGO-managed programme beneficiaries.
+          x-jsonld-id: "aao:targetBeneficiaryType"
+        deliveryChannels:
+          type: array
+          description: >
+            Digital delivery channels through which advisories under this offer
+            will be delivered. Must align with the AgriDigitalPerformance.deliveryMode
+            values used at fulfilment.
+          items:
+            type: string
+            enum:
+              - APP
+              - SMS
+              - WHATSAPP
+              - IVR
+              - EMAIL
+              - DASHBOARD
+              - PUSH_NOTIFICATION
+              - OTHER
+          x-jsonld-id: "aao:deliveryChannels"

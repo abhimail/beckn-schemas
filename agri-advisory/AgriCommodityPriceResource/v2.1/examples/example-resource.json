@@ -1,0 +1,165 @@
+{
+  "context": {
+    "domain": "agri-advisory",
+    "action": "on_discover",
+    "version": "2.0.0",
+    "bap_id": "farmer-welfare-bap.example.gov.in",
+    "bap_uri": "https://farmer-welfare-bap.example.gov.in/beckn",
+    "bpp_id": "agmarknet-advisory.example.in",
+    "bpp_uri": "https://agmarknet-advisory.example.in/beckn",
+    "transaction_id": "txn-discover-acpr-001",
+    "message_id": "msg-on-discover-acpr-001",
+    "timestamp": "2026-05-19T07:00:00+05:30",
+    "ttl": "PT30S",
+    "schemaContext": [
+      {
+        "schema": "AgriCommodityPriceResource",
+        "version": "2.1.0",
+        "context": "https://schema.beckn.io/AgriCommodityPriceResource/v2.1/context.jsonld"
+      }
+    ]
+  },
+  "message": {
+    "catalog": {
+      "descriptor": {
+        "name": "AgriPriceMitra Market Intelligence Platform",
+        "short_desc": "Real-time mandi price feeds, price trends, and selling-window advisories for major kharif and rabi commodities",
+        "long_desc": "AgriPriceMitra aggregates daily mandi prices from Agmarknet across 1,200 APMC markets in 18 states, enriches the data with NCDEX futures and model-generated 30-day price forecasts, and delivers farmer-friendly selling advisories via app and SMS in 9 regional languages.",
+        "code": "agripricemitra-platform"
+      },
+      "resources": [
+        {
+          "id": "resource-price-001",
+          "descriptor": {
+            "name": "Kharif Commodity Price Intelligence — Maharashtra & Karnataka",
+            "short_desc": "Daily APMC modal prices, price trends, and 30-day forecasts for key kharif crops",
+            "code": "kharif-price-maha-karn"
+          },
+          "resourceAttributes": {
+            "@context": "https://schema.beckn.io/AgriCommodityPriceResource/v2.1/context.jsonld",
+            "@type": "acpr:AgriCommodityPriceResource",
+            "acpr:commodities": [
+              {
+                "@context": "https://agrovoc.fao.org",
+                "@type": "AGROVOCCommodity",
+                "code": "c_7051",
+                "display": "Rice (Paddy)"
+              },
+              {
+                "@context": "https://agrovoc.fao.org",
+                "@type": "AGROVOCCommodity",
+                "code": "c_4398",
+                "display": "Maize"
+              },
+              {
+                "@context": "https://agrovoc.fao.org",
+                "@type": "AGROVOCCommodity",
+                "code": "c_7596",
+                "display": "Soybean"
+              },
+              {
+                "@context": "https://agrovoc.fao.org",
+                "@type": "AGROVOCCommodity",
+                "code": "c_6401",
+                "display": "Pigeon Pea (Tur)"
+              },
+              {
+                "@context": "https://agrovoc.fao.org",
+                "@type": "AGROVOCCommodity",
+                "code": "c_4369",
+                "display": "Cotton"
+              }
+            ],
+            "acpr:marketCodes": [
+              {
+                "@context": "https://agmarknet.gov.in",
+                "@type": "APMCMarket",
+                "code": "MH-PUN-01",
+                "display": "Pune APMC"
+              },
+              {
+                "@context": "https://agmarknet.gov.in",
+                "@type": "APMCMarket",
+                "code": "MH-NSK-01",
+                "display": "Nashik APMC"
+              },
+              {
+                "@context": "https://agmarknet.gov.in",
+                "@type": "APMCMarket",
+                "code": "MH-LTR-01",
+                "display": "Latur APMC"
+              },
+              {
+                "@context": "https://agmarknet.gov.in",
+                "@type": "APMCMarket",
+                "code": "KA-BGL-01",
+                "display": "Yeshwanthpur APMC (Bengaluru)"
+              },
+              {
+                "@context": "https://agmarknet.gov.in",
+                "@type": "APMCMarket",
+                "code": "KA-HVR-01",
+                "display": "Haveri APMC"
+              }
+            ],
+            "acpr:priceUpdateFrequencyHours": 24,
+            "acpr:priceDataTypes": [
+              "SPOT_PRICE",
+              "MODAL_PRICE",
+              "ARRIVAL_VOLUME",
+              "PRICE_TREND",
+              "PRICE_FORECAST"
+            ],
+            "acpr:dataSourceRef": "Agmarknet (agmarknet.gov.in); NCDEX Futures Data; State Agriculture Department Daily Mandi Reports",
+            "acpr:includesTradingAdvice": true,
+            "coverageAreaCodes": [
+              {
+                "@context": "https://lgdirectory.gov.in",
+                "@type": "LGDState",
+                "code": "27",
+                "display": "Maharashtra"
+              },
+              {
+                "@context": "https://lgdirectory.gov.in",
+                "@type": "LGDState",
+                "code": "29",
+                "display": "Karnataka"
+              }
+            ],
+            "languagesSupported": ["mr", "kn", "hi", "en"],
+            "serviceCategory": "DIGITAL_ADVISORY",
+            "providerType": "MARKET_INFO_SERVICE"
+          }
+        }
+      ],
+      "offers": [
+        {
+          "id": "offer-price-001",
+          "descriptor": {
+            "name": "FPO Seasonal Market Intelligence Pack — Kharif 2026",
+            "short_desc": "Daily price alerts and 30-day price forecasts for FPO bulk-selling decisions, kharif season",
+            "code": "fpo-kharif-market-intelligence-2026"
+          },
+          "resourceRef": "resource-price-001",
+          "offerAttributes": {
+            "deliveryChannels": ["APP", "SMS"],
+            "engagementUnitType": "FARMER_ADVISORY_ENGAGEMENT",
+            "commitmentRange": {
+              "minimum": 500,
+              "maximum": 10000,
+              "unit": "farmers"
+            },
+            "termMonths": 6
+          },
+          "pricing": {
+            "price": {
+              "currency": "INR",
+              "value": "25.00"
+            },
+            "pricingModel": "PER_FARMER_PER_MONTH"
+          }
+        }
+      ]
+    }
+  }
+}

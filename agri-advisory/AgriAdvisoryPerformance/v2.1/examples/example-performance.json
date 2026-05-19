@@ -1,0 +1,110 @@
+{
+  "context": {
+    "domain": "agri-advisory",
+    "action": "on_status",
+    "version": "2.0.0",
+    "bap_id": "agri-seeker.example.in",
+    "bap_uri": "https://agri-seeker.example.in/beckn/v2",
+    "bpp_id": "agri-advisory-provider.example.in",
+    "bpp_uri": "https://agri-advisory-provider.example.in/beckn/v2",
+    "transaction_id": "txn-7f4a8b23-order-0042",
+    "message_id": "msg-d5e2f1a8-0088",
+    "timestamp": "2025-07-14T07:45:00Z",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:020"
+      }
+    },
+    "currency": "INR"
+  },
+  "message": {
+    "contract": {
+      "id": "contract-agriadvise-0042",
+      "status": "ACTIVE",
+      "commitment": {
+        "resource": {
+          "id": "res-crop-advisory-001",
+          "descriptor": {
+            "name": "Kharif Crop Advisory — Solapur District"
+          }
+        },
+        "offer": {
+          "id": "offer-govt-scheme-kharif-001",
+          "descriptor": {
+            "name": "Government Scheme Advisory Bundle — Kharif 2025"
+          }
+        },
+        "quantity": {
+          "allocated": {
+            "count": 1250
+          }
+        }
+      },
+      "performance": [
+        {
+          "id": "perf-20250714-pest-solapur-001",
+          "status": "DELIVERED",
+          "performanceAttributes": {
+            "@context": "https://schema.beckn.io/AgriAdvisoryPerformance/v2.1/context.jsonld",
+            "@type": "aap:AgriAdvisoryPerformance",
+            "advisoryId": "ADVP-KH25-SOL-PEST-20250714-0001",
+            "advisoryType": "PEST_ALERT",
+            "generatedAt": "2025-07-14T04:00:00Z",
+            "cropSeasonRef": "KH-2025",
+            "validityWindowHours": 48,
+            "farmersReached": 1250,
+            "cropTypes": [
+              {
+                "code": "http://aims.fao.org/aos/agrovoc/c_8664",
+                "name": "Soybean",
+                "authority": "FAO_AGROVOC"
+              },
+              {
+                "code": "http://aims.fao.org/aos/agrovoc/c_4521",
+                "name": "Pigeon pea",
+                "authority": "FAO_AGROVOC"
+              }
+            ],
+            "dataSnapshotRef": "SNAP-ICAR-PEST-SOL-20250713-EVE",
+            "deliveryMode": "WHATSAPP",
+            "requestedLanguage": "mr",
+            "deliveredLanguage": "mr",
+            "contentAccessUrl": "https://content.agri-advisory-provider.example.in/advisories/ADVP-KH25-SOL-PEST-20250714-0001",
+            "contentAccessExpiry": "2025-07-16T04:00:00Z",
+            "targetLocation": {
+              "code": "IN-MH-SOL",
+              "name": "Solapur District, Maharashtra",
+              "authority": "LGD_INDIA"
+            },
+            "contentRef": "INTERNAL-CONTENT-SOL-PEST-0714",
+            "deliveredAt": "2025-07-14T07:30:00Z",
+            "deliveryConfirmed": true,
+            "providerConfirmedCompletion": true,
+            "serviceNotes": "Whitefly alert for soybean in Solapur district. Spray Imidacloprid 17.8 SL @ 0.3 ml/litre within 48 hours if infestation >5 insects/leaf."
+          }
+        }
+      ],
+      "participants": [
+        {
+          "id": "participant-bap-001",
+          "type": "SEEKER_NP",
+          "descriptor": {
+            "name": "Maharashtra State Agriculture Department",
+            "code": "MSAD-NP-001"
+          }
+        },
+        {
+          "id": "participant-bpp-001",
+          "type": "PROVIDER_NP",
+          "descriptor": {
+            "name": "AgriAdvise Platform Pvt Ltd",
+            "code": "AGRIADVISE-NP-001"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "context": {
+    "domain": "agri-advisory",
+    "action": "on_discover",
+    "version": "2.0.0",
+    "bap_id": "agri-seeker.example.in",
+    "bap_uri": "https://agri-seeker.example.in/beckn/v2",
+    "bpp_id": "agri-advisory-provider.example.in",
+    "bpp_uri": "https://agri-advisory-provider.example.in/beckn/v2",
+    "transaction_id": "txn-7f4a8b23-discover-001",
+    "message_id": "msg-a3c1d9e7-0012",
+    "timestamp": "2025-06-15T09:30:00Z",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "currency": "INR"
+  },
+  "message": {
+    "catalogs": [
+      {
+        "id": "catalog-agriadvise-001",
+        "descriptor": {
+          "name": "AgriAdvise Platform — Kharif 2025 Catalogue",
+          "short_desc": "Digital advisory services for Kharif 2025 season — crop advisory, weather forecast, and commodity price bundles"
+        },
+        "offers": [
+          {
+            "id": "offer-govt-scheme-kharif-001",
+            "descriptor": {
+              "name": "Government Scheme Advisory Bundle — Kharif 2025",
+              "short_desc": "Crop advisory subscription for government scheme beneficiaries; entitlement-eligible; WhatsApp + SMS delivery"
+            },
+            "offerAttributes": {
+              "@context": "https://schema.beckn.io/AgriAdvisoryOffer/v2.1/context.jsonld",
+              "@type": "aao:AgriAdvisoryOffer",
+              "bundledResourceTypes": [
+                "CROP_ADVISORY"
+              ],
+              "languageOptions": [
+                "hi",
+                "mr",
+                "kn"
+              ],
+              "subscriptionPeriodDays": 120,
+              "advisoriesPerSubscription": 30,
+              "entitlementEligible": true,
+              "targetBeneficiaryType": "GOVERNMENT_SCHEME",
+              "deliveryChannels": [
+                "WHATSAPP",
+                "SMS"
+              ]
+            },
+            "price": {
+              "currency": "INR",
+              "value": "450.00"
+            },
+            "quantity": {
+              "minimum": {
+                "count": 100
+              },
+              "maximum": {
+                "count": 50000
+              }
+            }
+          },
+          {
+            "id": "offer-fpo-premium-kharif-002",
+            "descriptor": {
+              "name": "FPO Premium Advisory Bundle — Kharif 2025",
+              "short_desc": "Full advisory bundle (crop + weather + price) for FPOs; app and dashboard delivery"
+            },
+            "offerAttributes": {
+              "@context": "https://schema.beckn.io/AgriAdvisoryOffer/v2.1/context.jsonld",
+              "@type": "aao:AgriAdvisoryOffer",
+              "bundledResourceTypes": [
+                "CROP_ADVISORY",
+                "WEATHER_FORECAST",
+                "COMMODITY_PRICE"
+              ],
+              "languageOptions": [
+                "hi",
+                "mr",
+                "kn",
+                "en"
+              ],
+              "subscriptionPeriodDays": 120,
+              "advisoriesPerSubscription": 60,
+              "entitlementEligible": false,
+              "targetBeneficiaryType": "FPO",
+              "deliveryChannels": [
+                "APP",
+                "DASHBOARD",
+                "PUSH_NOTIFICATION"
+              ]
+            },
+            "price": {
+              "currency": "INR",
+              "value": "1200.00"
+            },
+            "quantity": {
+              "minimum": {
+                "count": 10
+              },
+              "maximum": {
+                "count": 5000
+              }
+            }
+          }
+        ],
+        "resources": [
+          {
+            "id": "res-crop-advisory-001",
+            "descriptor": {
+              "name": "Kharif Crop Advisory — Multi-crop"
+            }
+          },
+          {
+            "id": "res-weather-forecast-001",
+            "descriptor": {
+              "name": "Localised Weather Forecast — District Level"
+            }
+          },
+          {
+            "id": "res-commodity-price-001",
+            "descriptor": {
+              "name": "Commodity Price Intelligence — APMC Mandis"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

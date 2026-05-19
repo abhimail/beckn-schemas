@@ -1,0 +1,22 @@
+{
+  "id": "https://schema.beckn.io/AgriAdvisoryPerformance/v1",
+  "name": "AgriAdvisoryPerformance",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["AgriDigitalPerformance", "ServicePerformance"],
+  "discovery_fields": [],
+  "indexable_paths": [
+    "performanceAttributes.advisoryType",
+    "performanceAttributes.cropSeasonRef"
+  ],
+  "filterable_paths": [
+    "performanceAttributes.advisoryType",
+    "performanceAttributes.cropTypes[*].code"
+  ],
+  "sortable_paths": [
+    "performanceAttributes.deliveredAt",
+    "performanceAttributes.farmersReached"
+  ],
+  "privacy_notes": []
+}

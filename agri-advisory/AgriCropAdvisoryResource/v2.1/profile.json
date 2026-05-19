@@ -1,0 +1,29 @@
+{
+  "id": "https://schema.beckn.io/AgriCropAdvisoryResource/v1",
+  "name": "AgriCropAdvisoryResource",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["AgriServiceResource"],
+  "discovery_fields": [
+    "resourceAttributes.acar:advisoryTypes",
+    "resourceAttributes.acar:cropTypes",
+    "resourceAttributes.acar:cropStagesSupported",
+    "resourceAttributes.acar:advisoryLeadTimeDays",
+    "resourceAttributes.acar:advisoryUpdateFrequencyHours"
+  ],
+  "indexable_paths": [
+    "resourceAttributes.acar:advisoryTypes",
+    "resourceAttributes.acar:cropTypes",
+    "resourceAttributes.acar:cropStagesSupported"
+  ],
+  "filterable_paths": [
+    "resourceAttributes.acar:advisoryTypes",
+    "resourceAttributes.acar:cropTypes",
+    "resourceAttributes.acar:cropStagesSupported",
+    "resourceAttributes.acar:advisoryLeadTimeDays",
+    "resourceAttributes.acar:advisoryUpdateFrequencyHours"
+  ],
+  "sortable_paths": [],
+  "privacy_notes": []
+}

@@ -1,0 +1,29 @@
+{
+  "id": "https://schema.beckn.io/AgriWeatherResource/v1",
+  "name": "AgriWeatherResource",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["AgriServiceResource"],
+  "discovery_fields": [
+    "resourceAttributes.awr:forecastHorizonDays",
+    "resourceAttributes.awr:forecastResolutionHours",
+    "resourceAttributes.awr:weatherParameters",
+    "resourceAttributes.awr:spatialResolution",
+    "resourceAttributes.awr:supportsAgroAdvisory",
+    "resourceAttributes.awr:updateFrequencyHours"
+  ],
+  "indexable_paths": [
+    "resourceAttributes.awr:weatherParameters",
+    "resourceAttributes.awr:supportsAgroAdvisory"
+  ],
+  "filterable_paths": [
+    "resourceAttributes.awr:forecastHorizonDays",
+    "resourceAttributes.awr:forecastResolutionHours",
+    "resourceAttributes.awr:weatherParameters",
+    "resourceAttributes.awr:supportsAgroAdvisory",
+    "resourceAttributes.awr:updateFrequencyHours"
+  ],
+  "sortable_paths": [],
+  "privacy_notes": []
+}

@@ -1,0 +1,81 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "aap": "https://schema.beckn.io/AgriAdvisoryPerformance#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "aap:AdvisoryType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "AdvisoryType",
+      "rdfs:comment": "Enumeration of agricultural advisory types that may be delivered in an AgriAdvisoryPerformance record."
+    },
+    {
+      "@id": "aap:PEST_ALERT",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "PEST_ALERT",
+      "rdfs:comment": "Alert about pest infestation risk or confirmed infestation in the target geography, with recommended control measures."
+    },
+    {
+      "@id": "aap:DISEASE_ALERT",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "DISEASE_ALERT",
+      "rdfs:comment": "Alert about crop disease risk or confirmed disease incidence, with recommended management actions."
+    },
+    {
+      "@id": "aap:SOWING_GUIDANCE",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "SOWING_GUIDANCE",
+      "rdfs:comment": "Guidance on optimal sowing dates, seed varieties, and seed treatment for the current season."
+    },
+    {
+      "@id": "aap:FERTILISER_SCHEDULE",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "FERTILISER_SCHEDULE",
+      "rdfs:comment": "Fertiliser application schedule and dosage recommendations based on crop stage and soil conditions."
+    },
+    {
+      "@id": "aap:IRRIGATION_ADVISORY",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "IRRIGATION_ADVISORY",
+      "rdfs:comment": "Irrigation scheduling advisory based on crop water requirements, weather forecast, and soil moisture data."
+    },
+    {
+      "@id": "aap:HARVEST_GUIDANCE",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "HARVEST_GUIDANCE",
+      "rdfs:comment": "Guidance on optimal harvest timing, post-harvest handling, and storage recommendations."
+    },
+    {
+      "@id": "aap:WEATHER_BASED_ADVISORY",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "WEATHER_BASED_ADVISORY",
+      "rdfs:comment": "Farm management advisory triggered by a specific weather event or forecast (e.g. delayed sowing due to monsoon deficit)."
+    },
+    {
+      "@id": "aap:MARKET_LINKED_ADVISORY",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "MARKET_LINKED_ADVISORY",
+      "rdfs:comment": "Advisory linking crop management decisions to current market price signals (e.g. switch crop variety based on price outlook)."
+    },
+    {
+      "@id": "aap:GENERAL_AGRONOMY",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "GENERAL_AGRONOMY",
+      "rdfs:comment": "General agronomic best-practice advisory not triggered by a specific alert or market event."
+    },
+    {
+      "@id": "aap:WEATHER_FORECAST",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "WEATHER_FORECAST",
+      "rdfs:comment": "Standalone localised weather forecast delivered as an advisory to support farm planning decisions."
+    },
+    {
+      "@id": "aap:COMMODITY_PRICE",
+      "@type": "aap:AdvisoryType",
+      "rdfs:label": "COMMODITY_PRICE",
+      "rdfs:comment": "Near-real-time or forward-looking commodity price intelligence delivered as an advisory."
+    }
+  ]
+}

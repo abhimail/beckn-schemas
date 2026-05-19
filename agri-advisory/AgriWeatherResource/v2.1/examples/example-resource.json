@@ -1,0 +1,141 @@
+{
+  "context": {
+    "domain": "agri-advisory",
+    "action": "on_discover",
+    "version": "2.0.0",
+    "bap_id": "agri-ngo-bap.example.ke",
+    "bap_uri": "https://agri-ngo-bap.example.ke/beckn",
+    "bpp_id": "kmd-forecast-platform.example.ke",
+    "bpp_uri": "https://kmd-forecast-platform.example.ke/beckn",
+    "transaction_id": "txn-discover-awr-001",
+    "message_id": "msg-on-discover-awr-001",
+    "timestamp": "2026-05-19T06:00:00+03:00",
+    "ttl": "PT30S",
+    "schemaContext": [
+      {
+        "schema": "AgriWeatherResource",
+        "version": "2.1.0",
+        "context": "https://schema.beckn.io/AgriWeatherResource/v2.1/context.jsonld"
+      }
+    ]
+  },
+  "message": {
+    "catalog": {
+      "descriptor": {
+        "name": "Kenya Agro-Met Advisory Platform",
+        "short_desc": "7-day hyper-local weather forecasts and interpreted agro-meteorological advisories for smallholder farmers in Kenya",
+        "long_desc": "Built on Kenya Meteorological Department (KMD) NWP data and IGAD ICPAC seasonal outlooks, this platform delivers 3-hourly village-level forecasts and farmer-friendly agro-advisory messages via SMS and USSD in Swahili and English.",
+        "code": "kmd-agro-met-platform"
+      },
+      "resources": [
+        {
+          "id": "resource-weather-001",
+          "descriptor": {
+            "name": "7-Day Village-Level Agro-Met Forecast — Kenya",
+            "short_desc": "3-hourly village-level weather forecasts with interpreted sowing and irrigation advisories",
+            "code": "kenya-7day-villagelevel-agromet"
+          },
+          "resourceAttributes": {
+            "@context": "https://schema.beckn.io/AgriWeatherResource/v2.1/context.jsonld",
+            "@type": "awr:AgriWeatherResource",
+            "awr:forecastHorizonDays": 7,
+            "awr:forecastResolutionHours": 3,
+            "awr:weatherParameters": [
+              {
+                "@context": "https://cfconventions.org",
+                "@type": "CFStandardName",
+                "code": "air_temperature",
+                "display": "Air Temperature"
+              },
+              {
+                "@context": "https://cfconventions.org",
+                "@type": "CFStandardName",
+                "code": "precipitation_amount",
+                "display": "Rainfall"
+              },
+              {
+                "@context": "https://cfconventions.org",
+                "@type": "CFStandardName",
+                "code": "relative_humidity",
+                "display": "Relative Humidity"
+              },
+              {
+                "@context": "https://cfconventions.org",
+                "@type": "CFStandardName",
+                "code": "wind_speed",
+                "display": "Wind Speed"
+              },
+              {
+                "@context": "https://cfconventions.org",
+                "@type": "CFStandardName",
+                "code": "surface_downwelling_shortwave_flux_in_air",
+                "display": "Solar Radiation"
+              }
+            ],
+            "awr:spatialResolution": "village-level (~1km grid)",
+            "awr:dataSourceRef": "Kenya Meteorological Department NWP — WRF Model; IGAD ICPAC Seasonal Outlook",
+            "awr:supportsAgroAdvisory": true,
+            "awr:updateFrequencyHours": 6,
+            "coverageAreaCodes": [
+              {
+                "@context": "https://www.knbs.or.ke/county-codes",
+                "@type": "KenyaCounty",
+                "code": "022",
+                "display": "Kisumu County"
+              },
+              {
+                "@context": "https://www.knbs.or.ke/county-codes",
+                "@type": "KenyaCounty",
+                "code": "023",
+                "display": "Siaya County"
+              },
+              {
+                "@context": "https://www.knbs.or.ke/county-codes",
+                "@type": "KenyaCounty",
+                "code": "007",
+                "display": "Kirinyaga County"
+              },
+              {
+                "@context": "https://www.knbs.or.ke/county-codes",
+                "@type": "KenyaCounty",
+                "code": "008",
+                "display": "Murang'a County"
+              }
+            ],
+            "languagesSupported": ["sw", "en"],
+            "serviceCategory": "DIGITAL_ADVISORY",
+            "providerType": "WEATHER_DATA_PROVIDER"
+          }
+        }
+      ],
+      "offers": [
+        {
+          "id": "offer-weather-001",
+          "descriptor": {
+            "name": "NGO Seasonal Deployment — 25,000 Farmers",
+            "short_desc": "SMS/USSD weather advisory subscription for NGO farmer programme, one growing season",
+            "code": "ngo-seasonal-25k-sms"
+          },
+          "resourceRef": "resource-weather-001",
+          "offerAttributes": {
+            "deliveryChannels": ["SMS", "USSD"],
+            "engagementUnitType": "FARMER_ADVISORY_ENGAGEMENT",
+            "commitmentRange": {
+              "minimum": 10000,
+              "maximum": 100000,
+              "unit": "farmers"
+            },
+            "termMonths": 6
+          },
+          "pricing": {
+            "price": {
+              "currency": "KES",
+              "value": "45.00"
+            },
+            "pricingModel": "PER_FARMER_PER_MONTH"
+          }
+        }
+      ]
+    }
+  }
+}

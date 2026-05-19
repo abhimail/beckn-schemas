@@ -1,0 +1,134 @@
+{
+  "context": {
+    "domain": "agri-advisory",
+    "action": "on_discover",
+    "version": "2.0.0",
+    "bap_id": "agri-scheme-bap.example.gov.in",
+    "bap_uri": "https://agri-scheme-bap.example.gov.in/beckn",
+    "bpp_id": "krishimitra-advisory.example.in",
+    "bpp_uri": "https://krishimitra-advisory.example.in/beckn",
+    "transaction_id": "txn-discover-acar-001",
+    "message_id": "msg-on-discover-acar-001",
+    "timestamp": "2026-05-19T08:30:00+05:30",
+    "ttl": "PT30S",
+    "schemaContext": [
+      {
+        "schema": "AgriCropAdvisoryResource",
+        "version": "2.1.0",
+        "context": "https://schema.beckn.io/AgriCropAdvisoryResource/v2.1/context.jsonld"
+      }
+    ]
+  },
+  "message": {
+    "catalog": {
+      "descriptor": {
+        "name": "KrishiMitra Advisory Platform",
+        "short_desc": "AI-powered crop advisory and pest alert services for smallholder farmers",
+        "long_desc": "KrishiMitra delivers hyper-local crop advisories to farmers via app, SMS, and WhatsApp. Advisories are generated using IMD weather data, satellite crop health monitoring, and state agriculture department pest surveillance networks.",
+        "code": "krishimitra-advisory-platform"
+      },
+      "resources": [
+        {
+          "id": "resource-advisory-001",
+          "descriptor": {
+            "name": "Rice & Wheat Advisory — North India",
+            "short_desc": "Pest alerts, disease alerts, and fertiliser schedules for rice and wheat farmers in North India",
+            "code": "rice-wheat-advisory-north-india"
+          },
+          "resourceAttributes": {
+            "@context": "https://schema.beckn.io/AgriCropAdvisoryResource/v2.1/context.jsonld",
+            "@type": "acar:AgriCropAdvisoryResource",
+            "acar:advisoryTypes": [
+              "PEST_ALERT",
+              "DISEASE_ALERT",
+              "FERTILISER_SCHEDULE",
+              "IRRIGATION_ADVISORY",
+              "WEATHER_BASED_ADVISORY"
+            ],
+            "acar:cropTypes": [
+              {
+                "@context": "https://agrovoc.fao.org",
+                "@type": "AGROVOCCrop",
+                "code": "c_6510",
+                "display": "Rice"
+              },
+              {
+                "@context": "https://agrovoc.fao.org",
+                "@type": "AGROVOCCrop",
+                "code": "c_8373",
+                "display": "Wheat"
+              }
+            ],
+            "acar:cropStagesSupported": [
+              "PRE_SOWING",
+              "GERMINATION",
+              "VEGETATIVE",
+              "FLOWERING",
+              "MATURITY",
+              "HARVEST",
+              "POST_HARVEST"
+            ],
+            "acar:advisoryLeadTimeDays": 3,
+            "acar:advisoryUpdateFrequencyHours": 24,
+            "acar:dataSourceRefs": [
+              "IMD National Weather Service (imd.gov.in)",
+              "NCIPM Pest Surveillance Network (icar.org.in/ncipm)",
+              "Sentinel-2 Satellite Crop Health Monitoring (ESA)"
+            ],
+            "coverageAreaCodes": [
+              {
+                "@context": "https://lgdirectory.gov.in",
+                "@type": "LGDState",
+                "code": "09",
+                "display": "Uttar Pradesh"
+              },
+              {
+                "@context": "https://lgdirectory.gov.in",
+                "@type": "LGDState",
+                "code": "06",
+                "display": "Haryana"
+              },
+              {
+                "@context": "https://lgdirectory.gov.in",
+                "@type": "LGDState",
+                "code": "03",
+                "display": "Punjab"
+              }
+            ],
+            "languagesSupported": ["hi", "pa", "en"],
+            "serviceCategory": "DIGITAL_ADVISORY",
+            "providerType": "DIGITAL_ADVISORY_PLATFORM"
+          }
+        }
+      ],
+      "offers": [
+        {
+          "id": "offer-advisory-001",
+          "descriptor": {
+            "name": "NGO District Deployment — 10,000 Farmers",
+            "short_desc": "Bulk advisory subscription for NGO farmer outreach programmes, 12-month term",
+            "code": "ngo-district-bulk-10k"
+          },
+          "resourceRef": "resource-advisory-001",
+          "offerAttributes": {
+            "deliveryChannels": ["APP", "SMS", "WHATSAPP"],
+            "engagementUnitType": "FARMER_ADVISORY_ENGAGEMENT",
+            "commitmentRange": {
+              "minimum": 5000,
+              "maximum": 50000,
+              "unit": "farmers"
+            },
+            "termMonths": 12
+          },
+          "pricing": {
+            "price": {
+              "currency": "INR",
+              "value": "18.00"
+            },
+            "pricingModel": "PER_FARMER_PER_MONTH"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "awr": "https://schema.beckn.io/AgriWeatherResource#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "awr:AgriWeatherResource",
+      "@type": "rdfs:Class",
+      "rdfs:label": "AgriWeatherResource",
+      "rdfs:comment": "A Beckn resource representing a meteorological data service that delivers weather forecasts, nowcasts, or interpreted agro-meteorological advisories to farmers and Seeker NPs. Weather parameters are expressed as coded values referencing WMO BUFR or CF Convention vocabularies and are not enumerated in this schema."
+    }
+  ]
+}

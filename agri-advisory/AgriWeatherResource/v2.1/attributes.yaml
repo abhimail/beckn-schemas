@@ -1,0 +1,93 @@
+openapi: 3.1.1
+$id: "https://schema.beckn.io/AgriWeatherResource/v2.1/attributes.yaml"
+info:
+  title: AgriWeatherResource Schema
+  version: "2.1.0"
+  description: >
+    Schema for agricultural weather forecast resources in the Beckn agri advisory
+    network. Models weather data services delivering forecasts, nowcasts, and
+    agro-meteorological advisories to farmers and Seeker NPs. Extends
+    AgriServiceResource and inherits coverageAreaCodes for machine-filterable
+    geographic scoping.
+  x-beckn-container: resourceAttributes
+
+components:
+  schemas:
+    AgriWeatherResource:
+      allOf:
+        - $ref: "https://schema.beckn.io/AgriServiceResource/v2.1/attributes.yaml#/components/schemas/AgriServiceResource"
+      type: object
+      x-beckn-container: resourceAttributes
+      x-status: under-review
+      x-tags:
+        - agri-advisory
+        - resource
+        - weather
+      x-jsonld:
+        "@context": "https://schema.beckn.io/AgriWeatherResource/v2.1/context.jsonld"
+        "@type": "awr:AgriWeatherResource"
+
+      # Inherited from AgriServiceResource:
+      #   serviceCategory: DIGITAL_ADVISORY
+      #   providerType: WEATHER_DATA_PROVIDER
+      #   coverageAreaCodes: CodedValue[]
+      #   languagesSupported: string[]
+
+      properties:
+        forecastHorizonDays:
+          type: integer
+          minimum: 1
+          description: >
+            Maximum number of days ahead for which this resource can provide
+            forecast data. Example: 7 for a 7-day forecast service.
+          x-jsonld-id: "awr:forecastHorizonDays"
+        forecastResolutionHours:
+          type: integer
+          minimum: 1
+          description: >
+            Temporal resolution of forecast data in hours. Example: 3 for
+            3-hourly forecasts, 24 for daily forecasts.
+          x-jsonld-id: "awr:forecastResolutionHours"
+        weatherParameters:
+          type: array
+          description: >
+            Meteorological parameters available from this resource, expressed
+            as coded values from a standard meteorological vocabulary.
+            Recommended authority: WMO BUFR / CF Conventions
+            (https://cfconventions.org or https://codes.wmo.int).
+            Common examples:
+              {"@context":"https://cfconventions.org","@type":"CFStandardName","code":"air_temperature","display":"Air Temperature"}
+              {"@context":"https://cfconventions.org","@type":"CFStandardName","code":"precipitation_amount","display":"Rainfall"}
+              {"@context":"https://cfconventions.org","@type":"CFStandardName","code":"relative_humidity","display":"Relative Humidity"}
+              {"@context":"https://cfconventions.org","@type":"CFStandardName","code":"wind_speed","display":"Wind Speed"}
+          items:
+            $ref: "../../agri-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+          x-jsonld-id: "awr:weatherParameters"
+        spatialResolution:
+          type: string
+          description: >
+            Spatial resolution of forecast data as a human-readable descriptor.
+            Examples: "1km grid", "district-level", "village-level", "5km grid".
+          x-jsonld-id: "awr:spatialResolution"
+        dataSourceRef:
+          type: string
+          description: >
+            Reference to the primary meteorological data source used by this
+            resource. Examples: "IMD National Weather Service", "ERA5 Reanalysis",
+            "Copernicus Climate Change Service", "OpenWeatherMap".
+          x-jsonld-id: "awr:dataSourceRef"
+        supportsAgroAdvisory:
+          type: boolean
+          default: false
+          description: >
+            Whether this resource can generate interpreted agro-meteorological
+            advisories (e.g. "ideal sowing window", "frost risk alert") in
+            addition to raw forecast data.
+          x-jsonld-id: "awr:supportsAgroAdvisory"
+        updateFrequencyHours:
+          type: integer
+          minimum: 1
+          description: >
+            How frequently (in hours) the forecast data is refreshed from the
+            upstream meteorological source.
+          x-jsonld-id: "awr:updateFrequencyHours"

@@ -1,0 +1,36 @@
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "acpr": "https://schema.beckn.io/AgriCommodityPriceResource#",
+
+    "AgriCommodityPriceResource": "acpr:AgriCommodityPriceResource",
+
+    "commodities": {
+      "@id": "acpr:commodities",
+      "@container": "@set"
+    },
+    "marketCodes": {
+      "@id": "acpr:marketCodes",
+      "@container": "@set"
+    },
+    "priceUpdateFrequencyHours": {
+      "@id": "acpr:priceUpdateFrequencyHours",
+      "@type": "xsd:integer"
+    },
+    "priceDataTypes": {
+      "@id": "acpr:priceDataTypes",
+      "@container": "@set"
+    },
+    "dataSourceRef": {
+      "@id": "acpr:dataSourceRef",
+      "@type": "xsd:string"
+    },
+    "includesTradingAdvice": {
+      "@id": "acpr:includesTradingAdvice",
+      "@type": "xsd:boolean"
+    }
+  }
+}

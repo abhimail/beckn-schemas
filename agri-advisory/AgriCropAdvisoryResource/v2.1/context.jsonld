@@ -1,0 +1,36 @@
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "acar": "https://schema.beckn.io/AgriCropAdvisoryResource#",
+
+    "AgriCropAdvisoryResource": "acar:AgriCropAdvisoryResource",
+
+    "advisoryTypes": {
+      "@id": "acar:advisoryTypes",
+      "@container": "@set"
+    },
+    "cropTypes": {
+      "@id": "acar:cropTypes",
+      "@container": "@set"
+    },
+    "cropStagesSupported": {
+      "@id": "acar:cropStagesSupported",
+      "@container": "@set"
+    },
+    "advisoryLeadTimeDays": {
+      "@id": "acar:advisoryLeadTimeDays",
+      "@type": "xsd:integer"
+    },
+    "advisoryUpdateFrequencyHours": {
+      "@id": "acar:advisoryUpdateFrequencyHours",
+      "@type": "xsd:integer"
+    },
+    "dataSourceRefs": {
+      "@id": "acar:dataSourceRefs",
+      "@container": "@set"
+    }
+  }
+}

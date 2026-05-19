@@ -1,0 +1,107 @@
+openapi: 3.1.1
+$id: "https://schema.beckn.io/AgriCropAdvisoryResource/v2.1/attributes.yaml"
+info:
+  title: AgriCropAdvisoryResource Schema
+  version: "2.1.0"
+  description: >
+    Schema for crop advisory resources in the Beckn agri advisory network.
+    Models digital crop advisories — pest/disease alerts, sowing guidance,
+    fertiliser schedules, irrigation advisories — delivered through digital
+    channels (app, SMS, WhatsApp, IVR). Extends AgriServiceResource (which
+    in turn extends ServiceResource) and inherits coverageAreaCodes for
+    machine-filterable geographic scoping.
+  x-beckn-container: resourceAttributes
+
+components:
+  schemas:
+    AgriCropAdvisoryResource:
+      allOf:
+        - $ref: "https://schema.beckn.io/AgriServiceResource/v2.1/attributes.yaml#/components/schemas/AgriServiceResource"
+      type: object
+      x-beckn-container: resourceAttributes
+      x-status: under-review
+      x-tags:
+        - agri-advisory
+        - resource
+        - crop
+      x-jsonld:
+        "@context": "https://schema.beckn.io/AgriCropAdvisoryResource/v2.1/context.jsonld"
+        "@type": "acar:AgriCropAdvisoryResource"
+
+      # Inherited from AgriServiceResource (set at catalog level by Provider NP):
+      #   serviceCategory: DIGITAL_ADVISORY
+      #   providerType: DIGITAL_ADVISORY_PLATFORM
+      #   coverageAreaCodes: CodedValue[]   — machine-filterable geographic scope
+      #   languagesSupported: string[]      — BCP 47 (from ServiceResource)
+
+      properties:
+        advisoryTypes:
+          type: array
+          description: >
+            Types of crop advisories this resource can deliver.
+            Multiple types may be listed for multi-purpose advisory resources.
+          items:
+            type: string
+            enum:
+              - PEST_ALERT
+              - DISEASE_ALERT
+              - SOWING_GUIDANCE
+              - FERTILISER_SCHEDULE
+              - IRRIGATION_ADVISORY
+              - HARVEST_GUIDANCE
+              - WEATHER_BASED_ADVISORY
+              - MARKET_LINKED_ADVISORY
+              - GENERAL_AGRONOMY
+          x-jsonld-id: "acar:advisoryTypes"
+        cropTypes:
+          type: array
+          description: >
+            Crops for which this resource can generate advisories, expressed as
+            typed coded values from a crop classification authority.
+            Recommended authority: FAO AGROVOC (https://agrovoc.fao.org).
+            Networks MAY also define their own crop code vocabulary and publish
+            the authority URI in network policy documentation.
+            Example: {"@context":"https://agrovoc.fao.org","@type":"AGROVOCCrop","code":"c_7051","display":"Rice"}
+          items:
+            $ref: "../../agri-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+          x-jsonld-id: "acar:cropTypes"
+        cropStagesSupported:
+          type: array
+          description: >
+            Crop growth stages for which advisories are available.
+            Based on the BBCH scale or network-defined stage vocabulary.
+          items:
+            type: string
+            enum:
+              - PRE_SOWING
+              - GERMINATION
+              - VEGETATIVE
+              - FLOWERING
+              - FRUITING
+              - MATURITY
+              - HARVEST
+              - POST_HARVEST
+          x-jsonld-id: "acar:cropStagesSupported"
+        advisoryLeadTimeDays:
+          type: integer
+          minimum: 0
+          description: >
+            Number of days in advance an advisory is generated before the
+            recommended action date. 0 indicates real-time or same-day advisories.
+          x-jsonld-id: "acar:advisoryLeadTimeDays"
+        advisoryUpdateFrequencyHours:
+          type: integer
+          minimum: 1
+          description: >
+            How frequently (in hours) this advisory resource refreshes its content.
+            Example: 24 for daily advisories, 168 for weekly.
+          x-jsonld-id: "acar:advisoryUpdateFrequencyHours"
+        dataSourceRefs:
+          type: array
+          description: >
+            References to data sources used to generate advisories (e.g. IMD weather
+            data feed, state agriculture department pest survey, satellite imagery
+            provider). Informational — aids transparency and traceability.
+          items:
+            type: string
+          x-jsonld-id: "acar:dataSourceRefs"

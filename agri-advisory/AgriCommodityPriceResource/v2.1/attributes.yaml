@@ -1,0 +1,97 @@
+openapi: 3.1.1
+$id: "https://schema.beckn.io/AgriCommodityPriceResource/v2.1/attributes.yaml"
+info:
+  title: AgriCommodityPriceResource Schema
+  version: "2.1.0"
+  description: >
+    Schema for commodity price and market intelligence resources in the Beckn
+    agri advisory network. Models services that deliver mandi/APMC prices,
+    market arrival data, and price trend advisories to farmers and Seeker NPs.
+    Extends AgriServiceResource and inherits coverageAreaCodes for
+    machine-filterable geographic scoping.
+  x-beckn-container: resourceAttributes
+
+components:
+  schemas:
+    AgriCommodityPriceResource:
+      allOf:
+        - $ref: "https://schema.beckn.io/AgriServiceResource/v2.1/attributes.yaml#/components/schemas/AgriServiceResource"
+      type: object
+      x-beckn-container: resourceAttributes
+      x-status: under-review
+      x-tags:
+        - agri-advisory
+        - resource
+        - commodity-price
+      x-jsonld:
+        "@context": "https://schema.beckn.io/AgriCommodityPriceResource/v2.1/context.jsonld"
+        "@type": "acpr:AgriCommodityPriceResource"
+
+      # Inherited from AgriServiceResource:
+      #   serviceCategory: DIGITAL_ADVISORY
+      #   providerType: MARKET_INFO_SERVICE
+      #   coverageAreaCodes: CodedValue[]   — geographic scope of market coverage
+      #   languagesSupported: string[]
+
+      properties:
+        commodities:
+          type: array
+          description: >
+            Agricultural commodities for which this resource provides pricing data,
+            expressed as typed coded values from a commodity classification authority.
+            Recommended authority: FAO AGROVOC (https://agrovoc.fao.org) or the
+            network's own commodity vocabulary published in network policy.
+            Example:
+              {"@context":"https://agrovoc.fao.org","@type":"AGROVOCCommodity","code":"c_7051","display":"Rice"}
+              {"@context":"https://agrovoc.fao.org","@type":"AGROVOCCommodity","code":"c_8001","display":"Wheat"}
+          items:
+            $ref: "../../agri-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+          x-jsonld-id: "acpr:commodities"
+        marketCodes:
+          type: array
+          description: >
+            Specific markets (mandi / APMC / exchange) for which this resource
+            provides price data, expressed as typed coded values.
+            Recommended authority for India: data.gov.in APMC market codes
+            (https://data.gov.in/resource/apmc-market-codes) or agmarknet.gov.in.
+            Example:
+              {"@context":"https://agmarknet.gov.in","@type":"APMCMarket","code":"MH-NSK-01","display":"Nashik APMC"}
+              {"@context":"https://agmarknet.gov.in","@type":"APMCMarket","code":"KA-BGL-01","display":"Yeshwanthpur APMC"}
+          items:
+            $ref: "../../agri-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+          x-jsonld-id: "acpr:marketCodes"
+        priceUpdateFrequencyHours:
+          type: integer
+          minimum: 1
+          description: >
+            How frequently (in hours) price data is refreshed from the source
+            markets. Example: 24 for once-daily mandi price updates.
+          x-jsonld-id: "acpr:priceUpdateFrequencyHours"
+        priceDataTypes:
+          type: array
+          description: >
+            Types of price data available from this resource.
+          items:
+            type: string
+            enum:
+              - SPOT_PRICE
+              - MODAL_PRICE
+              - ARRIVAL_VOLUME
+              - FUTURES_PRICE
+              - PRICE_TREND
+              - PRICE_FORECAST
+          x-jsonld-id: "acpr:priceDataTypes"
+        dataSourceRef:
+          type: string
+          description: >
+            Reference to the primary market data source. Examples: "Agmarknet",
+            "NCDEX", "MCX", "State Agriculture Department Daily Mandi Report".
+          x-jsonld-id: "acpr:dataSourceRef"
+        includesTradingAdvice:
+          type: boolean
+          default: false
+          description: >
+            Whether this resource provides interpreted trading or selling
+            recommendations (e.g. "hold stock", "sell now") in addition to raw
+            price data.
+          x-jsonld-id: "acpr:includesTradingAdvice"

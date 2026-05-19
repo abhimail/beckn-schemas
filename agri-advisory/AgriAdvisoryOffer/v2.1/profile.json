@@ -1,0 +1,31 @@
+{
+  "id": "https://schema.beckn.io/AgriAdvisoryOffer/v1",
+  "name": "AgriAdvisoryOffer",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["ServiceOffer"],
+  "discovery_fields": [
+    "offerAttributes.bundledResourceTypes",
+    "offerAttributes.languageOptions",
+    "offerAttributes.targetBeneficiaryType",
+    "offerAttributes.deliveryChannels",
+    "offerAttributes.entitlementEligible"
+  ],
+  "indexable_paths": [
+    "offerAttributes.bundledResourceTypes[*]",
+    "offerAttributes.targetBeneficiaryType",
+    "offerAttributes.entitlementEligible"
+  ],
+  "filterable_paths": [
+    "offerAttributes.bundledResourceTypes[*]",
+    "offerAttributes.targetBeneficiaryType",
+    "offerAttributes.deliveryChannels[*]",
+    "offerAttributes.entitlementEligible",
+    "offerAttributes.languageOptions[*]"
+  ],
+  "sortable_paths": [
+    "offerAttributes.subscriptionPeriodDays"
+  ],
+  "privacy_notes": []
+}

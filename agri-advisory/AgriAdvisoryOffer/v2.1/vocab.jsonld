@@ -1,0 +1,125 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "aao": "https://schema.beckn.io/AgriAdvisoryOffer#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "aao:BundledResourceType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "BundledResourceType",
+      "rdfs:comment": "Enumeration of advisory resource types that may be bundled in an AgriAdvisoryOffer."
+    },
+    {
+      "@id": "aao:CROP_ADVISORY",
+      "@type": "aao:BundledResourceType",
+      "rdfs:label": "CROP_ADVISORY",
+      "rdfs:comment": "Crop-specific agronomy advisory content (pest alerts, sowing guidance, fertiliser schedules, etc.)."
+    },
+    {
+      "@id": "aao:WEATHER_FORECAST",
+      "@type": "aao:BundledResourceType",
+      "rdfs:label": "WEATHER_FORECAST",
+      "rdfs:comment": "Localised weather forecast advisory for farm-level decision support."
+    },
+    {
+      "@id": "aao:COMMODITY_PRICE",
+      "@type": "aao:BundledResourceType",
+      "rdfs:label": "COMMODITY_PRICE",
+      "rdfs:comment": "Near-real-time commodity market price intelligence for crop sale timing decisions."
+    },
+
+    {
+      "@id": "aao:TargetBeneficiaryType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "TargetBeneficiaryType",
+      "rdfs:comment": "Enumeration of end-beneficiary categories for an AgriAdvisoryOffer."
+    },
+    {
+      "@id": "aao:INDIVIDUAL_FARMER",
+      "@type": "aao:TargetBeneficiaryType",
+      "rdfs:label": "INDIVIDUAL_FARMER",
+      "rdfs:comment": "A single farmer household subscribing directly to advisory services."
+    },
+    {
+      "@id": "aao:FARMER_GROUP",
+      "@type": "aao:TargetBeneficiaryType",
+      "rdfs:label": "FARMER_GROUP",
+      "rdfs:comment": "An informal farmer collective or self-help group (SHG) receiving advisory as a group."
+    },
+    {
+      "@id": "aao:FPO",
+      "@type": "aao:TargetBeneficiaryType",
+      "rdfs:label": "FPO",
+      "rdfs:comment": "Farmer Producer Organisation receiving advisory on behalf of member farmers."
+    },
+    {
+      "@id": "aao:GOVERNMENT_SCHEME",
+      "@type": "aao:TargetBeneficiaryType",
+      "rdfs:label": "GOVERNMENT_SCHEME",
+      "rdfs:comment": "Beneficiaries enrolled in a state or central government agricultural scheme."
+    },
+    {
+      "@id": "aao:NGO_PROGRAMME",
+      "@type": "aao:TargetBeneficiaryType",
+      "rdfs:label": "NGO_PROGRAMME",
+      "rdfs:comment": "Farmers covered under an NGO-managed programme that procures advisory in bulk."
+    },
+
+    {
+      "@id": "aao:DeliveryChannel",
+      "@type": "rdfs:Class",
+      "rdfs:label": "DeliveryChannel",
+      "rdfs:comment": "Enumeration of digital channels through which advisories are delivered to farmers."
+    },
+    {
+      "@id": "aao:APP",
+      "@type": "aao:DeliveryChannel",
+      "rdfs:label": "APP",
+      "rdfs:comment": "Delivery via a mobile or web application."
+    },
+    {
+      "@id": "aao:SMS",
+      "@type": "aao:DeliveryChannel",
+      "rdfs:label": "SMS",
+      "rdfs:comment": "Delivery via SMS text message."
+    },
+    {
+      "@id": "aao:WHATSAPP",
+      "@type": "aao:DeliveryChannel",
+      "rdfs:label": "WHATSAPP",
+      "rdfs:comment": "Delivery via WhatsApp messaging."
+    },
+    {
+      "@id": "aao:IVR",
+      "@type": "aao:DeliveryChannel",
+      "rdfs:label": "IVR",
+      "rdfs:comment": "Delivery via Interactive Voice Response (IVR) phone call."
+    },
+    {
+      "@id": "aao:EMAIL",
+      "@type": "aao:DeliveryChannel",
+      "rdfs:label": "EMAIL",
+      "rdfs:comment": "Delivery via email."
+    },
+    {
+      "@id": "aao:DASHBOARD",
+      "@type": "aao:DeliveryChannel",
+      "rdfs:label": "DASHBOARD",
+      "rdfs:comment": "Delivery via a web-based MIS or programme management dashboard."
+    },
+    {
+      "@id": "aao:PUSH_NOTIFICATION",
+      "@type": "aao:DeliveryChannel",
+      "rdfs:label": "PUSH_NOTIFICATION",
+      "rdfs:comment": "Delivery via push notification to a registered mobile application."
+    },
+    {
+      "@id": "aao:OTHER",
+      "@type": "aao:DeliveryChannel",
+      "rdfs:label": "OTHER",
+      "rdfs:comment": "Delivery via a channel not enumerated above; describe in serviceNotes."
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "@context": {
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "acar": "https://schema.beckn.io/AgriCropAdvisoryResource#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "acar:AgriCropAdvisoryResource",
+      "@type": "rdfs:Class",
+      "rdfs:label": "AgriCropAdvisoryResource",
+      "rdfs:comment": "A Beckn resource representing a digital crop advisory capability, including pest/disease alerts, sowing guidance, fertiliser schedules, and irrigation advisories."
+    },
+    {
+      "@id": "acar:AdvisoryType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "AdvisoryType",
+      "rdfs:comment": "Enumeration of crop advisory categories that an AgriCropAdvisoryResource can deliver."
+    },
+    {
+      "@id": "acar:PEST_ALERT",
+      "@type": "acar:AdvisoryType",
+      "rdfs:label": "Pest Alert",
+      "rdfs:comment": "Advisory warning farmers of pest infestations detected or predicted in their crop area, with recommended intervention measures."
+    },
+    {
+      "@id": "acar:DISEASE_ALERT",
+      "@type": "acar:AdvisoryType",
+      "rdfs:label": "Disease Alert",
+      "rdfs:comment": "Advisory warning farmers of plant disease outbreaks or risk conditions, with recommended preventive or curative actions."
+    },
+    {
+      "@id": "acar:SOWING_GUIDANCE",
+      "@type": "acar:AdvisoryType",
+      "rdfs:label": "Sowing Guidance",
+      "rdfs:comment": "Advisory recommending optimal sowing dates, seed varieties, seed treatment, and sowing methods based on soil and weather conditions."
+    },
+    {
+      "@id": "acar:FERTILISER_SCHEDULE",
+      "@type": "acar:AdvisoryType",
+      "rdfs:label": "Fertiliser Schedule",
+      "rdfs:comment": "Advisory providing crop-stage-specific nutrient application schedules, including dose, timing, and application method recommendations."
+    },
+    {
+      "@id": "acar:IRRIGATION_ADVISORY",
+      "@type": "acar:AdvisoryType",
+      "rdfs:label": "Irrigation Advisory",
+      "rdfs:comment": "Advisory recommending irrigation scheduling based on soil moisture, evapotranspiration, and forecast rainfall data."
+    },
+    {
+      "@id": "acar:HARVEST_GUIDANCE",
+      "@type": "acar:AdvisoryType",
+      "rdfs:label": "Harvest Guidance",
+      "rdfs:comment": "Advisory recommending optimal harvest timing and post-harvest handling based on crop maturity indicators and weather forecasts."
+    },
+    {
+      "@id": "acar:WEATHER_BASED_ADVISORY",
+      "@type": "acar:AdvisoryType",
+      "rdfs:label": "Weather-Based Advisory",
+      "rdfs:comment": "Integrated advisory synthesising meteorological forecasts into actionable farm management recommendations."
+    },
+    {
+      "@id": "acar:MARKET_LINKED_ADVISORY",
+      "@type": "acar:AdvisoryType",
+      "rdfs:label": "Market-Linked Advisory",
+      "rdfs:comment": "Advisory combining agronomic guidance with commodity market price signals to optimise production and marketing decisions."
+    },
+    {
+      "@id": "acar:GENERAL_AGRONOMY",
+      "@type": "acar:AdvisoryType",
+      "rdfs:label": "General Agronomy",
+      "rdfs:comment": "General crop management advisories not classified under a specific alert or schedule category."
+    },
+    {
+      "@id": "acar:CropStage",
+      "@type": "rdfs:Class",
+      "rdfs:label": "CropStage",
+      "rdfs:comment": "Enumeration of crop growth stages for which AgriCropAdvisoryResource can generate advisories, aligned with the BBCH scale."
+    },
+    {
+      "@id": "acar:PRE_SOWING",
+      "@type": "acar:CropStage",
+      "rdfs:label": "Pre-Sowing",
+      "rdfs:comment": "Period before seed sowing, covering land preparation, soil testing, and seed selection activities."
+    },
+    {
+      "@id": "acar:GERMINATION",
+      "@type": "acar:CropStage",
+      "rdfs:label": "Germination",
+      "rdfs:comment": "Stage from seed imbibition through seedling emergence, corresponding to BBCH stages 00–09."
+    },
+    {
+      "@id": "acar:VEGETATIVE",
+      "@type": "acar:CropStage",
+      "rdfs:label": "Vegetative",
+      "rdfs:comment": "Period of leaf and stem development before reproductive growth begins, BBCH stages 10–39."
+    },
+    {
+      "@id": "acar:FLOWERING",
+      "@type": "acar:CropStage",
+      "rdfs:label": "Flowering",
+      "rdfs:comment": "Inflorescence and flower development stage, BBCH stages 51–69."
+    },
+    {
+      "@id": "acar:FRUITING",
+      "@type": "acar:CropStage",
+      "rdfs:label": "Fruiting",
+      "rdfs:comment": "Period of fruit set and development after pollination, BBCH stages 71–79."
+    },
+    {
+      "@id": "acar:MATURITY",
+      "@type": "acar:CropStage",
+      "rdfs:label": "Maturity",
+      "rdfs:comment": "Ripening and physiological maturity stage, BBCH stages 81–89."
+    },
+    {
+      "@id": "acar:HARVEST",
+      "@type": "acar:CropStage",
+      "rdfs:label": "Harvest",
+      "rdfs:comment": "Crop harvest window, covering timing and method of harvest operations."
+    },
+    {
+      "@id": "acar:POST_HARVEST",
+      "@type": "acar:CropStage",
+      "rdfs:label": "Post-Harvest",
+      "rdfs:comment": "Period after harvest covering drying, storage, grading, and market preparation."
+    }
+  ]
+}
