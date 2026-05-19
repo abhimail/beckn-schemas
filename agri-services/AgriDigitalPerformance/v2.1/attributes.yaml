@@ -20,15 +20,14 @@ components:
   schemas:
     AgriDigitalPerformance:
       allOf:
-        - $ref: "../../../generic-service/ServicePerformance/v2.1/attributes.yaml#/components/schemas/ServicePerformance"
+        - $ref: "https://schema.beckn.io/ServicePerformance/v2.1/attributes.yaml#/components/schemas/ServicePerformance"
       type: object
       x-beckn-container: performanceAttributes
       x-status: under-review
       x-tags:
-        - service
-        - agri-services-ext
+        - agri-services
         - performance
-        - digital
+        - agri-advisory
       x-jsonld:
         "@context": "https://schema.beckn.io/AgriDigitalPerformance/v2.1/context.jsonld"
         "@type": "adp:AgriDigitalPerformance"
@@ -91,7 +90,7 @@ components:
             Allows Seeker NPs and farmers to confirm the advisory is relevant to
             their location.
             Example: {"@context":"https://lgdirectory.gov.in","@type":"LGDDistrict","code":"507","display":"Nashik"}
-          $ref: "../../../generic-service/generic-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+          $ref: "https://schema.beckn.io/CodedValue/attributes.yaml#/components/schemas/CodedValue"
           x-jsonld-id: "adp:targetLocation"
         contentRef:
           type: string

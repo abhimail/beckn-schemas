@@ -5,9 +5,30 @@
   "protocol_version": "2.0",
   "semantic_model": "generalised",
   "included_schemas": ["AgriServiceResource"],
-  "discovery_fields": ["serviceCategory", "providerType", "livestockTypes", "serviceAreaHierarchy.county"],
-  "indexable_paths": ["serviceCategory", "providerType", "serviceAreaHierarchy.county", "serviceAreaHierarchy.country"],
-  "filterable_paths": ["serviceCategory", "providerType", "livestockTypes", "serviceAreaHierarchy.county"],
-  "sortable_paths": ["serviceAreaHierarchy.coverageRadiusKm"],
-  "privacy_notes": ["serviceAreaHierarchy may identify specific farms by location"]
+  "discovery_fields": [
+    "resourceAttributes.serviceCategory",
+    "resourceAttributes.providerType",
+    "resourceAttributes.coverageAreaCodes"
+  ],
+  "indexable_paths": [
+    "resourceAttributes.serviceCategory",
+    "resourceAttributes.providerType",
+    "resourceAttributes.livestockTypes",
+    "resourceAttributes.serviceAreaHierarchy.county",
+    "resourceAttributes.serviceAreaHierarchy.country"
+  ],
+  "filterable_paths": [
+    "resourceAttributes.serviceCategory",
+    "resourceAttributes.providerType",
+    "resourceAttributes.coverageAreaCodes[*].code",
+    "resourceAttributes.livestockTypes[*]",
+    "resourceAttributes.serviceAreaHierarchy.county",
+    "resourceAttributes.serviceAreaHierarchy.country"
+  ],
+  "sortable_paths": [
+    "resourceAttributes.serviceAreaHierarchy.coverageRadiusKm"
+  ],
+  "privacy_notes": [
+    "serviceAreaHierarchy.village may identify a specific farm by location when combined with provider identity"
+  ]
 }

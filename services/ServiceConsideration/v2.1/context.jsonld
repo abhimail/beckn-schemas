@@ -20,6 +20,8 @@
     "payerArchetype": {"@id": "scn:payerArchetype"},
     "paymentSchedule": {"@id": "scn:paymentSchedule", "@container": "@list"},
     "milestoneId": {"@id": "scn:milestoneId"},
+    "amount": {"@id": "scn:amount"},
+    "description": {"@id": "scn:milestoneDescription"},
     "dueDate": {"@id": "scn:dueDate"},
     "paid": {"@id": "scn:paid"},
     "paidAt": {"@id": "scn:paidAt"},

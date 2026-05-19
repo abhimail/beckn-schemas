@@ -1,29 +1,153 @@
 {
   "@context": {
-    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "asr": "https://schema.beckn.io/AgriServiceResource#",
-    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld"
   },
   "@graph": [
-    {"@id": "asr:AgriServiceCategory", "@type": "rdfs:Class", "rdfs:label": "AgriServiceCategory"},
-    {"@id": "asr:VACCINATION", "@type": "asr:AgriServiceCategory", "rdfs:label": "Vaccination"},
-    {"@id": "asr:BROODING", "@type": "asr:AgriServiceCategory", "rdfs:label": "Brooding"},
-    {"@id": "asr:INCUBATION", "@type": "asr:AgriServiceCategory", "rdfs:label": "Incubation"},
-    {"@id": "asr:AGRI_INPUT", "@type": "asr:AgriServiceCategory", "rdfs:label": "Agricultural Input"},
-    {"@id": "asr:ADVISORY", "@type": "asr:AgriServiceCategory", "rdfs:label": "Advisory"},
-    {"@id": "asr:SCREENING", "@type": "asr:AgriServiceCategory", "rdfs:label": "Screening"},
-    {"@id": "asr:AgriProviderType", "@type": "rdfs:Class", "rdfs:label": "AgriProviderType"},
-    {"@id": "asr:VET", "@type": "asr:AgriProviderType", "rdfs:label": "Veterinarian"},
-    {"@id": "asr:AGROVET", "@type": "asr:AgriProviderType", "rdfs:label": "Agrovet"},
-    {"@id": "asr:EXTENSION_OFFICER", "@type": "asr:AgriProviderType", "rdfs:label": "Extension Officer"},
-    {"@id": "asr:AGRI_INPUT_DEALER", "@type": "asr:AgriProviderType", "rdfs:label": "Agricultural Input Dealer"},
-    {"@id": "asr:AGRI_TRAINER", "@type": "asr:AgriProviderType", "rdfs:label": "Agricultural Trainer"},
-    {"@id": "asr:AgriLivestockType", "@type": "rdfs:Class", "rdfs:label": "AgriLivestockType"},
-    {"@id": "asr:POULTRY", "@type": "asr:AgriLivestockType", "rdfs:label": "Poultry"},
-    {"@id": "asr:CATTLE", "@type": "asr:AgriLivestockType", "rdfs:label": "Cattle"},
-    {"@id": "asr:GOAT", "@type": "asr:AgriLivestockType", "rdfs:label": "Goat"},
-    {"@id": "asr:SHEEP", "@type": "asr:AgriLivestockType", "rdfs:label": "Sheep"},
-    {"@id": "asr:PIG", "@type": "asr:AgriLivestockType", "rdfs:label": "Pig"},
-    {"@id": "asr:OTHER", "@type": "asr:AgriLivestockType", "rdfs:label": "Other"}
+    {
+      "@id": "asr:ServiceCategory",
+      "@type": "rdfs:Class",
+      "rdfs:label": "ServiceCategory",
+      "rdfs:comment": "Category of agricultural service provided by the resource"
+    },
+    {
+      "@id": "asr:VACCINATION",
+      "@type": "asr:ServiceCategory",
+      "rdfs:label": "VACCINATION",
+      "rdfs:comment": "Livestock vaccination camp or on-farm vaccination visit"
+    },
+    {
+      "@id": "asr:BROODING",
+      "@type": "asr:ServiceCategory",
+      "rdfs:label": "BROODING",
+      "rdfs:comment": "Poultry brooding management and support services"
+    },
+    {
+      "@id": "asr:INCUBATION",
+      "@type": "asr:ServiceCategory",
+      "rdfs:label": "INCUBATION",
+      "rdfs:comment": "Egg incubation services and hatchery support"
+    },
+    {
+      "@id": "asr:AGRI_INPUT",
+      "@type": "asr:ServiceCategory",
+      "rdfs:label": "AGRI_INPUT",
+      "rdfs:comment": "Supply and delivery of agricultural inputs (feed, medicine, equipment)"
+    },
+    {
+      "@id": "asr:ADVISORY",
+      "@type": "asr:ServiceCategory",
+      "rdfs:label": "ADVISORY",
+      "rdfs:comment": "In-person agricultural advisory or extension officer visit"
+    },
+    {
+      "@id": "asr:SCREENING",
+      "@type": "asr:ServiceCategory",
+      "rdfs:label": "SCREENING",
+      "rdfs:comment": "Disease screening and health assessment of livestock or crops"
+    },
+    {
+      "@id": "asr:DIGITAL_ADVISORY",
+      "@type": "asr:ServiceCategory",
+      "rdfs:label": "DIGITAL_ADVISORY",
+      "rdfs:comment": "Remote digital advisory delivered via app, SMS, WhatsApp, IVR, or dashboard"
+    },
+    {
+      "@id": "asr:ProviderType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "ProviderType",
+      "rdfs:comment": "Classification of the entity providing the agricultural service"
+    },
+    {
+      "@id": "asr:VET",
+      "@type": "asr:ProviderType",
+      "rdfs:label": "VET",
+      "rdfs:comment": "Licensed veterinarian providing clinical or preventive services"
+    },
+    {
+      "@id": "asr:AGROVET",
+      "@type": "asr:ProviderType",
+      "rdfs:label": "AGROVET",
+      "rdfs:comment": "Agrovet retail outlet providing inputs, basic diagnostics and advisory"
+    },
+    {
+      "@id": "asr:EXTENSION_OFFICER",
+      "@type": "asr:ProviderType",
+      "rdfs:label": "EXTENSION_OFFICER",
+      "rdfs:comment": "Government or NGO agricultural extension officer"
+    },
+    {
+      "@id": "asr:AGRI_INPUT_DEALER",
+      "@type": "asr:ProviderType",
+      "rdfs:label": "AGRI_INPUT_DEALER",
+      "rdfs:comment": "Dealer specialising in agricultural inputs (feeds, seeds, fertilisers, agrochemicals)"
+    },
+    {
+      "@id": "asr:AGRI_TRAINER",
+      "@type": "asr:ProviderType",
+      "rdfs:label": "AGRI_TRAINER",
+      "rdfs:comment": "Trainer delivering structured farmer training programmes"
+    },
+    {
+      "@id": "asr:DIGITAL_ADVISORY_PLATFORM",
+      "@type": "asr:ProviderType",
+      "rdfs:label": "DIGITAL_ADVISORY_PLATFORM",
+      "rdfs:comment": "Technology platform delivering agricultural advisories via digital channels"
+    },
+    {
+      "@id": "asr:WEATHER_DATA_PROVIDER",
+      "@type": "asr:ProviderType",
+      "rdfs:label": "WEATHER_DATA_PROVIDER",
+      "rdfs:comment": "Provider of weather forecasts and agro-meteorological data"
+    },
+    {
+      "@id": "asr:MARKET_INFO_SERVICE",
+      "@type": "asr:ProviderType",
+      "rdfs:label": "MARKET_INFO_SERVICE",
+      "rdfs:comment": "Service providing commodity price and market linkage information"
+    },
+    {
+      "@id": "asr:LivestockType",
+      "@type": "rdfs:Class",
+      "rdfs:label": "LivestockType",
+      "rdfs:comment": "Type of livestock for which the service is applicable"
+    },
+    {
+      "@id": "asr:POULTRY",
+      "@type": "asr:LivestockType",
+      "rdfs:label": "POULTRY",
+      "rdfs:comment": "Domestic poultry including chickens, ducks, turkeys and guinea fowl"
+    },
+    {
+      "@id": "asr:CATTLE",
+      "@type": "asr:LivestockType",
+      "rdfs:label": "CATTLE",
+      "rdfs:comment": "Cattle including dairy and beef breeds"
+    },
+    {
+      "@id": "asr:GOAT",
+      "@type": "asr:LivestockType",
+      "rdfs:label": "GOAT",
+      "rdfs:comment": "Goats including dairy and meat breeds"
+    },
+    {
+      "@id": "asr:SHEEP",
+      "@type": "asr:LivestockType",
+      "rdfs:label": "SHEEP",
+      "rdfs:comment": "Sheep including wool, meat and dairy breeds"
+    },
+    {
+      "@id": "asr:PIG",
+      "@type": "asr:LivestockType",
+      "rdfs:label": "PIG",
+      "rdfs:comment": "Pigs and swine"
+    },
+    {
+      "@id": "asr:OTHER",
+      "@type": "asr:LivestockType",
+      "rdfs:label": "OTHER",
+      "rdfs:comment": "Other livestock types not covered by the defined enumeration values"
+    }
   ]
 }

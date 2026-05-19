@@ -9,5 +9,5 @@
   "indexable_paths": ["livestockType", "farmLocation.county", "farmLocation.country"],
   "filterable_paths": ["livestockType", "farmLocation.county"],
   "sortable_paths": ["livestockCount"],
-  "privacy_notes": ["farmLocation may identify specific farms by GPS or landmark", "livestockCount reveals farm size"]
+  "privacy_notes": ["farmLocation.geo exposes precise GeoJSON coordinates — may identify a specific farm when combined with provider identity", "livestockCount reveals farm size"]
 }

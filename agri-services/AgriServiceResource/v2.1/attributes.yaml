@@ -14,14 +14,14 @@ components:
   schemas:
     AgriServiceResource:
       allOf:
-        - $ref: "../../../generic-service/ServiceResource/v2.1/attributes.yaml#/components/schemas/ServiceResource"
+        - $ref: "https://schema.beckn.io/ServiceResource/v2.1/attributes.yaml#/components/schemas/ServiceResource"
       type: object
       x-beckn-container: resourceAttributes
       x-status: under-review
       x-tags:
-        - service
-        - agri-services-ext
+        - agri-services
         - resource
+        - agri-advisory
       x-jsonld:
         "@context": "https://schema.beckn.io/AgriServiceResource/v2.1/context.jsonld"
         "@type": "asr:AgriServiceResource"
@@ -111,7 +111,7 @@ components:
             Networks SHOULD publish their canonical authority URI and @type vocabulary
             in their network policy documentation.
           items:
-            $ref: "../../../generic-service/generic-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+            $ref: "https://schema.beckn.io/CodedValue/attributes.yaml#/components/schemas/CodedValue"
           x-jsonld-id: "asr:coverageAreaCodes"
 
     AgriServiceAreaHierarchy:

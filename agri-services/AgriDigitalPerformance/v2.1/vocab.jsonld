@@ -1,0 +1,63 @@
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "adp": "https://schema.beckn.io/AgriDigitalPerformance#",
+    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld"
+  },
+  "@graph": [
+    {
+      "@id": "adp:DeliveryMode",
+      "@type": "rdfs:Class",
+      "rdfs:label": "DeliveryMode",
+      "rdfs:comment": "Channel through which agricultural advisory content was delivered to the farmer or Seeker NP"
+    },
+    {
+      "@id": "adp:APP",
+      "@type": "adp:DeliveryMode",
+      "rdfs:label": "APP",
+      "rdfs:comment": "Delivery via an in-app notification or content page within a mobile or web application"
+    },
+    {
+      "@id": "adp:SMS",
+      "@type": "adp:DeliveryMode",
+      "rdfs:label": "SMS",
+      "rdfs:comment": "Delivery as a plain-text SMS message to a registered mobile number"
+    },
+    {
+      "@id": "adp:WHATSAPP",
+      "@type": "adp:DeliveryMode",
+      "rdfs:label": "WHATSAPP",
+      "rdfs:comment": "Delivery via WhatsApp message, which may be text, image, or document format"
+    },
+    {
+      "@id": "adp:IVR",
+      "@type": "adp:DeliveryMode",
+      "rdfs:label": "IVR",
+      "rdfs:comment": "Delivery as an Interactive Voice Response audio advisory via phone call"
+    },
+    {
+      "@id": "adp:EMAIL",
+      "@type": "adp:DeliveryMode",
+      "rdfs:label": "EMAIL",
+      "rdfs:comment": "Delivery via email to a registered email address"
+    },
+    {
+      "@id": "adp:DASHBOARD",
+      "@type": "adp:DeliveryMode",
+      "rdfs:label": "DASHBOARD",
+      "rdfs:comment": "Content made available on a web or mobile application dashboard for self-service retrieval"
+    },
+    {
+      "@id": "adp:PUSH_NOTIFICATION",
+      "@type": "adp:DeliveryMode",
+      "rdfs:label": "PUSH_NOTIFICATION",
+      "rdfs:comment": "Delivery as a mobile push notification to a registered device"
+    },
+    {
+      "@id": "adp:OTHER",
+      "@type": "adp:DeliveryMode",
+      "rdfs:label": "OTHER",
+      "rdfs:comment": "Delivery via any channel not covered by the defined DeliveryMode enumeration values"
+    }
+  ]
+}

@@ -9,5 +9,5 @@
   "indexable_paths": ["confirmedAppointmentTime", "serviceLocation.region", "serviceLocation.country"],
   "filterable_paths": ["providerConfirmedCompletion", "clientConfirmedCompletion", "followUpRequired"],
   "sortable_paths": ["confirmedAppointmentTime"],
-  "privacy_notes": ["serviceNotes may contain sensitive service details", "gpsCoordinates reveal precise location information"]
+  "privacy_notes": ["serviceNotes may contain sensitive service details", "geo field exposes precise GeoJSON coordinates — restrict location data in responses where farmer privacy is required"]
 }

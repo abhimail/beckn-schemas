@@ -4,84 +4,128 @@
     "schemaContext": ["https://schema.beckn.io/AgriServiceResource/v2.1/context.jsonld"]
   },
   "message": {
-    "catalogs": [{
-      "@type": "beckn:Catalog",
-      "beckn:id": "cat-agri-001",
-      "beckn:descriptor": {
-        "schema:name": "Dr. James Mwangi - Poultry Vaccination Services",
-        "schema:description": "Professional poultry vaccination and health advisory services"
-      },
-      "beckn:provider": {
-        "beckn:id": "prov-jm-001",
+    "catalogs": [
+      {
+        "@type": "beckn:Catalog",
+        "beckn:id": "cat-agri-digital-001",
         "beckn:descriptor": {
-          "schema:name": "Dr. James Mwangi",
-          "schema:description": "Licensed Veterinarian - Poultry Specialist"
-        }
-      },
-      "beckn:resources": [{
-        "@type": "beckn:Resource",
-        "beckn:id": "res-poul-vac-001",
-        "beckn:descriptor": {
-          "schema:name": "Poultry Vaccination Service",
-          "beckn:shortDesc": "Professional vaccination service for poultry flocks",
-          "schema:description": "On-farm poultry vaccination and health screening service"
+          "schema:name": "Krishikal Digital Advisory Services",
+          "schema:description": "AI-powered digital advisory for smallholder farmers in Maharashtra and Karnataka"
         },
-        "beckn:isAvailable": true,
-        "beckn:resourceAttributes": {
-          "serviceUnit": "PER_VISIT",
-          "coverageArea": {
-            "region": "Central Region",
-            "country": "KE",
-            "coverageRadiusKm": 25
-          },
-          "capacityPerDay": 10,
-          "capacityPerWeek": 60,
-          "availabilitySchedule": [
-            {
-              "dayOfWeek": "MONDAY",
-              "startTime": "07:00",
-              "endTime": "17:00"
-            },
-            {
-              "dayOfWeek": "TUESDAY",
-              "startTime": "07:00",
-              "endTime": "17:00"
-            },
-            {
-              "dayOfWeek": "WEDNESDAY",
-              "startTime": "07:00",
-              "endTime": "17:00"
-            },
-            {
-              "dayOfWeek": "THURSDAY",
-              "startTime": "07:00",
-              "endTime": "17:00"
-            },
-            {
-              "dayOfWeek": "FRIDAY",
-              "startTime": "07:00",
-              "endTime": "17:00"
-            },
-            {
-              "dayOfWeek": "SATURDAY",
-              "startTime": "08:00",
-              "endTime": "14:00"
-            }
-          ],
-          "minimumBookingAdvanceHours": 24,
-          "languagesSupported": ["en", "sw"],
-          "serviceCategory": "VACCINATION",
-          "providerType": "VET",
-          "livestockTypes": ["POULTRY"],
-          "serviceAreaHierarchy": {
-            "village": "Githunguri",
-            "ward": "Githunguri",
-            "county": "Kiambu",
-            "country": "KE",
-            "coverageRadiusKm": 25
+        "beckn:provider": {
+          "beckn:id": "prov-krishikal-001",
+          "beckn:descriptor": {
+            "schema:name": "Krishikal Agritech Pvt Ltd",
+            "schema:description": "Digital advisory platform delivering crop, weather and market advisories in 6 Indian languages"
           }
-        }
-      }]
-    }]
+        },
+        "beckn:resources": [
+          {
+            "@type": "beckn:Resource",
+            "beckn:id": "res-da-mh-001",
+            "beckn:descriptor": {
+              "schema:name": "Crop Advisory — Maharashtra (Marathi)",
+              "beckn:shortDesc": "Daily personalised crop advisory delivered via WhatsApp in Marathi",
+              "schema:description": "AI-generated, agronomist-reviewed daily crop advisory covering pest alerts, weather forecasts and input recommendations for smallholder farms in Maharashtra districts"
+            },
+            "beckn:isAvailable": true,
+            "beckn:resourceAttributes": {
+              "serviceUnit": "PER_SUBSCRIPTION",
+              "capacityPerDay": 5000,
+              "capacityPerWeek": 35000,
+              "availabilitySchedule": [
+                {"dayOfWeek": "MONDAY", "startTime": "06:00", "endTime": "20:00"},
+                {"dayOfWeek": "TUESDAY", "startTime": "06:00", "endTime": "20:00"},
+                {"dayOfWeek": "WEDNESDAY", "startTime": "06:00", "endTime": "20:00"},
+                {"dayOfWeek": "THURSDAY", "startTime": "06:00", "endTime": "20:00"},
+                {"dayOfWeek": "FRIDAY", "startTime": "06:00", "endTime": "20:00"},
+                {"dayOfWeek": "SATURDAY", "startTime": "06:00", "endTime": "20:00"},
+                {"dayOfWeek": "SUNDAY", "startTime": "06:00", "endTime": "20:00"}
+              ],
+              "minimumBookingAdvanceHours": 0,
+              "languagesSupported": ["mr", "hi", "en"],
+              "serviceCategory": "DIGITAL_ADVISORY",
+              "providerType": "DIGITAL_ADVISORY_PLATFORM",
+              "livestockTypes": [],
+              "serviceAreaHierarchy": {
+                "village": "",
+                "ward": "",
+                "county": "Nashik",
+                "country": "IN",
+                "coverageRadiusKm": 0
+              },
+              "coverageAreaCodes": [
+                {
+                  "@context": "https://lgdirectory.gov.in",
+                  "@type": "LGDDistrict",
+                  "code": "507",
+                  "display": "Nashik"
+                },
+                {
+                  "@context": "https://lgdirectory.gov.in",
+                  "@type": "LGDDistrict",
+                  "code": "508",
+                  "display": "Ahmednagar"
+                },
+                {
+                  "@context": "https://lgdirectory.gov.in",
+                  "@type": "LGDDistrict",
+                  "code": "509",
+                  "display": "Pune"
+                }
+              ]
+            }
+          },
+          {
+            "@type": "beckn:Resource",
+            "beckn:id": "res-vac-ke-001",
+            "beckn:descriptor": {
+              "schema:name": "Poultry Vaccination Service — Kiambu County",
+              "beckn:shortDesc": "On-farm Newcastle disease and Marek's disease vaccination for commercial poultry",
+              "schema:description": "Licensed veterinary vaccination service for commercial broiler and layer farms in Kiambu and Muranga counties, Kenya. Covers Newcastle disease, Marek's disease and Gumboro disease vaccines."
+            },
+            "beckn:isAvailable": true,
+            "beckn:resourceAttributes": {
+              "serviceUnit": "PER_VISIT",
+              "capacityPerDay": 3,
+              "capacityPerWeek": 15,
+              "availabilitySchedule": [
+                {"dayOfWeek": "MONDAY", "startTime": "07:00", "endTime": "17:00"},
+                {"dayOfWeek": "TUESDAY", "startTime": "07:00", "endTime": "17:00"},
+                {"dayOfWeek": "WEDNESDAY", "startTime": "07:00", "endTime": "17:00"},
+                {"dayOfWeek": "THURSDAY", "startTime": "07:00", "endTime": "17:00"},
+                {"dayOfWeek": "FRIDAY", "startTime": "07:00", "endTime": "17:00"}
+              ],
+              "minimumBookingAdvanceHours": 48,
+              "languagesSupported": ["en", "sw"],
+              "serviceCategory": "VACCINATION",
+              "providerType": "VET",
+              "livestockTypes": ["POULTRY"],
+              "serviceAreaHierarchy": {
+                "village": "",
+                "ward": "",
+                "county": "Kiambu",
+                "country": "KE",
+                "coverageRadiusKm": 40
+              },
+              "coverageAreaCodes": [
+                {
+                  "@context": "https://www.knbs.or.ke/county-codes",
+                  "@type": "KenyaCounty",
+                  "code": "22",
+                  "display": "Kiambu"
+                },
+                {
+                  "@context": "https://www.knbs.or.ke/county-codes",
+                  "@type": "KenyaCounty",
+                  "code": "21",
+                  "display": "Muranga"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
   }
 }

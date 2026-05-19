@@ -1,4 +1,5 @@
 openapi: 3.1.1
+$id: "https://schema.beckn.io/AgriServicePerformance/v2.1/attributes.yaml"
 info:
   title: AgriServicePerformance Schema
   version: "2.1.0"
@@ -9,9 +10,15 @@ components:
   schemas:
     AgriServicePerformance:
       allOf:
-        - $ref: "../../services/ServicePerformance/v2.1/attributes.yaml#/components/schemas/ServicePerformance"
+        - $ref: "https://schema.beckn.io/ServicePerformance/v2.1/attributes.yaml#/components/schemas/ServicePerformance"
       type: object
       x-beckn-container: performanceAttributes
+      x-status: under-review
+      x-tags:
+        - service
+        - agri-services
+        - performance
+        - agri-livestock
       x-jsonld:
         "@context": "https://schema.beckn.io/AgriServicePerformance/v2.1/context.jsonld"
         "@type": "aspm:AgriServicePerformance"

@@ -1,0 +1,122 @@
+{
+  "context": {
+    "action": "on_status",
+    "schemaContext": ["https://schema.beckn.io/AgriDigitalPerformance/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-da-mh-20260518-001",
+      "beckn:status": {"code": "ACTIVE"},
+      "beckn:participants": [
+        {
+          "beckn:id": "prov-krishikal-001",
+          "beckn:descriptor": {
+            "schema:name": "Krishikal Agritech Pvt Ltd",
+            "schema:description": "Digital advisory platform"
+          }
+        },
+        {
+          "beckn:id": "seeker-ngo-praja-001",
+          "beckn:descriptor": {
+            "schema:name": "Prajalakshmi Rural Development Foundation",
+            "schema:description": "NGO providing digital advisory services to smallholder farmers in Nashik district"
+          }
+        }
+      ],
+      "beckn:commitments": [
+        {
+          "beckn:id": "commitment-da-001",
+          "beckn:status": {"code": "COMMITTED"},
+          "beckn:resources": [
+            {
+              "beckn:id": "res-da-mh-001",
+              "beckn:quantity": {"beckn:count": 1}
+            }
+          ]
+        }
+      ],
+      "beckn:performance": [
+        {
+          "@type": "beckn:Performance",
+          "beckn:id": "perf-da-20260518-001",
+          "beckn:status": {"code": "COMPLETED"},
+          "beckn:commitmentIds": ["commitment-da-001"],
+          "beckn:performanceAttributes": {
+            "providerConfirmedCompletion": true,
+            "clientConfirmedCompletion": false,
+            "serviceNotes": "Crop advisory for kharif tomato — pest pressure alert for Helicoverpa armigera issued for Nashik district based on IMD weather data",
+            "followUpRequired": true,
+            "followUpDate": "2026-05-19",
+            "deliveryMode": "WHATSAPP",
+            "requestedLanguage": "mr",
+            "deliveredLanguage": "mr",
+            "contentAccessUrl": "https://advisory.krishikal.in/content/adv-20260518-nashik-tomato-pest?token=eyJhbGciOiJIUzI1NiJ9.eyJjb250ZW50IjoiYWR2LTIwMjYwNTE4In0.signed",
+            "contentAccessExpiry": "2026-05-25T23:59:59Z",
+            "targetLocation": {
+              "@context": "https://lgdirectory.gov.in",
+              "@type": "LGDDistrict",
+              "code": "507",
+              "display": "Nashik"
+            },
+            "contentRef": "KK-ADV-2026-05-18-MH-507-TOMATO-PEST-001",
+            "deliveredAt": "2026-05-18T07:15:32Z",
+            "deliveryConfirmed": true
+          }
+        },
+        {
+          "@type": "beckn:Performance",
+          "beckn:id": "perf-da-20260518-002",
+          "beckn:status": {"code": "COMPLETED"},
+          "beckn:commitmentIds": ["commitment-da-001"],
+          "beckn:performanceAttributes": {
+            "providerConfirmedCompletion": true,
+            "clientConfirmedCompletion": false,
+            "serviceNotes": "Weather advisory — pre-monsoon forecast for Nashik district, IMD district-level forecast integration",
+            "followUpRequired": false,
+            "deliveryMode": "SMS",
+            "requestedLanguage": "mr",
+            "deliveredLanguage": "hi",
+            "contentAccessUrl": "",
+            "contentAccessExpiry": "",
+            "targetLocation": {
+              "@context": "https://lgdirectory.gov.in",
+              "@type": "LGDDistrict",
+              "code": "507",
+              "display": "Nashik"
+            },
+            "contentRef": "KK-WX-2026-05-18-MH-507-PREMONSOON-001",
+            "deliveredAt": "2026-05-18T06:00:05Z",
+            "deliveryConfirmed": false
+          }
+        },
+        {
+          "@type": "beckn:Performance",
+          "beckn:id": "perf-da-20260517-003",
+          "beckn:status": {"code": "COMPLETED"},
+          "beckn:commitmentIds": ["commitment-da-001"],
+          "beckn:performanceAttributes": {
+            "providerConfirmedCompletion": true,
+            "clientConfirmedCompletion": true,
+            "serviceNotes": "Market price bulletin — onion and tomato mandi prices for Lasalgaon APMC as of 17 May 2026",
+            "followUpRequired": false,
+            "deliveryMode": "DASHBOARD",
+            "requestedLanguage": "mr",
+            "deliveredLanguage": "mr",
+            "contentAccessUrl": "https://dashboard.krishikal.in/market/nashik/2026-05-17",
+            "contentAccessExpiry": "2026-06-17T23:59:59Z",
+            "targetLocation": {
+              "@context": "https://lgdirectory.gov.in",
+              "@type": "LGDDistrict",
+              "code": "507",
+              "display": "Nashik"
+            },
+            "contentRef": "KK-MKT-2026-05-17-MH-507-ONION-TOMATO-001",
+            "deliveredAt": "2026-05-17T14:30:00Z",
+            "deliveryConfirmed": true
+          }
+        }
+      ]
+    }
+  }
+}

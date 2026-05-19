@@ -1,4 +1,5 @@
 openapi: 3.1.1
+$id: "https://schema.beckn.io/AgriServiceOffer/v2.1/attributes.yaml"
 info:
   title: AgriServiceOffer Schema
   version: "2.1.0"
@@ -9,9 +10,15 @@ components:
   schemas:
     AgriServiceOffer:
       allOf:
-        - $ref: "../../services/ServiceOffer/v2.1/attributes.yaml#/components/schemas/ServiceOffer"
+        - $ref: "https://schema.beckn.io/ServiceOffer/v2.1/attributes.yaml#/components/schemas/ServiceOffer"
       type: object
       x-beckn-container: offerAttributes
+      x-status: under-review
+      x-tags:
+        - service
+        - agri-services
+        - offer
+        - agri-advisory
       x-jsonld:
         "@context": "https://schema.beckn.io/AgriServiceOffer/v2.1/context.jsonld"
         "@type": "asof:AgriServiceOffer"

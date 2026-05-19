@@ -147,11 +147,6 @@ components:
               type: string
               description: Reference to the discount scheme applied at lock time (if any)
               x-jsonld-id: "se:lts_discountRef"
-            totalCapacity:
-              type: integer
-              minimum: 1
-              description: Total units locked under this entitlement
-              x-jsonld-id: "se:lts_totalCapacity"
             lockedAt:
               type: string
               format: date-time

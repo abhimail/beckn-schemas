@@ -1,5 +1,5 @@
 openapi: 3.1.1
-$id: "https://schema.beckn.io/generic-common/CodedValue/attributes.yaml"
+$id: "https://schema.beckn.io/CodedValue/attributes.yaml"
 info:
   title: CodedValue Shared Type
   version: "1.0.0"

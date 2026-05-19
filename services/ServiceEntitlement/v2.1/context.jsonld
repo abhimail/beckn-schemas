@@ -81,9 +81,7 @@
     "lts_discountRef": {
       "@id": "se:lts_discountRef"
     },
-    "lts_totalCapacity": {
-      "@id": "se:lts_totalCapacity"
-    },
+
     "lts_lockedAt": {
       "@id": "se:lts_lockedAt"
     },
