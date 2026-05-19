@@ -83,7 +83,7 @@ are preserved for maximum traceability.
 
 ### `cropTypes` as CodedValue array
 Crop identification requires both a code (from a recognised authority such as FAO
-AGROVOC or ICAR) and a display name. `CodedValue` (from `agri-common`) provides this
+AGROVOC or ICAR) and a display name. `CodedValue` (from `generic-service/generic-common`) provides this
 structure and is consistent with crop identification in the resource schemas.
 
 ### `dataSnapshotRef`

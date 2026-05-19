@@ -61,7 +61,7 @@ components:
               {"@context":"https://cfconventions.org","@type":"CFStandardName","code":"relative_humidity","display":"Relative Humidity"}
               {"@context":"https://cfconventions.org","@type":"CFStandardName","code":"wind_speed","display":"Wind Speed"}
           items:
-            $ref: "../../agri-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+            $ref: "https://schema.beckn.io/CodedValue/v2.1/attributes.yaml#/components/schemas/CodedValue"
           x-jsonld-id: "awr:weatherParameters"
         spatialResolution:
           type: string

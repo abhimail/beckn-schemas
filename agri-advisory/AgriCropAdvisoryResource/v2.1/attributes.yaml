@@ -63,7 +63,7 @@ components:
             the authority URI in network policy documentation.
             Example: {"@context":"https://agrovoc.fao.org","@type":"AGROVOCCrop","code":"c_7051","display":"Rice"}
           items:
-            $ref: "../../agri-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+            $ref: "https://schema.beckn.io/CodedValue/v2.1/attributes.yaml#/components/schemas/CodedValue"
           x-jsonld-id: "acar:cropTypes"
         cropStagesSupported:
           type: array

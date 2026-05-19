@@ -45,7 +45,7 @@ components:
               {"@context":"https://agrovoc.fao.org","@type":"AGROVOCCommodity","code":"c_7051","display":"Rice"}
               {"@context":"https://agrovoc.fao.org","@type":"AGROVOCCommodity","code":"c_8001","display":"Wheat"}
           items:
-            $ref: "../../agri-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+            $ref: "https://schema.beckn.io/CodedValue/v2.1/attributes.yaml#/components/schemas/CodedValue"
           x-jsonld-id: "acpr:commodities"
         marketCodes:
           type: array
@@ -58,7 +58,7 @@ components:
               {"@context":"https://agmarknet.gov.in","@type":"APMCMarket","code":"MH-NSK-01","display":"Nashik APMC"}
               {"@context":"https://agmarknet.gov.in","@type":"APMCMarket","code":"KA-BGL-01","display":"Yeshwanthpur APMC"}
           items:
-            $ref: "../../agri-common/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+            $ref: "https://schema.beckn.io/CodedValue/v2.1/attributes.yaml#/components/schemas/CodedValue"
           x-jsonld-id: "acpr:marketCodes"
         priceUpdateFrequencyHours:
           type: integer

@@ -48,7 +48,7 @@ Beckn v2.1 Core
 └── ServiceSettlement        (generic-service) — reused as-is
 
 Shared type definitions
-└── agri-common/CodedValue/  (re-export of generic-service/generic-common/CodedValue/)
+└── CodedValue  (generic-service/generic-common — referenced via absolute schema.beckn.io URL)
 ```
 
 ---
@@ -58,10 +58,6 @@ Shared type definitions
 ```
 agri-advisory-v21/
 ├── README.md
-├── agri-common/
-│   └── CodedValue/
-│       ├── attributes.yaml   ← re-export of upstream generic-common CodedValue
-│       └── README.md
 ├── AgriCropAdvisoryResource/
 │   └── v2.1/attributes.yaml
 ├── AgriWeatherResource/
@@ -83,7 +79,7 @@ This pack references schemas from two sibling packs. Both must be present for
 
 | Pack | Location | Schemas used |
 |---|---|---|
-| `generic-service` | `../agri services/generic-service/` | ServiceResource, ServiceOffer, ServicePerformance, ServiceConsideration, ServiceContract, ServiceParticipant, ServiceEntitlement, ServiceSettlement, **generic-common/CodedValue** |
+| `generic-service` | `../agri services/generic-service/` | ServiceResource, ServiceOffer, ServicePerformance, ServiceConsideration, ServiceContract, ServiceParticipant, ServiceEntitlement, ServiceSettlement; **CodedValue** referenced via `https://schema.beckn.io/CodedValue/v2.1/attributes.yaml` |
 | `agri-services-ext` | `../agri services/agri-services-ext/` | AgriServiceResource, **AgriDigitalPerformance** |
 
 ---
