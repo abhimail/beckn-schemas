@@ -1,8 +1,7 @@
 {
   "@context": {
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "adp": "https://schema.beckn.io/AgriDigitalPerformance#",
-    "@import": "https://schema.beckn.io/core/v2/vocab.jsonld"
+    "adp": "https://schema.beckn.io/AgriDigitalPerformance#"
   },
   "@graph": [
     {

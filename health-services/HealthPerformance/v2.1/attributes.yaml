@@ -4,7 +4,7 @@ info:
   title: HealthPerformance Schema
   version: "2.1.0"
   description: >
-    Performance-level attributes for a health service engagement on the ONHS network.
+    Performance-level attributes for a health service engagement.
     Extends ServicePerformance/v2.1 with health service type discriminator, clinical
     follow-up urgency, provisional diagnosis, generated artifact references,
     deletion attestation, and structured clinical interpretation.

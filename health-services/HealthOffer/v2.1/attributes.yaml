@@ -4,7 +4,7 @@ info:
   title: HealthOffer Schema
   version: "2.1.0"
   description: >
-    Offer-level attributes for a health service on the ONHS network.
+    Offer-level attributes for a health service.
     Extends ServiceOffer/v2.1 with health service type discriminator and
     health-specific offer types (SINGLE_EVENT, BULK_PROCUREMENT, CAMP).
     Inherited base fields (minimumQuantity, maximumQuantity, requiresAdvanceBooking,

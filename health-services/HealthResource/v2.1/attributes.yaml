@@ -4,7 +4,7 @@ info:
   title: HealthResource Schema
   version: "2.1.0"
   description: >
-    Resource-level attributes for a health service provider on the ONHS network.
+    Resource-level attributes for a health service provider.
     Extends ServiceResource/v2.1 with health-specific clinical delivery unit,
     clinical validation, service prerequisites, and AI analytics engine specs.
     Inherited base fields (serviceUnit, coverageArea, capacityPerDay, capacityPerWeek,
@@ -130,7 +130,7 @@ components:
           properties:
             modelName:
               type: string
-              description: Name or identifier of the analytical model (e.g. "Swaasa-CoughAI-v2")
+              description: Name or identifier of the analytical model (e.g. "CoughAI-v2", "RetinalNet-v3")
             modelVersion:
               type: string
               description: Version of the model

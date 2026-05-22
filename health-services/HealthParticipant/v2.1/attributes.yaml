@@ -5,7 +5,7 @@ info:
   version: "2.1.0"
   description: >
     Participant-level attributes for individuals and organisations involved in a
-    health service engagement on the ONHS network. Covers patients, field workers,
+    health service engagement. Covers patients, field workers,
     specialists, payers, and implementing agencies. Extends ServiceParticipant to
     inherit credentialRefs for runtime credential proof.
   x-beckn-container: participantAttributes
@@ -43,7 +43,7 @@ components:
                 PATIENT: the individual receiving the service.
                 CARE_GIVER: guardian or carer acting on behalf of the patient.
                 SPECIALIST: licensed health practitioner delivering the service.
-                FIELD_WORKER: community health worker or ASHA facilitating engagement.
+                FIELD_WORKER: community health worker or field facilitator.
                 PAYER: entity bearing the cost (individual or organisational).
                 IMPLEMENTING_AGENCY: organisation that procured the service capacity.
               x-jsonld-id: "hpa:participantRole"
@@ -55,7 +55,7 @@ components:
                 Examples by role:
                   PATIENT — ABHA (India), NHS number (UK), MRN (facility-issued)
                   SPECIALIST — NMC registration (India), NPI (USA), GMC number (UK)
-                  FIELD_WORKER — ASHA worker ID, State HID (Karnataka)
+                  FIELD_WORKER — community health worker ID, State Health Worker ID
                   PAYER — TPA ID, insurer registration, scheme code (e.g. PMJAY)
                   IMPLEMENTING_AGENCY — NGO registration, HFR facility ID
                 The `system` field names the issuing registry; agreed values are
@@ -70,7 +70,7 @@ components:
                     type: string
                     description: >
                       Name of the issuing registry or identifier system.
-                      Examples: ABHA, NMC, HFR, NPI, GMC, NHS, ASHA-ID, State-HID-KA,
+                      Examples: ABHA, NMC, HFR, NPI, GMC, NHS, CHW-ID, State-HID,
                       PMJAY, IRDAI, TPA-REG, NGO-REG
                     example: "ABHA"
                   value:

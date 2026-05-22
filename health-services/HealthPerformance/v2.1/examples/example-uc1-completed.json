@@ -1,5 +1,5 @@
 {
-  "_comment": "UC1 — completed Swaasa cough analysis with clinical interpretation",
+  "_comment": "UC1 — completed AI cough analysis with clinical interpretation",
   "context": {
     "action": "on_status",
     "schemaContext": ["https://schema.beckn.io/HealthPerformance/v2.1/context.jsonld"]
@@ -22,11 +22,11 @@
           "followupRecommendationCode": "URGENT",
           "followUpDate": "2026-06-03",
           "provisionalDiagnosis": "Probable pulmonary tuberculosis",
-          "artifactsGenerated": ["swaasa-report-uc1-001"],
+          "artifactsGenerated": ["diag-report-uc1-001"],
           "clinicalInterpretation": {
             "confidence": 0.89,
             "flaggedFindings": ["Probable TB", "Abnormal cough pattern", "Crackling sound detected"],
-            "modelOutputRef": "swaasa-raw-output-uc1-001",
+            "modelOutputRef": "model-raw-output-uc1-001",
             "reviewedBySpecialist": true,
             "specialistReviewAt": "2026-06-01T11:30:00+05:30"
           }

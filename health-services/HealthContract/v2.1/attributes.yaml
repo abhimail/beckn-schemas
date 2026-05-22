@@ -4,7 +4,7 @@ info:
   title: HealthContract Schema
   version: "2.1.0"
   description: >
-    Contract-level attributes for a health service engagement on the ONHS network.
+    Contract-level attributes for a health service engagement.
     Extends ServiceContract/v2.1 with health service type discriminator, camp linkage,
     patient input artifact references, and structured patient consent sub-object.
     Inherited base fields (bookingChannel, clientNotes, cancellationReason,
@@ -56,7 +56,7 @@ components:
             Provider-issued URI returned in on_select.contractAttributes. Semantics
             vary by healthServiceType: for DIAGNOSTIC_ANALYTICS and RADIOLOGY it is
             the upload target to which the Seeker NP POSTs clinical input artifacts
-            (e.g. cough audio for Swaasa, imaging files for radiology interpretation)
+            (e.g. cough audio for AI cough analysis, imaging files for radiology interpretation)
             before or during the init cycle; for TELECONSULTATION it carries the video
             session join URL issued by the provider platform, which the Seeker NP
             surfaces to the patient at the scheduled time. If absent, the Seeker NP

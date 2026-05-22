@@ -3,17 +3,18 @@
     "schema": "https://schema.org/",
     "beckn": "https://schema.beckn.io/",
     "adp": "https://schema.beckn.io/AgriDigitalPerformance#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
 
     "AgriDigitalPerformance": "adp:AgriDigitalPerformance",
 
-    "deliveryMode": "adp:deliveryMode",
-    "requestedLanguage": "adp:requestedLanguage",
-    "deliveredLanguage": "adp:deliveredLanguage",
-    "contentAccessUrl": "adp:contentAccessUrl",
-    "contentAccessExpiry": "adp:contentAccessExpiry",
-    "targetLocation": "adp:targetLocation",
-    "contentRef": "adp:contentRef",
-    "deliveredAt": "adp:deliveredAt",
-    "deliveryConfirmed": "adp:deliveryConfirmed"
+    "deliveryMode": {"@id": "adp:deliveryMode"},
+    "requestedLanguage": {"@id": "adp:requestedLanguage"},
+    "deliveredLanguage": {"@id": "adp:deliveredLanguage"},
+    "contentAccessUrl": {"@id": "adp:contentAccessUrl"},
+    "contentAccessExpiry": {"@id": "adp:contentAccessExpiry"},
+    "targetLocation": {"@id": "adp:targetLocation"},
+    "contentRef": {"@id": "adp:contentRef"},
+    "deliveredAt": {"@id": "adp:deliveredAt"},
+    "deliveryConfirmed": {"@id": "adp:deliveryConfirmed"}
   }
 }

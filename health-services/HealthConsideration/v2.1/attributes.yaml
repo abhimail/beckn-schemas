@@ -4,8 +4,8 @@ info:
   title: HealthConsideration Schema
   version: "2.1.0"
   description: >
-    Consideration (pricing and payment) attributes for a health service engagement
-    on the ONHS network. Extends ServiceConsideration/v2.1, inheriting all base fields
+    Consideration (pricing and payment) attributes for a health service engagement.
+    Extends ServiceConsideration/v2.1, inheriting all base fields
     (pricePerUnit, currency, totalAmount, discountRef, netAmount, paymentMethodsAccepted,
     selectedPaymentMethod, transactionRef, payerArchetype, paymentSchedule,
     paymentAuthorisation, entitlementRef) and the bifurcation rule.

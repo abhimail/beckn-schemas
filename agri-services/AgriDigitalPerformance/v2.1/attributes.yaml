@@ -26,6 +26,7 @@ components:
       x-status: under-review
       x-tags:
         - agri-services
+        - agri-services-ext
         - performance
         - agri-advisory
       x-jsonld:
@@ -90,7 +91,7 @@ components:
             Allows Seeker NPs and farmers to confirm the advisory is relevant to
             their location.
             Example: {"@context":"https://lgdirectory.gov.in","@type":"LGDDistrict","code":"507","display":"Nashik"}
-          $ref: "https://schema.beckn.io/CodedValue/attributes.yaml#/components/schemas/CodedValue"
+          $ref: "https://schema.beckn.io/CodedValue/v2.1/attributes.yaml#/components/schemas/CodedValue"
           x-jsonld-id: "adp:targetLocation"
         contentRef:
           type: string

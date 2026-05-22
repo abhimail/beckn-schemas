@@ -4,7 +4,7 @@ info:
   title: HealthSettlement Schema
   version: "2.1.0"
   description: >
-    Settlement attributes for a health service engagement on the ONHS network.
+    Settlement attributes for a health service engagement.
     Extends ServiceSettlement/v2.1, inheriting all base fields (paymentReceivedByProvider,
     paymentRecordedAt, receiptRef, paymentNotes, adjustmentType, adjustmentAmount,
     adjustmentReason, adjustedAt, finalSettlementRef, disputeRef).

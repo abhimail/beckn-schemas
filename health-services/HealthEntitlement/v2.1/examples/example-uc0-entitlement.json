@@ -1,5 +1,5 @@
 {
-  "_comment": "UC0 procurement — HealthEntitlement issued on confirm (1000 Swaasa analyses)",
+  "_comment": "UC0 procurement — HealthEntitlement issued on confirm (1000 AI cough analyses)",
   "context": {
     "action": "on_confirm",
     "schemaContext": ["https://schema.beckn.io/HealthEntitlement/v2.1/context.jsonld"]
@@ -12,17 +12,17 @@
       "beckn:contractAttributes": {
         "@type": "he:HealthEntitlement",
         "entitlementId": "ent-550e8400-e29b-41d4-a716-446655440000",
-        "issuerId": "provider-np-swaasa-001",
+        "issuerId": "provider-np-cough-ai-001",
         "holderId": "implementing-agency-district-001",
         "healthServiceType": "DIAGNOSTIC_ANALYTICS",
-        "serviceScope": ["res-swaasa-cough-v2"],
+        "serviceScope": ["res-cough-ai-v2"],
         "totalCapacity": 1000,
         "usedCapacity": 0,
         "remainingCapacity": 1000,
         "validFrom": "2026-05-01",
         "validUntil": "2027-04-30",
         "geographyScope": ["IN-KA-BLR", "IN-KA-MYS"],
-        "counterpartyScope": ["provider-np-swaasa-001"],
+        "counterpartyScope": ["provider-np-cough-ai-001"],
         "redemptionRules": {
           "minPerRedemption": 1,
           "maxPerRedemption": 50,

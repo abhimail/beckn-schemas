@@ -1,18 +1,18 @@
 {
-  "_comment": "UC0 bulk procurement offer for Swaasa cough analysis",
+  "_comment": "UC0 bulk procurement offer for AI cough analysis",
   "context": {
     "action": "on_discover",
     "schemaContext": ["https://schema.beckn.io/HealthOffer/v2.1/context.jsonld"]
   },
   "message": {
     "catalogs": [{
-      "beckn:id": "catalog-swaasa-001",
-      "beckn:descriptor": {"schema:name": "Swaasa Health Services Catalog"},
-      "beckn:provider": {"beckn:id": "provider-np-swaasa-001"},
+      "beckn:id": "catalog-cough-ai-001",
+      "beckn:descriptor": {"schema:name": "CoughAI Health Services Catalog"},
+      "beckn:provider": {"beckn:id": "provider-np-cough-ai-001"},
       "beckn:offers": [{
         "@type": "beckn:Offer",
-        "beckn:id": "offer-swaasa-bulk-001",
-        "beckn:resourceIds": ["res-swaasa-cough-v2"],
+        "beckn:id": "offer-cough-ai-bulk-001",
+        "beckn:resourceIds": ["res-cough-ai-v2"],
         "beckn:offerAttributes": {
           "@type": "hof:HealthOffer",
           "healthServiceType": "DIAGNOSTIC_ANALYTICS",

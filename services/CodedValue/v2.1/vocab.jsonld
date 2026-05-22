@@ -1,0 +1,33 @@
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "cv": "https://schema.beckn.io/CodedValue#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#"
+  },
+  "@graph": [
+    {
+      "@id": "cv:CodedValue",
+      "@type": "owl:Class",
+      "rdfs:label": "CodedValue",
+      "rdfs:comment": "A single code drawn from an external or administrative coding authority. The triple (@context, @type, code) uniquely identifies the value within the authority's namespace. Modelled on the FHIR Coding pattern. Upstream candidate for the Beckn Protocol core vocabulary."
+    },
+    {
+      "@id": "cv:code",
+      "@type": "owl:DatatypeProperty",
+      "rdfs:label": "code",
+      "rdfs:comment": "The actual code string as published by the coding authority. Use this field for filtering and matching — never the display label.",
+      "rdfs:domain": { "@id": "cv:CodedValue" },
+      "rdfs:range": { "@id": "schema:Text" }
+    },
+    {
+      "@id": "cv:display",
+      "@type": "owl:DatatypeProperty",
+      "rdfs:label": "display",
+      "rdfs:comment": "Optional human-readable label for the code as defined by the coding authority. Informational only — do not use for filtering or matching.",
+      "rdfs:domain": { "@id": "cv:CodedValue" },
+      "rdfs:range": { "@id": "schema:Text" }
+    }
+  ]
+}
