@@ -1,0 +1,5 @@
+{
+  "_stub_notice": "TEMPORARY STUB — This file exists only to satisfy a schema discovery tool requirement. It is not maintained and does not reflect the actual domain vocabulary. See individual schema folders (Health*/v2.1/vocab.jsonld) for normative vocabulary definitions. Remove once the discovery tool aggregates vocab files at load time (tracked in GitHub issue).",
+  "@context": {},
+  "@graph": []
+}
