@@ -15,7 +15,6 @@ components:
       x-beckn-container: performanceAttributes
       x-status: under-review
       x-tags:
-        - service
         - agri-services
         - performance
         - agri-livestock

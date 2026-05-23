@@ -15,7 +15,6 @@ components:
       x-beckn-container: offerAttributes
       x-status: under-review
       x-tags:
-        - service
         - agri-services
         - offer
         - agri-advisory

@@ -26,7 +26,6 @@ components:
       x-status: under-review
       x-tags:
         - agri-services
-        - agri-services-ext
         - performance
         - agri-advisory
       x-jsonld:
