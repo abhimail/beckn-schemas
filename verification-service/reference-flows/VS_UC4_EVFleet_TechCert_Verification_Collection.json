@@ -1,0 +1,453 @@
+{
+  "info": {
+    "name": "VS — UC4: EV Fleet Tech Skill Certificate Verification",
+    "description": "## Verification Service Network — UC4: EV Fleet Tech Skill Certificate Verification\n\n**Scenario:** ZapCharge Fleet Services (Requesting NP) verifies the NSDC EV\nTechnology certificate of technician applicant Arjun Mehta via CertVerify India\n(Provider NP) before onboarding him to their EV fleet maintenance platform.\nHybrid verification (automated Skill India portal lookup + manual review);\nresult available within 1 business day. on_confirm indicates verification in\nprogress (PENDING); on_status returns VERIFIED with a signed PDF certificate.\n\n**Protocol:** Beckn v2.0.0 + Verification Service schema pack v2.1.0\n**Verification type:** SKILL_CERTIFICATE | **Method:** HYBRID | **Turnaround:** P1D\n**Purpose:** PLATFORM_ONBOARDING | **Consent:** OTP\n\n### Structural conventions\n\n- Async hybrid flow — aggregateResult INCONCLUSIVE at on_confirm (P1D SLA)\n- on_status returns VERIFIED + performance record (confidence 0.95) + signed PDF\n- HYBRID method: automated Skill India portal lookup + manual review step\n\n### Consideration lifecycle\n\n| Call | status.code | price |\n|---|---|---|\n| catalog (on_discover) | *(none)* | ₹350 |\n| on_select | PENDING | ₹350 |\n| init | PENDING | ₹350 |\n| on_init | QUOTED | ₹350 |\n| confirm / on_confirm / on_status | ACTIVE | ₹350 |\n\n### Quick-start: environment setup\n\n1. Import **VS_Environment.json** and select the environment.\n2. Set `base_url`, `requesting_np_uri`, `provider_np_uri`, and `auth_token`.\n3. Run folders 01–10 in order. After confirm, wait P1D before polling status.\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "",
+      "type": "string",
+      "description": "Provider NP (BPP) endpoint — set per environment"
+    },
+    {
+      "key": "requesting_np_uri",
+      "value": "",
+      "type": "string",
+      "description": "Requesting NP (BAP) callback URI — set per environment"
+    },
+    {
+      "key": "provider_np_uri",
+      "value": "",
+      "type": "string",
+      "description": "Provider NP (BPP) URI — set per environment"
+    },
+    {
+      "key": "requesting_np_id",
+      "value": "zapcharge.in",
+      "type": "string",
+      "description": "Requesting NP network identifier (maps to bapId in Beckn context)"
+    },
+    {
+      "key": "provider_np_id",
+      "value": "certverify.in",
+      "type": "string",
+      "description": "Provider NP network identifier (maps to bppId in Beckn context)"
+    },
+    {
+      "key": "domain",
+      "value": "vs:verification",
+      "type": "string",
+      "description": "Confirm exact domain prefix with network team"
+    },
+    {
+      "key": "network_id",
+      "value": "vs.in/verification",
+      "type": "string",
+      "description": "Confirm exact value with network registry team"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Network-issued JWT — set before running"
+    },
+    {
+      "key": "transaction_id",
+      "value": "e3f4a5b6-c7d8-4012-8f34-ab5678901cd2",
+      "type": "string",
+      "description": "UUID — regenerate for separate test runs"
+    },
+    {
+      "key": "contract_id",
+      "value": "f4a5b6c7-d8e9-4123-8a45-bc6789012de3",
+      "type": "string",
+      "description": "Assigned by Provider NP at on_select"
+    },
+    {
+      "key": "payment_ref",
+      "value": "NEFT-20260520-093200-AXIS-045",
+      "type": "string",
+      "description": "NEFT transaction reference"
+    },
+    {
+      "key": "subject_mobile_masked",
+      "value": "XXXXXXX2217",
+      "type": "string",
+      "description": "Masked mobile for display only"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — discover",
+      "description": "Requesting NP (ZapCharge) discovers skill certificate verification services.",
+      "item": [
+        {
+          "name": "discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"e3f4a5b6-c7d8-4012-8f34-ab5678901cd2\",\n    \"timestamp\": \"2026-05-20T09:15:00+05:30\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"intent\": {\n      \"filters\": \"$.catalogs[*].resources[*] ? (@.resourceAttributes.verificationType.code == \\\"SKILL_CERTIFICATE\\\")\",\n      \"textSearch\": \"NSDC EV technology certificate\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/discover"
+            },
+            "description": "**discover** — Requesting NP → Gateway\n\nZapCharge Fleet Services filters for SKILL_CERTIFICATE verification with textSearch 'NSDC EV technology certificate'. schemaContext included (catalog phase)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 — on_discover",
+      "description": "Provider NP (CertVerify India) returns its skill certificate verification catalog.",
+      "item": [
+        {
+          "name": "on_discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"f4a5b6c7-d8e9-4123-8a45-bc6789012de3\",\n    \"timestamp\": \"2026-05-20T09:15:04+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"cat-vs-certverify-001\",\n        \"descriptor\": {\n          \"name\": \"CertVerify India — Skill Certificate Verification Catalog\",\n          \"shortDesc\": \"NSDC and Sector Skill Council certificate verification\"\n        },\n        \"provider\": {\n          \"id\": \"{{provider_np_id}}\",\n          \"descriptor\": {\n            \"name\": \"CertVerify India Pvt. Ltd.\",\n            \"shortDesc\": \"Accredited by NSDC for digital certificate verification\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"res-vs-skill-001\",\n            \"descriptor\": {\n              \"name\": \"Skill Certificate Verification\",\n              \"shortDesc\": \"Hybrid verification of NSDC and Sector Skill Council certificates\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n              \"@type\": \"vr:VerificationResource\",\n              \"verificationType\": {\n                \"code\": \"SKILL_CERTIFICATE\",\n                \"name\": \"Skill Certificate Verification\"\n              },\n              \"supportedDocumentTypes\": [\n                {\n                  \"code\": \"SKILL_CERT\",\n                  \"name\": \"NSDC / Sector Skill Council Certificate\"\n                },\n                {\n                  \"code\": \"DEGREE_CERT\",\n                  \"name\": \"Vocational Training Degree Certificate\"\n                }\n              ],\n              \"supportedJurisdictions\": [\n                {\n                  \"code\": \"IN\",\n                  \"name\": \"India\"\n                }\n              ],\n              \"verificationMethod\": \"HYBRID\",\n              \"requiredInputFields\": [\n                {\n                  \"fieldName\": \"certificateNumber\",\n                  \"displayName\": \"Certificate Number\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true\n                },\n                {\n                  \"fieldName\": \"holderName\",\n                  \"displayName\": \"Certificate Holder Name\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true\n                },\n                {\n                  \"fieldName\": \"issuingBody\",\n                  \"displayName\": \"Issuing Body / Sector Skill Council\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true\n                },\n                {\n                  \"fieldName\": \"issueYear\",\n                  \"displayName\": \"Year of Issue\",\n                  \"fieldType\": \"NUMBER\",\n                  \"isRequired\": false\n                }\n              ],\n              \"authoritativeSource\": {\n                \"name\": \"Skill India Portal — National Skill Development Corporation\",\n                \"url\": \"https://www.skillindia.gov.in\",\n                \"type\": \"GOVERNMENT_DATABASE\"\n              },\n              \"outputFields\": [\n                {\n                  \"fieldName\": \"holderName\",\n                  \"displayName\": \"Holder Name\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"certificateNumber\",\n                  \"displayName\": \"Certificate Number\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"skillName\",\n                  \"displayName\": \"Skill / Trade Name\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"qualificationPack\",\n                  \"displayName\": \"Qualification Pack ID\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"issuingBody\",\n                  \"displayName\": \"Issuing Body\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"issueDate\",\n                  \"displayName\": \"Issue Date\",\n                  \"fieldType\": \"DATE\"\n                },\n                {\n                  \"fieldName\": \"expiryDate\",\n                  \"displayName\": \"Expiry Date\",\n                  \"fieldType\": \"DATE\"\n                }\n              ],\n              \"complianceStandards\": [\n                {\n                  \"code\": \"NSQF\",\n                  \"name\": \"National Skills Qualifications Framework\"\n                },\n                {\n                  \"code\": \"DPDPA_2023\",\n                  \"name\": \"Digital Personal Data Protection Act, 2023\"\n                }\n              ]\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"offer-vs-skill-hybrid-001\",\n            \"resourceIds\": [\n              \"res-vs-skill-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Skill Certificate Verification — Hybrid\",\n              \"shortDesc\": \"NSDC skill certificate verification, result within 1 business day\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"P1D\",\n              \"resultValidityPeriod\": \"P6M\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\",\n                \"OFFLINE_CONSENT\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-skill-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 350,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request skill certificate verification fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_discover"
+            },
+            "description": "**on_discover** — Provider NP → Requesting NP\n\nCertVerify India returns catalog. Requesting NP selects `offer-vs-skill-hybrid-001` (₹350/request, P1D HYBRID turnaround)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 — select",
+      "description": "Requesting NP originates DRAFT contract for skill certificate verification.",
+      "item": [
+        {
+          "name": "select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"a5b6c7d8-e9f0-4234-8b56-cd7890123ef4\",\n    \"timestamp\": \"2026-05-20T09:30:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc4-skill-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-skill-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-skill-hybrid-001\",\n            \"resourceIds\": [\n              \"res-vs-skill-001\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc4-zapcharge-001\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/select"
+            },
+            "description": "**select** — Requesting NP → Provider NP\n\nDRAFT Contract with skill certificate commitment (1 verification). Minimal participant — subject and certificate details follow at init."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 — on_select",
+      "description": "Provider NP assigns contract id and returns PENDING pricing.",
+      "item": [
+        {
+          "name": "on_select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"b6c7d8e9-f0a1-4345-8c67-de8901234fa5\",\n    \"timestamp\": \"2026-05-20T09:30:02+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc4-skill-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-skill-001\",\n              \"descriptor\": {\n                \"name\": \"Skill Certificate Verification\",\n                \"shortDesc\": \"Hybrid verification of NSDC and Sector Skill Council certificates\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"SKILL_CERTIFICATE\",\n                  \"name\": \"Skill Certificate Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"SKILL_CERT\",\n                    \"name\": \"NSDC / Sector Skill Council Certificate\"\n                  },\n                  {\n                    \"code\": \"DEGREE_CERT\",\n                    \"name\": \"Vocational Training Degree Certificate\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"HYBRID\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"certificateNumber\",\n                    \"displayName\": \"Certificate Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Certificate Holder Name\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"issuingBody\",\n                    \"displayName\": \"Issuing Body / Sector Skill Council\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"issueYear\",\n                    \"displayName\": \"Year of Issue\",\n                    \"fieldType\": \"NUMBER\",\n                    \"isRequired\": false\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"Skill India Portal — National Skill Development Corporation\",\n                  \"url\": \"https://www.skillindia.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"certificateNumber\",\n                    \"displayName\": \"Certificate Number\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"skillName\",\n                    \"displayName\": \"Skill / Trade Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"qualificationPack\",\n                    \"displayName\": \"Qualification Pack ID\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issuingBody\",\n                    \"displayName\": \"Issuing Body\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issueDate\",\n                    \"displayName\": \"Issue Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"expiryDate\",\n                    \"displayName\": \"Expiry Date\",\n                    \"fieldType\": \"DATE\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"NSQF\",\n                    \"name\": \"National Skills Qualifications Framework\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-skill-hybrid-001\",\n            \"resourceIds\": [\n              \"res-vs-skill-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Skill Certificate Verification — Hybrid\",\n              \"shortDesc\": \"NSDC skill certificate verification, result within 1 business day\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"P1D\",\n              \"resultValidityPeriod\": \"P6M\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\",\n                \"OFFLINE_CONSENT\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-skill-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 350,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request skill certificate verification fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-skill-cat-001\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 350,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request skill certificate verification fee, excluding GST\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc4-zapcharge-001\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_select"
+            },
+            "description": "**on_select** — Provider NP → Requesting NP\n\nProvider NP assigns `{{contract_id}}`. PENDING consideration ₹350."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 — init",
+      "description": "Requesting NP submits subject reference, certificate input, purpose, and OTP consent.",
+      "item": [
+        {
+          "name": "init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"c7d8e9f0-a1b2-4456-8d78-ef9012345ab6\",\n    \"timestamp\": \"2026-05-20T09:31:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc4-skill-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-skill-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-skill-hybrid-001\",\n            \"resourceIds\": [\n              \"res-vs-skill-001\"\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-skill-cat-001\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 350,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request skill certificate verification fee, excluding GST\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc4-zapcharge-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"ZapCharge Fleet Services Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — EV fleet technology services provider, Hyderabad\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Arjun Mehta\",\n          \"dateOfBirth\": \"1995-11-08\",\n          \"identifiers\": [\n            {\n              \"type\": \"EMPLOYEE_ID\",\n              \"value\": \"AM-ZC-2026-0045\",\n              \"maskedValue\": \"AM-ZC-2026-0045\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX2217\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"PLATFORM_ONBOARDING\",\n          \"description\": \"Skill certificate verification for EV fleet technician platform onboarding\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc4-am-001\",\n          \"mechanism\": \"OTP\",\n          \"grantedAt\": \"2026-05-20T09:30:00+05:30\",\n          \"expiresAt\": \"2026-05-20T10:30:00+05:30\",\n          \"scope\": [\n            \"SKILL_CERTIFICATE\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"ZapCharge Fleet Services Pvt. Ltd.\",\n          \"organizationType\": \"PLATFORM\",\n          \"referenceId\": \"tech-application-zc-2026-0520-045\"\n        },\n        \"certificateInput\": {\n          \"certificateNumber\": \"NSDC-EV-2024-78901\",\n          \"holderName\": \"Arjun Mehta\",\n          \"issuingBody\": \"ASDC — Automotive Skills Development Council\",\n          \"issueYear\": 2024\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/init"
+            },
+            "description": "**init** — Requesting NP → Provider NP\n\nRequesting NP introduces: subject (Arjun Mehta), certificate input (NSDC-EV-2024-78901, ASDC issuing body), purpose (PLATFORM_ONBOARDING), and OTP consent reference. certificateInput is added to contractAttributes to carry the specific certificate details to the Provider NP."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 — on_init",
+      "description": "Provider NP returns QUOTED consideration.",
+      "item": [
+        {
+          "name": "on_init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"d8e9f0a1-b2c3-4567-8e89-fa0123456bc7\",\n    \"timestamp\": \"2026-05-20T09:31:02+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc4-skill-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-skill-001\",\n              \"descriptor\": {\n                \"name\": \"Skill Certificate Verification\",\n                \"shortDesc\": \"Hybrid verification of NSDC and Sector Skill Council certificates\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"SKILL_CERTIFICATE\",\n                  \"name\": \"Skill Certificate Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"SKILL_CERT\",\n                    \"name\": \"NSDC / Sector Skill Council Certificate\"\n                  },\n                  {\n                    \"code\": \"DEGREE_CERT\",\n                    \"name\": \"Vocational Training Degree Certificate\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"HYBRID\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"certificateNumber\",\n                    \"displayName\": \"Certificate Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Certificate Holder Name\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"issuingBody\",\n                    \"displayName\": \"Issuing Body / Sector Skill Council\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"issueYear\",\n                    \"displayName\": \"Year of Issue\",\n                    \"fieldType\": \"NUMBER\",\n                    \"isRequired\": false\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"Skill India Portal — National Skill Development Corporation\",\n                  \"url\": \"https://www.skillindia.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"certificateNumber\",\n                    \"displayName\": \"Certificate Number\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"skillName\",\n                    \"displayName\": \"Skill / Trade Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"qualificationPack\",\n                    \"displayName\": \"Qualification Pack ID\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issuingBody\",\n                    \"displayName\": \"Issuing Body\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issueDate\",\n                    \"displayName\": \"Issue Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"expiryDate\",\n                    \"displayName\": \"Expiry Date\",\n                    \"fieldType\": \"DATE\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"NSQF\",\n                    \"name\": \"National Skills Qualifications Framework\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-skill-hybrid-001\",\n            \"resourceIds\": [\n              \"res-vs-skill-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Skill Certificate Verification — Hybrid\",\n              \"shortDesc\": \"NSDC skill certificate verification, result within 1 business day\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"P1D\",\n              \"resultValidityPeriod\": \"P6M\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\",\n                \"OFFLINE_CONSENT\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-skill-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 350,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request skill certificate verification fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-skill-cat-001\",\n          \"status\": {\n            \"code\": \"QUOTED\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 350,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request skill certificate verification fee, excluding GST\",\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"paymentSchedule\": \"UPFRONT\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc4-zapcharge-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"ZapCharge Fleet Services Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — EV fleet technology services provider, Hyderabad\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Arjun Mehta\",\n          \"dateOfBirth\": \"1995-11-08\",\n          \"identifiers\": [\n            {\n              \"type\": \"EMPLOYEE_ID\",\n              \"value\": \"AM-ZC-2026-0045\",\n              \"maskedValue\": \"AM-ZC-2026-0045\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX2217\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"PLATFORM_ONBOARDING\",\n          \"description\": \"Skill certificate verification for EV fleet technician platform onboarding\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc4-am-001\",\n          \"mechanism\": \"OTP\",\n          \"grantedAt\": \"2026-05-20T09:30:00+05:30\",\n          \"expiresAt\": \"2026-05-20T10:30:00+05:30\",\n          \"scope\": [\n            \"SKILL_CERTIFICATE\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"ZapCharge Fleet Services Pvt. Ltd.\",\n          \"organizationType\": \"PLATFORM\",\n          \"referenceId\": \"tech-application-zc-2026-0520-045\"\n        },\n        \"certificateInput\": {\n          \"certificateNumber\": \"NSDC-EV-2024-78901\",\n          \"holderName\": \"Arjun Mehta\",\n          \"issuingBody\": \"ASDC — Automotive Skills Development Council\",\n          \"issueYear\": 2024\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_init"
+            },
+            "description": "**on_init** — Provider NP → Requesting NP\n\nQUOTED consideration (₹350 NEFT UPFRONT). Payment instructions out-of-band."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 — confirm",
+      "description": "Requesting NP confirms the contract with NEFT payment authorisation.",
+      "item": [
+        {
+          "name": "confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"e9f0a1b2-c3d4-4678-8f90-ab1234567cd8\",\n    \"timestamp\": \"2026-05-20T09:32:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc4-skill-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-skill-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-skill-hybrid-001\",\n            \"resourceIds\": [\n              \"res-vs-skill-001\"\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-skill-cat-001\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 350,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request skill certificate verification fee, excluding GST\",\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\",\n            \"paymentAuthorisation\": {\n              \"authCode\": \"{{payment_ref}}\",\n              \"authProvider\": \"AXIS_BANK\",\n              \"authTimestamp\": \"2026-05-20T09:31:50+05:30\",\n              \"authAmount\": 350\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc4-zapcharge-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"ZapCharge Fleet Services Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — EV fleet technology services provider, Hyderabad\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Arjun Mehta\",\n          \"dateOfBirth\": \"1995-11-08\",\n          \"identifiers\": [\n            {\n              \"type\": \"EMPLOYEE_ID\",\n              \"value\": \"AM-ZC-2026-0045\",\n              \"maskedValue\": \"AM-ZC-2026-0045\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX2217\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"PLATFORM_ONBOARDING\",\n          \"description\": \"Skill certificate verification for EV fleet technician platform onboarding\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc4-am-001\",\n          \"mechanism\": \"OTP\",\n          \"grantedAt\": \"2026-05-20T09:30:00+05:30\",\n          \"expiresAt\": \"2026-05-20T10:30:00+05:30\",\n          \"scope\": [\n            \"SKILL_CERTIFICATE\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"ZapCharge Fleet Services Pvt. Ltd.\",\n          \"organizationType\": \"PLATFORM\",\n          \"referenceId\": \"tech-application-zc-2026-0520-045\"\n        },\n        \"certificateInput\": {\n          \"certificateNumber\": \"NSDC-EV-2024-78901\",\n          \"holderName\": \"Arjun Mehta\",\n          \"issuingBody\": \"ASDC — Automotive Skills Development Council\",\n          \"issueYear\": 2024\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/confirm"
+            },
+            "description": "**confirm** — Requesting NP → Provider NP\n\nACTIVE consideration with Axis Bank NEFT authorisation (₹350). Provider NP begins hybrid verification (Skill India portal + manual review)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08 — on_confirm  ★ Verification Started",
+      "description": "Provider NP confirms payment and indicates hybrid verification is in progress.",
+      "item": [
+        {
+          "name": "on_confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"f0a1b2c3-d4e5-4789-8a01-bc2345678de9\",\n    \"timestamp\": \"2026-05-20T09:32:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"descriptor\": {\n        \"name\": \"Skill Cert Verification — ZapCharge / Arjun Mehta\",\n        \"shortDesc\": \"Hybrid verification in progress — result by EOD 2026-05-21\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc4-skill-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-skill-001\",\n              \"descriptor\": {\n                \"name\": \"Skill Certificate Verification\",\n                \"shortDesc\": \"Hybrid verification of NSDC and Sector Skill Council certificates\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"SKILL_CERTIFICATE\",\n                  \"name\": \"Skill Certificate Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"SKILL_CERT\",\n                    \"name\": \"NSDC / Sector Skill Council Certificate\"\n                  },\n                  {\n                    \"code\": \"DEGREE_CERT\",\n                    \"name\": \"Vocational Training Degree Certificate\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"HYBRID\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"certificateNumber\",\n                    \"displayName\": \"Certificate Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Certificate Holder Name\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"issuingBody\",\n                    \"displayName\": \"Issuing Body / Sector Skill Council\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"issueYear\",\n                    \"displayName\": \"Year of Issue\",\n                    \"fieldType\": \"NUMBER\",\n                    \"isRequired\": false\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"Skill India Portal — National Skill Development Corporation\",\n                  \"url\": \"https://www.skillindia.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"certificateNumber\",\n                    \"displayName\": \"Certificate Number\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"skillName\",\n                    \"displayName\": \"Skill / Trade Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"qualificationPack\",\n                    \"displayName\": \"Qualification Pack ID\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issuingBody\",\n                    \"displayName\": \"Issuing Body\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issueDate\",\n                    \"displayName\": \"Issue Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"expiryDate\",\n                    \"displayName\": \"Expiry Date\",\n                    \"fieldType\": \"DATE\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"NSQF\",\n                    \"name\": \"National Skills Qualifications Framework\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-skill-hybrid-001\",\n            \"resourceIds\": [\n              \"res-vs-skill-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Skill Certificate Verification — Hybrid\",\n              \"shortDesc\": \"NSDC skill certificate verification, result within 1 business day\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"P1D\",\n              \"resultValidityPeriod\": \"P6M\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\",\n                \"OFFLINE_CONSENT\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-skill-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 350,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request skill certificate verification fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-skill-cat-001\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 350,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request skill certificate verification fee, excluding GST\",\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc4-zapcharge-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"ZapCharge Fleet Services Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — EV fleet technology services provider, Hyderabad\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Arjun Mehta\",\n          \"dateOfBirth\": \"1995-11-08\",\n          \"identifiers\": [\n            {\n              \"type\": \"EMPLOYEE_ID\",\n              \"value\": \"AM-ZC-2026-0045\",\n              \"maskedValue\": \"AM-ZC-2026-0045\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX2217\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"PLATFORM_ONBOARDING\",\n          \"description\": \"Skill certificate verification for EV fleet technician platform onboarding\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc4-am-001\",\n          \"mechanism\": \"OTP\",\n          \"grantedAt\": \"2026-05-20T09:30:00+05:30\",\n          \"expiresAt\": \"2026-05-20T10:30:00+05:30\",\n          \"scope\": [\n            \"SKILL_CERTIFICATE\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"ZapCharge Fleet Services Pvt. Ltd.\",\n          \"organizationType\": \"PLATFORM\",\n          \"referenceId\": \"tech-application-zc-2026-0520-045\"\n        },\n        \"certificateInput\": {\n          \"certificateNumber\": \"NSDC-EV-2024-78901\",\n          \"holderName\": \"Arjun Mehta\",\n          \"issuingBody\": \"ASDC — Automotive Skills Development Council\",\n          \"issueYear\": 2024\n        },\n        \"aggregateResult\": {\n          \"status\": \"INCONCLUSIVE\",\n          \"summary\": \"Verification in progress. Skill India portal queried; manual review queued for certificates not yet in digital registry. Result expected by EOD 2026-05-21 (P1D SLA).\"\n        },\n        \"expiresAt\": \"2026-11-20T09:32:00+05:30\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_confirm"
+            },
+            "description": "**on_confirm** — Provider NP → Requesting NP\n\nContract ACTIVE. Payment received. aggregateResult INCONCLUSIVE — hybrid verification in progress (P1D SLA). Skill India portal queried; manual review queued. Requesting NP should poll after 1 business day."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "09 — status",
+      "description": "Requesting NP polls for verification result after 1 business day.",
+      "item": [
+        {
+          "name": "status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"a1b2c3d4-e5f6-4890-8b12-cd3456789ef0\",\n    \"timestamp\": \"2026-05-21T10:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc4-skill-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-skill-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-skill-hybrid-001\",\n            \"resourceIds\": [\n              \"res-vs-skill-001\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/status"
+            },
+            "description": "**status** — Requesting NP → Provider NP\n\nPoll for hybrid verification result. Timestamp is next business day (2026-05-21 10:00 IST). Per core spec, message.contract with id and commitment refs (not flat contractId)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10 — on_status  ★ Verification Complete",
+      "description": "Provider NP returns VERIFIED result with manual review evidence and signed PDF.",
+      "item": [
+        {
+          "name": "on_status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"b2c3d4e5-f6a7-4901-8c23-de4567890fa1\",\n    \"timestamp\": \"2026-05-21T10:00:03+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"descriptor\": {\n        \"name\": \"Skill Cert Verification — ZapCharge / Arjun Mehta\",\n        \"shortDesc\": \"Verification complete — VERIFIED\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc4-skill-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-skill-001\",\n              \"descriptor\": {\n                \"name\": \"Skill Certificate Verification\",\n                \"shortDesc\": \"Hybrid verification of NSDC and Sector Skill Council certificates\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"SKILL_CERTIFICATE\",\n                  \"name\": \"Skill Certificate Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"SKILL_CERT\",\n                    \"name\": \"NSDC / Sector Skill Council Certificate\"\n                  },\n                  {\n                    \"code\": \"DEGREE_CERT\",\n                    \"name\": \"Vocational Training Degree Certificate\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"HYBRID\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"certificateNumber\",\n                    \"displayName\": \"Certificate Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Certificate Holder Name\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"issuingBody\",\n                    \"displayName\": \"Issuing Body / Sector Skill Council\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"issueYear\",\n                    \"displayName\": \"Year of Issue\",\n                    \"fieldType\": \"NUMBER\",\n                    \"isRequired\": false\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"Skill India Portal — National Skill Development Corporation\",\n                  \"url\": \"https://www.skillindia.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"certificateNumber\",\n                    \"displayName\": \"Certificate Number\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"skillName\",\n                    \"displayName\": \"Skill / Trade Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"qualificationPack\",\n                    \"displayName\": \"Qualification Pack ID\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issuingBody\",\n                    \"displayName\": \"Issuing Body\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issueDate\",\n                    \"displayName\": \"Issue Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"expiryDate\",\n                    \"displayName\": \"Expiry Date\",\n                    \"fieldType\": \"DATE\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"NSQF\",\n                    \"name\": \"National Skills Qualifications Framework\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-skill-hybrid-001\",\n            \"resourceIds\": [\n              \"res-vs-skill-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Skill Certificate Verification — Hybrid\",\n              \"shortDesc\": \"NSDC skill certificate verification, result within 1 business day\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"P1D\",\n              \"resultValidityPeriod\": \"P6M\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\",\n                \"OFFLINE_CONSENT\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-skill-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 350,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request skill certificate verification fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-skill-cat-001\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 350,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request skill certificate verification fee, excluding GST\",\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc4-zapcharge-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"ZapCharge Fleet Services Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — EV fleet technology services provider, Hyderabad\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc4-skill-001\",\n          \"commitmentId\": \"commitment-uc4-skill-001\",\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/verification-service/VerificationPerformance/v2.1/context.jsonld\",\n            \"@type\": \"vp:VerificationPerformance\",\n            \"verificationResult\": {\n              \"status\": \"VERIFIED\",\n              \"matchScore\": 0.95,\n              \"remarks\": \"NSDC-EV-2024-78901 found in Skill India portal. Manual review confirmed ASDC EV Technology QP:ASC/Q1412 Level 4.\"\n            },\n            \"processingSteps\": [\n              {\n                \"stepName\": \"INPUT_VALIDATION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-20T09:32:10+05:30\"\n              },\n              {\n                \"stepName\": \"SOURCE_QUERY\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-20T09:32:15+05:30\",\n                \"details\": \"Skill India portal returned certificate record\"\n              },\n              {\n                \"stepName\": \"DATA_EXTRACTION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-20T09:32:16+05:30\"\n              },\n              {\n                \"stepName\": \"MANUAL_REVIEW\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-21T09:45:00+05:30\",\n                \"details\": \"Reviewer confirmed ASDC issuing body and QP code\"\n              },\n              {\n                \"stepName\": \"RESULT_COMPILATION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-21T09:50:00+05:30\"\n              }\n            ],\n            \"verifiedData\": {\n              \"holderName\": \"ARJUN MEHTA\",\n              \"certificateNumber\": \"NSDC-EV-2024-78901\",\n              \"skillName\": \"EV Technology — Maintenance and Repair\",\n              \"qualificationPack\": \"ASC/Q1412\",\n              \"issuingBody\": \"ASDC — Automotive Skills Development Council\",\n              \"issueDate\": \"2024-09-15\",\n              \"expiryDate\": \"2027-09-14\"\n            },\n            \"evidence\": [\n              {\n                \"type\": \"SOURCE_RESPONSE_HASH\",\n                \"hash\": \"sha256-f1e2d3c4b5a6f7e8d9c0b1a2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9a0f1e2\",\n                \"description\": \"SHA-256 hash of Skill India portal API response\",\n                \"createdAt\": \"2026-05-20T09:32:15+05:30\"\n              },\n              {\n                \"type\": \"MANUAL_REVIEW_NOTES\",\n                \"description\": \"Manual reviewer notes confirming ASDC issuing body; internal case ID CVR-2026-0520-089\",\n                \"createdAt\": \"2026-05-21T09:45:00+05:30\"\n              }\n            ],\n            \"confidenceScore\": 0.95,\n            \"verifiedAt\": \"2026-05-21T09:50:00+05:30\",\n            \"validUntil\": \"2026-11-21T09:50:00+05:30\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Arjun Mehta\",\n          \"dateOfBirth\": \"1995-11-08\",\n          \"identifiers\": [\n            {\n              \"type\": \"EMPLOYEE_ID\",\n              \"value\": \"AM-ZC-2026-0045\",\n              \"maskedValue\": \"AM-ZC-2026-0045\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX2217\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"PLATFORM_ONBOARDING\",\n          \"description\": \"Skill certificate verification for EV fleet technician platform onboarding\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc4-am-001\",\n          \"mechanism\": \"OTP\",\n          \"grantedAt\": \"2026-05-20T09:30:00+05:30\",\n          \"expiresAt\": \"2026-05-20T10:30:00+05:30\",\n          \"scope\": [\n            \"SKILL_CERTIFICATE\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"ZapCharge Fleet Services Pvt. Ltd.\",\n          \"organizationType\": \"PLATFORM\",\n          \"referenceId\": \"tech-application-zc-2026-0520-045\"\n        },\n        \"certificateInput\": {\n          \"certificateNumber\": \"NSDC-EV-2024-78901\",\n          \"holderName\": \"Arjun Mehta\",\n          \"issuingBody\": \"ASDC — Automotive Skills Development Council\",\n          \"issueYear\": 2024\n        },\n        \"aggregateResult\": {\n          \"status\": \"VERIFIED\",\n          \"summary\": \"NSDC-EV-2024-78901 verified. EV Technology QP:ASC/Q1412 Level 4 confirmed active. Manual review complete.\",\n          \"completedAt\": \"2026-05-21T09:50:00+05:30\"\n        },\n        \"expiresAt\": \"2026-11-20T09:32:00+05:30\",\n        \"issuedCredentials\": [\n          {\n            \"credentialId\": \"cred-uc4-skill-001\",\n            \"credentialType\": \"PDF\",\n            \"format\": \"application/pdf\",\n            \"url\": \"https://certs.certverify.in/skill/cred-uc4-skill-001.pdf\",\n            \"issuedAt\": \"2026-05-21T09:55:00+05:30\",\n            \"credentialExpiresAt\": \"2026-11-21T09:55:00+05:30\",\n            \"issuerId\": \"{{provider_np_id}}\"\n          }\n        ]\n      },\n      \"settlements\": [\n        {\n          \"id\": \"settlement-uc4-skill-001\",\n          \"considerationId\": \"cons-vs-skill-cat-001\",\n          \"status\": \"COMPLETE\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_status"
+            },
+            "description": "**on_status** — Provider NP → Requesting NP\n\naggregateResult VERIFIED. NSDC-EV-2024-78901 confirmed — EV Technology QP:ASC/Q1412 Level 4, ASDC issuing body, valid until 2027-09-14. Performance includes both SOURCE_RESPONSE_HASH (automated) and MANUAL_REVIEW_NOTES (human review). issuedCredentials carries a signed PDF certificate valid for 6 months."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 openapi: 3.1.1
+$id: "https://schema.beckn.io/VerificationContract/v2.1/attributes.yaml"
 info:
   title: Verification Contract Attributes
   description: >
@@ -16,6 +17,10 @@ components:
     VerificationContract:
       type: object
       x-beckn-container: contractAttributes
+      x-status: under-review
+      x-tags:
+        - verification-service
+        - contract
       x-jsonld:
         "@context": "https://schema.beckn.io/VerificationContract/v2.1/context.jsonld"
         "@type": "vc:VerificationContract"

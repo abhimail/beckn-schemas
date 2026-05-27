@@ -1,0 +1,453 @@
+{
+  "info": {
+    "name": "VS — UC1: Bus Operator Driving Licence Verification",
+    "description": "## Verification Service Network — UC1: Bus Operator Driving Licence Verification\n\n**Scenario:** CityExpress Bus Services (Requesting NP) verifies the heavy motor\nvehicle driving licence of driver applicant Ravi Kumar via TrustVerify India\n(Provider NP) during employment onboarding. Real-time lookup against Parivahan\nSewa; result available within 30 minutes. On confirmation the contract is active\nand verification is in progress (PENDING). On status poll, the result is returned\nas VERIFIED with a signed PDF certificate.\n\n**Protocol:** Beckn v2.0.0 + Verification Service schema pack v2.1.0\n**Verification type:** DRIVING_LICENCE | **Method:** REAL_TIME_API | **Turnaround:** PT30M\n**Purpose:** EMPLOYMENT_ONBOARDING | **Consent:** OTP\n\n### Structural conventions\n\n- `select` carries a DRAFT `Contract` (per `SelectAction.contract` in core spec)\n- BAP originates the contract without an id; Provider NP assigns id at `on_select`\n- `contractAttributes` absent at select / on_select — subject not yet identified\n- BAP introduces subject, purpose, and consent reference at `init`\n- `on_confirm` returns aggregateResult PENDING — verification is async (PT30M SLA)\n- `on_status` returns aggregateResult VERIFIED + performance record + issuedCredentials\n\n### Consideration lifecycle\n\n| Call | status.code | price | notes |\n|---|---|---|---|\n| catalog (on_discover) | *(none)* | ₹250 | no status on catalog |\n| on_select | PENDING | ₹250 | priced; Requesting NP has not yet committed |\n| init | PENDING | ₹250 | Requesting NP echoes binding intent |\n| on_init | QUOTED | ₹250 | binding quote; payment instructions out-of-band |\n| confirm / on_confirm / on_status | ACTIVE | ₹250 | payment authorisation submitted |\n\n### Quick-start: environment setup\n\n1. Import **VS_Environment.json** (Environments → Import) and select it.\n2. Set `base_url`, `requesting_np_uri`, `provider_np_uri`, and `auth_token`.\n3. Run folders 01–10 in order.\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "",
+      "type": "string",
+      "description": "Provider NP (BPP) endpoint — set per environment"
+    },
+    {
+      "key": "requesting_np_uri",
+      "value": "",
+      "type": "string",
+      "description": "Requesting NP (BAP) callback URI — set per environment"
+    },
+    {
+      "key": "provider_np_uri",
+      "value": "",
+      "type": "string",
+      "description": "Provider NP (BPP) URI — set per environment"
+    },
+    {
+      "key": "requesting_np_id",
+      "value": "cityexpress.in",
+      "type": "string",
+      "description": "Requesting NP network identifier (maps to bapId in Beckn context)"
+    },
+    {
+      "key": "provider_np_id",
+      "value": "trustverify.in",
+      "type": "string",
+      "description": "Provider NP network identifier (maps to bppId in Beckn context)"
+    },
+    {
+      "key": "domain",
+      "value": "vs:verification",
+      "type": "string",
+      "description": "Confirm exact domain prefix with network team"
+    },
+    {
+      "key": "network_id",
+      "value": "vs.in/verification",
+      "type": "string",
+      "description": "Confirm exact value with network registry team"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Network-issued JWT — set before running"
+    },
+    {
+      "key": "transaction_id",
+      "value": "c3d4e5f6-a7b8-4012-8d34-ef5678901aba",
+      "type": "string",
+      "description": "UUID — regenerate for separate test runs"
+    },
+    {
+      "key": "contract_id",
+      "value": "d4e5f6a7-b8c9-4123-8e45-fa6789012bcb",
+      "type": "string",
+      "description": "Assigned by Provider NP at on_select"
+    },
+    {
+      "key": "payment_ref",
+      "value": "UPI-20260512-103000-HDFC-001",
+      "type": "string",
+      "description": "UPI transaction reference"
+    },
+    {
+      "key": "subject_mobile_masked",
+      "value": "XXXXXXX4521",
+      "type": "string",
+      "description": "Masked mobile for display — not shared in full"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — discover",
+      "description": "Requesting NP (CityExpress) broadcasts intent to discover driving licence verification services.",
+      "item": [
+        {
+          "name": "discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"c3d4e5f6-a7b8-4012-8d34-ef5678901abc\",\n    \"timestamp\": \"2026-05-12T10:15:00+05:30\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"intent\": {\n      \"filters\": \"$.catalogs[*].resources[*] ? (@.resourceAttributes.verificationType.code == \\\"DRIVING_LICENCE\\\")\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/discover"
+            },
+            "description": "**discover** — Requesting NP → Gateway\n\nCityExpress Bus Services broadcasts discovery intent filtering for DRIVING_LICENCE verification resources. schemaContext included (catalog phase)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 — on_discover",
+      "description": "Provider NP (TrustVerify India) returns its full catalog with DL verification resource and offer.",
+      "item": [
+        {
+          "name": "on_discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"d4e5f6a7-b8c9-4123-8e45-fa6789012bcd\",\n    \"timestamp\": \"2026-05-12T10:15:03+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"cat-vs-trustverify-001\",\n        \"descriptor\": {\n          \"name\": \"TrustVerify India — Verification Service Catalog\",\n          \"shortDesc\": \"DL, identity, and skill certificate verification for the shared mobility sector\"\n        },\n        \"provider\": {\n          \"id\": \"{{provider_np_id}}\",\n          \"descriptor\": {\n            \"name\": \"TrustVerify India Pvt. Ltd.\",\n            \"shortDesc\": \"CERT-In empanelled verification service provider; authorised UIDAI AUA\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"res-vs-dl-001\",\n            \"descriptor\": {\n              \"name\": \"Driving Licence Verification\",\n              \"shortDesc\": \"Real-time DL verification against Parivahan Sewa (MoRTH)\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n              \"@type\": \"vr:VerificationResource\",\n              \"verificationType\": {\n                \"code\": \"DRIVING_LICENCE\",\n                \"name\": \"Driving Licence Verification\"\n              },\n              \"supportedDocumentTypes\": [\n                {\n                  \"code\": \"DRIVING_LICENCE\",\n                  \"name\": \"Motor Vehicle Driving Licence\"\n                }\n              ],\n              \"supportedJurisdictions\": [\n                {\n                  \"code\": \"IN\",\n                  \"name\": \"India\"\n                }\n              ],\n              \"verificationMethod\": \"REAL_TIME_API\",\n              \"requiredInputFields\": [\n                {\n                  \"fieldName\": \"licenceNumber\",\n                  \"displayName\": \"Driving Licence Number\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true,\n                  \"validationPattern\": \"^[A-Z]{2}[0-9]{2}[0-9]{4}[0-9]{7}$\"\n                },\n                {\n                  \"fieldName\": \"dateOfBirth\",\n                  \"displayName\": \"Date of Birth\",\n                  \"fieldType\": \"DATE\",\n                  \"isRequired\": true\n                },\n                {\n                  \"fieldName\": \"holderName\",\n                  \"displayName\": \"Holder Name (as on DL)\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true\n                }\n              ],\n              \"authoritativeSource\": {\n                \"name\": \"Parivahan Sewa — Ministry of Road Transport and Highways\",\n                \"url\": \"https://parivahan.gov.in\",\n                \"type\": \"GOVERNMENT_DATABASE\"\n              },\n              \"outputFields\": [\n                {\n                  \"fieldName\": \"holderName\",\n                  \"displayName\": \"Holder Name\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"licenceNumber\",\n                  \"displayName\": \"Licence Number\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"issueDate\",\n                  \"displayName\": \"Issue Date\",\n                  \"fieldType\": \"DATE\"\n                },\n                {\n                  \"fieldName\": \"expiryDate\",\n                  \"displayName\": \"Expiry Date\",\n                  \"fieldType\": \"DATE\"\n                },\n                {\n                  \"fieldName\": \"vehicleClasses\",\n                  \"displayName\": \"Authorised Classes\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"issuingAuthority\",\n                  \"displayName\": \"Issuing RTO\",\n                  \"fieldType\": \"STRING\"\n                }\n              ],\n              \"complianceStandards\": [\n                {\n                  \"code\": \"IT_ACT_2000\",\n                  \"name\": \"Information Technology Act, 2000\"\n                },\n                {\n                  \"code\": \"DPDPA_2023\",\n                  \"name\": \"Digital Personal Data Protection Act, 2023\"\n                }\n              ]\n            }\n          },\n          {\n            \"id\": \"res-vs-identity-001\",\n            \"descriptor\": {\n              \"name\": \"Identity Verification — Aadhaar eKYC\",\n              \"shortDesc\": \"Real-time identity verification via UIDAI Aadhaar eKYC\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n              \"@type\": \"vr:VerificationResource\",\n              \"verificationType\": {\n                \"code\": \"IDENTITY\",\n                \"name\": \"Identity Verification\"\n              },\n              \"supportedDocumentTypes\": [\n                {\n                  \"code\": \"AADHAAR\",\n                  \"name\": \"Aadhaar Card\"\n                },\n                {\n                  \"code\": \"PAN\",\n                  \"name\": \"Permanent Account Number Card\"\n                }\n              ],\n              \"supportedJurisdictions\": [\n                {\n                  \"code\": \"IN\",\n                  \"name\": \"India\"\n                }\n              ],\n              \"verificationMethod\": \"REAL_TIME_API\",\n              \"requiredInputFields\": [\n                {\n                  \"fieldName\": \"aadhaarNumber\",\n                  \"displayName\": \"Aadhaar Number\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true,\n                  \"validationPattern\": \"^[2-9][0-9]{11}$\"\n                },\n                {\n                  \"fieldName\": \"consentOtp\",\n                  \"displayName\": \"OTP (sent to registered mobile)\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true\n                }\n              ],\n              \"authoritativeSource\": {\n                \"name\": \"UIDAI — Unique Identification Authority of India\",\n                \"url\": \"https://uidai.gov.in\",\n                \"type\": \"GOVERNMENT_DATABASE\"\n              },\n              \"outputFields\": [\n                {\n                  \"fieldName\": \"name\",\n                  \"displayName\": \"Full Name\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"dateOfBirth\",\n                  \"displayName\": \"Date of Birth\",\n                  \"fieldType\": \"DATE\"\n                },\n                {\n                  \"fieldName\": \"gender\",\n                  \"displayName\": \"Gender\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"address\",\n                  \"displayName\": \"Address\",\n                  \"fieldType\": \"OBJECT\"\n                },\n                {\n                  \"fieldName\": \"photo\",\n                  \"displayName\": \"Photo\",\n                  \"fieldType\": \"IMAGE\"\n                }\n              ],\n              \"complianceStandards\": [\n                {\n                  \"code\": \"UIDAI_AUA\",\n                  \"name\": \"UIDAI AUA/KUA Regulations\"\n                },\n                {\n                  \"code\": \"DPDPA_2023\",\n                  \"name\": \"Digital Personal Data Protection Act, 2023\"\n                }\n              ]\n            }\n          },\n          {\n            \"id\": \"res-vs-skill-001\",\n            \"descriptor\": {\n              \"name\": \"Skill Certificate Verification\",\n              \"shortDesc\": \"Hybrid verification of NSDC and Sector Skill Council certificates\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n              \"@type\": \"vr:VerificationResource\",\n              \"verificationType\": {\n                \"code\": \"SKILL_CERTIFICATE\",\n                \"name\": \"Skill Certificate Verification\"\n              },\n              \"supportedDocumentTypes\": [\n                {\n                  \"code\": \"SKILL_CERT\",\n                  \"name\": \"NSDC / Sector Skill Council Certificate\"\n                },\n                {\n                  \"code\": \"DEGREE_CERT\",\n                  \"name\": \"Vocational Training Degree Certificate\"\n                }\n              ],\n              \"supportedJurisdictions\": [\n                {\n                  \"code\": \"IN\",\n                  \"name\": \"India\"\n                }\n              ],\n              \"verificationMethod\": \"HYBRID\",\n              \"requiredInputFields\": [\n                {\n                  \"fieldName\": \"certificateNumber\",\n                  \"displayName\": \"Certificate Number\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true\n                },\n                {\n                  \"fieldName\": \"holderName\",\n                  \"displayName\": \"Certificate Holder Name\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true\n                },\n                {\n                  \"fieldName\": \"issuingBody\",\n                  \"displayName\": \"Issuing Body / Sector Skill Council\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true\n                },\n                {\n                  \"fieldName\": \"issueYear\",\n                  \"displayName\": \"Year of Issue\",\n                  \"fieldType\": \"NUMBER\",\n                  \"isRequired\": false\n                }\n              ],\n              \"authoritativeSource\": {\n                \"name\": \"Skill India Portal — National Skill Development Corporation\",\n                \"url\": \"https://www.skillindia.gov.in\",\n                \"type\": \"GOVERNMENT_DATABASE\"\n              },\n              \"outputFields\": [\n                {\n                  \"fieldName\": \"holderName\",\n                  \"displayName\": \"Holder Name\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"certificateNumber\",\n                  \"displayName\": \"Certificate Number\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"skillName\",\n                  \"displayName\": \"Skill / Trade Name\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"qualificationPack\",\n                  \"displayName\": \"Qualification Pack ID\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"issuingBody\",\n                  \"displayName\": \"Issuing Body\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"issueDate\",\n                  \"displayName\": \"Issue Date\",\n                  \"fieldType\": \"DATE\"\n                },\n                {\n                  \"fieldName\": \"expiryDate\",\n                  \"displayName\": \"Expiry Date\",\n                  \"fieldType\": \"DATE\"\n                }\n              ],\n              \"complianceStandards\": [\n                {\n                  \"code\": \"NSQF\",\n                  \"name\": \"National Skills Qualifications Framework\"\n                },\n                {\n                  \"code\": \"DPDPA_2023\",\n                  \"name\": \"Digital Personal Data Protection Act, 2023\"\n                }\n              ]\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"offer-vs-dl-std-001\",\n            \"resourceIds\": [\n              \"res-vs-dl-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"DL Verification — Standard\",\n              \"shortDesc\": \"Real-time DL verification, result within 30 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT30M\",\n              \"resultValidityPeriod\": \"P90D\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-dl-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 250,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request DL verification fee, excluding GST\"\n                }\n              }\n            ]\n          },\n          {\n            \"id\": \"offer-vs-identity-instant-001\",\n            \"resourceIds\": [\n              \"res-vs-identity-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Identity Verification — Instant KYC\",\n              \"shortDesc\": \"Aadhaar eKYC with verified result in under 5 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT5M\",\n              \"resultValidityPeriod\": \"P1Y\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"PREMIUM\",\n              \"dataRetentionPolicy\": \"P7D\",\n              \"supportedConsentMechanisms\": [\n                \"AADHAAR_EKYC\",\n                \"OTP\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-identity-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 150,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\"\n                }\n              }\n            ]\n          },\n          {\n            \"id\": \"offer-vs-skill-hybrid-001\",\n            \"resourceIds\": [\n              \"res-vs-skill-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Skill Certificate Verification — Hybrid\",\n              \"shortDesc\": \"NSDC skill certificate verification, result within 1 business day\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"P1D\",\n              \"resultValidityPeriod\": \"P6M\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\",\n                \"OFFLINE_CONSENT\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-skill-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 350,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request skill certificate verification fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_discover"
+            },
+            "description": "**on_discover** — Provider NP → Requesting NP\n\nTrustVerify India returns its full catalog. Requesting NP selects `offer-vs-dl-std-001` (₹250/request, PT30M turnaround)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 — select",
+      "description": "Requesting NP originates the DRAFT contract selecting the DL verification offer.",
+      "item": [
+        {
+          "name": "select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"e5f6a7b8-c9d0-4234-8f56-ab7890123cde\",\n    \"timestamp\": \"2026-05-12T10:28:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1-dl-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-dl-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-dl-std-001\",\n            \"resourceIds\": [\n              \"res-vs-dl-001\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc1-cityexpress-001\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/select"
+            },
+            "description": "**select** — Requesting NP → Provider NP\n\nRequesting NP originates a DRAFT Contract selecting `offer-vs-dl-std-001` for 1 verification. No contract id yet — Provider NP assigns it at on_select. Minimal participant (no PII at this stage). No contractAttributes — subject will be introduced at init."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 — on_select",
+      "description": "Provider NP assigns contract id and returns PENDING pricing.",
+      "item": [
+        {
+          "name": "on_select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"f6a7b8c9-d0e1-4345-8a67-bc8901234def\",\n    \"timestamp\": \"2026-05-12T10:28:02+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1-dl-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-dl-001\",\n              \"descriptor\": {\n                \"name\": \"Driving Licence Verification\",\n                \"shortDesc\": \"Real-time DL verification against Parivahan Sewa (MoRTH)\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"DRIVING_LICENCE\",\n                  \"name\": \"Driving Licence Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"DRIVING_LICENCE\",\n                    \"name\": \"Motor Vehicle Driving Licence\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"REAL_TIME_API\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"licenceNumber\",\n                    \"displayName\": \"Driving Licence Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true,\n                    \"validationPattern\": \"^[A-Z]{2}[0-9]{2}[0-9]{4}[0-9]{7}$\"\n                  },\n                  {\n                    \"fieldName\": \"dateOfBirth\",\n                    \"displayName\": \"Date of Birth\",\n                    \"fieldType\": \"DATE\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name (as on DL)\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"Parivahan Sewa — Ministry of Road Transport and Highways\",\n                  \"url\": \"https://parivahan.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"licenceNumber\",\n                    \"displayName\": \"Licence Number\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issueDate\",\n                    \"displayName\": \"Issue Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"expiryDate\",\n                    \"displayName\": \"Expiry Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"vehicleClasses\",\n                    \"displayName\": \"Authorised Classes\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issuingAuthority\",\n                    \"displayName\": \"Issuing RTO\",\n                    \"fieldType\": \"STRING\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"IT_ACT_2000\",\n                    \"name\": \"Information Technology Act, 2000\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-dl-std-001\",\n            \"resourceIds\": [\n              \"res-vs-dl-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"DL Verification — Standard\",\n              \"shortDesc\": \"Real-time DL verification, result within 30 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT30M\",\n              \"resultValidityPeriod\": \"P90D\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-dl-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 250,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request DL verification fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-dl-cat-001\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 250,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request DL verification fee, excluding GST\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc1-cityexpress-001\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_select"
+            },
+            "description": "**on_select** — Provider NP → Requesting NP\n\nProvider NP assigns `{{contract_id}}` and returns PENDING consideration (₹250). Requesting NP now has the contract id to use in all subsequent calls. No contractAttributes — subject not yet in scope."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 — init",
+      "description": "Requesting NP submits full participant details, subject reference, purpose, and consent.",
+      "item": [
+        {
+          "name": "init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"a7b8c9d0-e1f2-4456-8b78-cd9012345ef0\",\n    \"timestamp\": \"2026-05-12T10:29:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1-dl-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-dl-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-dl-std-001\",\n            \"resourceIds\": [\n              \"res-vs-dl-001\"\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-dl-cat-001\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 250,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request DL verification fee, excluding GST\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc1-cityexpress-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"CityExpress Bus Services Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — intercity bus operator, Karnataka\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Ravi Kumar\",\n          \"dateOfBirth\": \"1992-03-15\",\n          \"identifiers\": [\n            {\n              \"type\": \"LICENCE_NUMBER\",\n              \"value\": \"KA0120190123456\",\n              \"maskedValue\": \"KA01XXXX123456\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX4521\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"EMPLOYMENT_ONBOARDING\",\n          \"description\": \"Verification of driving licence for HMV driver employment onboarding\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc1-rk-001\",\n          \"mechanism\": \"OTP\",\n          \"grantedAt\": \"2026-05-12T10:28:00+05:30\",\n          \"expiresAt\": \"2026-05-12T11:28:00+05:30\",\n          \"scope\": [\n            \"DRIVING_LICENCE\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"CityExpress Bus Services Pvt. Ltd.\",\n          \"organizationType\": \"EMPLOYER\",\n          \"referenceId\": \"onboarding-case-ce-2026-0512-001\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/init"
+            },
+            "description": "**init** — Requesting NP → Provider NP\n\nRequesting NP introduces: (1) full organisation descriptor, (2) contractAttributes with subject (Ravi Kumar), purpose (EMPLOYMENT_ONBOARDING), and consent reference (OTP, granted 10:28 IST). Consideration echoed as PENDING — binding intent signalled."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 — on_init",
+      "description": "Provider NP returns binding QUOTED consideration.",
+      "item": [
+        {
+          "name": "on_init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"b8c9d0e1-f2a3-4567-8c89-de0123456fa1\",\n    \"timestamp\": \"2026-05-12T10:29:02+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1-dl-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-dl-001\",\n              \"descriptor\": {\n                \"name\": \"Driving Licence Verification\",\n                \"shortDesc\": \"Real-time DL verification against Parivahan Sewa (MoRTH)\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"DRIVING_LICENCE\",\n                  \"name\": \"Driving Licence Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"DRIVING_LICENCE\",\n                    \"name\": \"Motor Vehicle Driving Licence\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"REAL_TIME_API\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"licenceNumber\",\n                    \"displayName\": \"Driving Licence Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true,\n                    \"validationPattern\": \"^[A-Z]{2}[0-9]{2}[0-9]{4}[0-9]{7}$\"\n                  },\n                  {\n                    \"fieldName\": \"dateOfBirth\",\n                    \"displayName\": \"Date of Birth\",\n                    \"fieldType\": \"DATE\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name (as on DL)\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"Parivahan Sewa — Ministry of Road Transport and Highways\",\n                  \"url\": \"https://parivahan.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"licenceNumber\",\n                    \"displayName\": \"Licence Number\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issueDate\",\n                    \"displayName\": \"Issue Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"expiryDate\",\n                    \"displayName\": \"Expiry Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"vehicleClasses\",\n                    \"displayName\": \"Authorised Classes\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issuingAuthority\",\n                    \"displayName\": \"Issuing RTO\",\n                    \"fieldType\": \"STRING\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"IT_ACT_2000\",\n                    \"name\": \"Information Technology Act, 2000\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-dl-std-001\",\n            \"resourceIds\": [\n              \"res-vs-dl-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"DL Verification — Standard\",\n              \"shortDesc\": \"Real-time DL verification, result within 30 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT30M\",\n              \"resultValidityPeriod\": \"P90D\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-dl-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 250,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request DL verification fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-dl-cat-001\",\n          \"status\": {\n            \"code\": \"QUOTED\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 250,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request DL verification fee, excluding GST\",\n            \"selectedPaymentMethod\": \"UPI\",\n            \"paymentSchedule\": \"UPFRONT\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc1-cityexpress-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"CityExpress Bus Services Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — intercity bus operator, Karnataka\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Ravi Kumar\",\n          \"dateOfBirth\": \"1992-03-15\",\n          \"identifiers\": [\n            {\n              \"type\": \"LICENCE_NUMBER\",\n              \"value\": \"KA0120190123456\",\n              \"maskedValue\": \"KA01XXXX123456\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX4521\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"EMPLOYMENT_ONBOARDING\",\n          \"description\": \"Verification of driving licence for HMV driver employment onboarding\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc1-rk-001\",\n          \"mechanism\": \"OTP\",\n          \"grantedAt\": \"2026-05-12T10:28:00+05:30\",\n          \"expiresAt\": \"2026-05-12T11:28:00+05:30\",\n          \"scope\": [\n            \"DRIVING_LICENCE\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"CityExpress Bus Services Pvt. Ltd.\",\n          \"organizationType\": \"EMPLOYER\",\n          \"referenceId\": \"onboarding-case-ce-2026-0512-001\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_init"
+            },
+            "description": "**on_init** — Provider NP → Requesting NP\n\nProvider NP returns QUOTED consideration (₹250 via UPI, UPFRONT). Payment instructions are issued out-of-band. Requesting NP proceeds to payment and then confirm."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 — confirm",
+      "description": "Requesting NP confirms the contract with payment authorisation.",
+      "item": [
+        {
+          "name": "confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"c9d0e1f2-a3b4-4678-8d90-ef1234567ab2\",\n    \"timestamp\": \"2026-05-12T10:30:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1-dl-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-dl-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-dl-std-001\",\n            \"resourceIds\": [\n              \"res-vs-dl-001\"\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-dl-cat-001\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 250,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request DL verification fee, excluding GST\",\n            \"selectedPaymentMethod\": \"UPI\",\n            \"transactionRef\": \"{{payment_ref}}\",\n            \"paymentAuthorisation\": {\n              \"authCode\": \"{{payment_ref}}\",\n              \"authProvider\": \"HDFC_UPI\",\n              \"authTimestamp\": \"2026-05-12T10:29:55+05:30\",\n              \"authAmount\": 250\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc1-cityexpress-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"CityExpress Bus Services Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — intercity bus operator, Karnataka\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Ravi Kumar\",\n          \"dateOfBirth\": \"1992-03-15\",\n          \"identifiers\": [\n            {\n              \"type\": \"LICENCE_NUMBER\",\n              \"value\": \"KA0120190123456\",\n              \"maskedValue\": \"KA01XXXX123456\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX4521\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"EMPLOYMENT_ONBOARDING\",\n          \"description\": \"Verification of driving licence for HMV driver employment onboarding\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc1-rk-001\",\n          \"mechanism\": \"OTP\",\n          \"grantedAt\": \"2026-05-12T10:28:00+05:30\",\n          \"expiresAt\": \"2026-05-12T11:28:00+05:30\",\n          \"scope\": [\n            \"DRIVING_LICENCE\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"CityExpress Bus Services Pvt. Ltd.\",\n          \"organizationType\": \"EMPLOYER\",\n          \"referenceId\": \"onboarding-case-ce-2026-0512-001\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/confirm"
+            },
+            "description": "**confirm** — Requesting NP → Provider NP\n\nRequesting NP confirms the contract with ACTIVE consideration and UPI payment authorisation. Contract status moves to ACTIVE. Provider NP will begin the DL verification immediately."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08 — on_confirm  ★ Verification Started",
+      "description": "Provider NP acknowledges payment and indicates verification is in progress (aggregateResult PENDING).",
+      "item": [
+        {
+          "name": "on_confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"d0e1f2a3-b4c5-4789-8e01-fa2345678bc3\",\n    \"timestamp\": \"2026-05-12T10:30:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"descriptor\": {\n        \"name\": \"DL Verification — CityExpress / Ravi Kumar\",\n        \"shortDesc\": \"Verification in progress — result expected by 11:00 IST\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1-dl-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-dl-001\",\n              \"descriptor\": {\n                \"name\": \"Driving Licence Verification\",\n                \"shortDesc\": \"Real-time DL verification against Parivahan Sewa (MoRTH)\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"DRIVING_LICENCE\",\n                  \"name\": \"Driving Licence Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"DRIVING_LICENCE\",\n                    \"name\": \"Motor Vehicle Driving Licence\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"REAL_TIME_API\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"licenceNumber\",\n                    \"displayName\": \"Driving Licence Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true,\n                    \"validationPattern\": \"^[A-Z]{2}[0-9]{2}[0-9]{4}[0-9]{7}$\"\n                  },\n                  {\n                    \"fieldName\": \"dateOfBirth\",\n                    \"displayName\": \"Date of Birth\",\n                    \"fieldType\": \"DATE\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name (as on DL)\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"Parivahan Sewa — Ministry of Road Transport and Highways\",\n                  \"url\": \"https://parivahan.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"licenceNumber\",\n                    \"displayName\": \"Licence Number\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issueDate\",\n                    \"displayName\": \"Issue Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"expiryDate\",\n                    \"displayName\": \"Expiry Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"vehicleClasses\",\n                    \"displayName\": \"Authorised Classes\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issuingAuthority\",\n                    \"displayName\": \"Issuing RTO\",\n                    \"fieldType\": \"STRING\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"IT_ACT_2000\",\n                    \"name\": \"Information Technology Act, 2000\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-dl-std-001\",\n            \"resourceIds\": [\n              \"res-vs-dl-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"DL Verification — Standard\",\n              \"shortDesc\": \"Real-time DL verification, result within 30 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT30M\",\n              \"resultValidityPeriod\": \"P90D\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-dl-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 250,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request DL verification fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-dl-cat-001\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 250,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request DL verification fee, excluding GST\",\n            \"selectedPaymentMethod\": \"UPI\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc1-cityexpress-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"CityExpress Bus Services Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — intercity bus operator, Karnataka\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Ravi Kumar\",\n          \"dateOfBirth\": \"1992-03-15\",\n          \"identifiers\": [\n            {\n              \"type\": \"LICENCE_NUMBER\",\n              \"value\": \"KA0120190123456\",\n              \"maskedValue\": \"KA01XXXX123456\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX4521\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"EMPLOYMENT_ONBOARDING\",\n          \"description\": \"Verification of driving licence for HMV driver employment onboarding\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc1-rk-001\",\n          \"mechanism\": \"OTP\",\n          \"grantedAt\": \"2026-05-12T10:28:00+05:30\",\n          \"expiresAt\": \"2026-05-12T11:28:00+05:30\",\n          \"scope\": [\n            \"DRIVING_LICENCE\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"CityExpress Bus Services Pvt. Ltd.\",\n          \"organizationType\": \"EMPLOYER\",\n          \"referenceId\": \"onboarding-case-ce-2026-0512-001\"\n        },\n        \"aggregateResult\": {\n          \"status\": \"INCONCLUSIVE\",\n          \"summary\": \"Verification in progress. Real-time lookup submitted to Parivahan Sewa. Result expected within PT30M.\"\n        },\n        \"expiresAt\": \"2026-08-12T10:30:00+05:30\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_confirm"
+            },
+            "description": "**on_confirm** — Provider NP → Requesting NP\n\nContract is ACTIVE. Payment received. aggregateResult is INCONCLUSIVE (verification submitted to Parivahan Sewa; PT30M SLA). Requesting NP should poll via `status` after the SLA window."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "09 — status",
+      "description": "Requesting NP polls for verification result after PT30M.",
+      "item": [
+        {
+          "name": "status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"e1f2a3b4-c5d6-4890-8f12-ab3456789cd4\",\n    \"timestamp\": \"2026-05-12T11:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1-dl-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-dl-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-dl-std-001\",\n            \"resourceIds\": [\n              \"res-vs-dl-001\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/status"
+            },
+            "description": "**status** — Requesting NP → Provider NP\n\nPoll for the verification result. Per core spec StatusAction, message.contract carries the contract id and commitment refs (not a flat message.contractId)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10 — on_status  ★ Verification Complete",
+      "description": "Provider NP returns VERIFIED result with performance record and signed PDF certificate.",
+      "item": [
+        {
+          "name": "on_status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"f2a3b4c5-d6e7-4901-8a23-bc4567890de5\",\n    \"timestamp\": \"2026-05-12T11:00:02+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"descriptor\": {\n        \"name\": \"DL Verification — CityExpress / Ravi Kumar\",\n        \"shortDesc\": \"Verification complete — VERIFIED\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1-dl-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-dl-001\",\n              \"descriptor\": {\n                \"name\": \"Driving Licence Verification\",\n                \"shortDesc\": \"Real-time DL verification against Parivahan Sewa (MoRTH)\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"DRIVING_LICENCE\",\n                  \"name\": \"Driving Licence Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"DRIVING_LICENCE\",\n                    \"name\": \"Motor Vehicle Driving Licence\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"REAL_TIME_API\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"licenceNumber\",\n                    \"displayName\": \"Driving Licence Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true,\n                    \"validationPattern\": \"^[A-Z]{2}[0-9]{2}[0-9]{4}[0-9]{7}$\"\n                  },\n                  {\n                    \"fieldName\": \"dateOfBirth\",\n                    \"displayName\": \"Date of Birth\",\n                    \"fieldType\": \"DATE\",\n                    \"isRequired\": true\n                  },\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name (as on DL)\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"Parivahan Sewa — Ministry of Road Transport and Highways\",\n                  \"url\": \"https://parivahan.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"holderName\",\n                    \"displayName\": \"Holder Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"licenceNumber\",\n                    \"displayName\": \"Licence Number\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issueDate\",\n                    \"displayName\": \"Issue Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"expiryDate\",\n                    \"displayName\": \"Expiry Date\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"vehicleClasses\",\n                    \"displayName\": \"Authorised Classes\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"issuingAuthority\",\n                    \"displayName\": \"Issuing RTO\",\n                    \"fieldType\": \"STRING\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"IT_ACT_2000\",\n                    \"name\": \"Information Technology Act, 2000\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-dl-std-001\",\n            \"resourceIds\": [\n              \"res-vs-dl-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"DL Verification — Standard\",\n              \"shortDesc\": \"Real-time DL verification, result within 30 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT30M\",\n              \"resultValidityPeriod\": \"P90D\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"STANDARD\",\n              \"dataRetentionPolicy\": \"P30D\",\n              \"supportedConsentMechanisms\": [\n                \"OTP\",\n                \"DIGITAL_SIGNATURE\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-dl-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 250,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request DL verification fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-dl-cat-001\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 250,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request DL verification fee, excluding GST\",\n            \"selectedPaymentMethod\": \"UPI\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc1-cityexpress-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"CityExpress Bus Services Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — intercity bus operator, Karnataka\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc1-dl-001\",\n          \"commitmentId\": \"commitment-uc1-dl-001\",\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/verification-service/VerificationPerformance/v2.1/context.jsonld\",\n            \"@type\": \"vp:VerificationPerformance\",\n            \"verificationResult\": {\n              \"status\": \"VERIFIED\",\n              \"matchScore\": 0.98,\n              \"remarks\": \"Licence details match Parivahan Sewa records. HMV endorsement active.\"\n            },\n            \"processingSteps\": [\n              {\n                \"stepName\": \"INPUT_VALIDATION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-12T10:30:06+05:30\"\n              },\n              {\n                \"stepName\": \"SOURCE_QUERY\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-12T10:30:08+05:30\",\n                \"details\": \"Parivahan Sewa API queried successfully\"\n              },\n              {\n                \"stepName\": \"DATA_COMPARISON\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-12T10:30:09+05:30\"\n              },\n              {\n                \"stepName\": \"RESULT_COMPILATION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-12T10:30:10+05:30\"\n              }\n            ],\n            \"verifiedData\": {\n              \"holderName\": \"RAVI KUMAR\",\n              \"licenceNumber\": \"KA0120190123456\",\n              \"issueDate\": \"2019-03-20\",\n              \"expiryDate\": \"2039-03-19\",\n              \"vehicleClasses\": \"LMV, MCWG, HMV\",\n              \"issuingAuthority\": \"RTO Bengaluru Central (KA-01)\"\n            },\n            \"evidence\": [\n              {\n                \"type\": \"SOURCE_RESPONSE_HASH\",\n                \"hash\": \"sha256-a3f8c2d1e4b9f70c5a2d6e8b1c4f7a0d3e6b9c2f5a8d1e4b7f0c3a6d9b2e5f8a\",\n                \"description\": \"SHA-256 hash of Parivahan Sewa API response for audit trail\",\n                \"createdAt\": \"2026-05-12T10:30:08+05:30\"\n              }\n            ],\n            \"confidenceScore\": 0.98,\n            \"verifiedAt\": \"2026-05-12T10:30:10+05:30\",\n            \"validUntil\": \"2026-08-12T10:30:10+05:30\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Ravi Kumar\",\n          \"dateOfBirth\": \"1992-03-15\",\n          \"identifiers\": [\n            {\n              \"type\": \"LICENCE_NUMBER\",\n              \"value\": \"KA0120190123456\",\n              \"maskedValue\": \"KA01XXXX123456\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX4521\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"EMPLOYMENT_ONBOARDING\",\n          \"description\": \"Verification of driving licence for HMV driver employment onboarding\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc1-rk-001\",\n          \"mechanism\": \"OTP\",\n          \"grantedAt\": \"2026-05-12T10:28:00+05:30\",\n          \"expiresAt\": \"2026-05-12T11:28:00+05:30\",\n          \"scope\": [\n            \"DRIVING_LICENCE\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"CityExpress Bus Services Pvt. Ltd.\",\n          \"organizationType\": \"EMPLOYER\",\n          \"referenceId\": \"onboarding-case-ce-2026-0512-001\"\n        },\n        \"aggregateResult\": {\n          \"status\": \"VERIFIED\",\n          \"summary\": \"Driving licence KA0120190123456 verified against Parivahan Sewa. HMV endorsement confirmed active. Holder name matches.\",\n          \"completedAt\": \"2026-05-12T10:30:10+05:30\"\n        },\n        \"expiresAt\": \"2026-08-12T10:30:10+05:30\",\n        \"issuedCredentials\": [\n          {\n            \"credentialId\": \"cred-uc1-dl-001\",\n            \"credentialType\": \"PDF\",\n            \"format\": \"application/pdf\",\n            \"url\": \"https://certs.trustverify.in/dl/cred-uc1-dl-001.pdf\",\n            \"issuedAt\": \"2026-05-12T10:30:30+05:30\",\n            \"credentialExpiresAt\": \"2026-08-12T10:30:30+05:30\",\n            \"issuerId\": \"{{provider_np_id}}\"\n          }\n        ]\n      },\n      \"settlements\": [\n        {\n          \"id\": \"settlement-uc1-dl-001\",\n          \"considerationId\": \"cons-vs-dl-cat-001\",\n          \"status\": \"COMPLETE\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_status"
+            },
+            "description": "**on_status** — Provider NP → Requesting NP\n\naggregateResult VERIFIED. Licence KA0120190123456 confirmed against Parivahan Sewa (matchScore 0.98, HMV endorsement active). issuedCredentials contains a signed PDF certificate valid for 90 days. CityExpress can download the certificate from the URL and store it in Ravi Kumar's onboarding record."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

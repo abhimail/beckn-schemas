@@ -1,0 +1,79 @@
+{
+  "id": "f5a6b7c8-d9e0-4a12-8f56-ab7890123cde",
+  "name": "Verification Service Network",
+  "_postman_variable_scope": "environment",
+  "values": [
+    {
+      "key": "base_url",
+      "value": "",
+      "enabled": true,
+      "description": "Provider NP (BPP) endpoint. Set to BPP sandbox / staging / integration URL."
+    },
+    {
+      "key": "requesting_np_uri",
+      "value": "",
+      "enabled": true,
+      "description": "Requesting NP (BAP) callback URI. Set to BAP sandbox endpoint."
+    },
+    {
+      "key": "provider_np_uri",
+      "value": "",
+      "enabled": true,
+      "description": "Provider NP (BPP) URI. Used for on_* callback simulations."
+    },
+    {
+      "key": "registry_url",
+      "value": "",
+      "enabled": true,
+      "description": "Network registry / CDS URL for catalog/publish."
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "enabled": true,
+      "description": "Network-issued JWT — obtain from network registry before running."
+    },
+    {
+      "key": "domain",
+      "value": "vs:verification",
+      "enabled": true,
+      "description": "Domain prefix — confirm exact value with network team before going live."
+    },
+    {
+      "key": "network_id",
+      "value": "vs.in/verification",
+      "enabled": true,
+      "description": "Network ID — confirm exact value with registry team. Format: namespace/registry."
+    },
+    {
+      "key": "requesting_np_id",
+      "value": "requesting-np.example.in",
+      "enabled": true,
+      "description": "Requesting NP network identifier (appears as bapId in Beckn context)."
+    },
+    {
+      "key": "provider_np_id",
+      "value": "provider-np.example.in",
+      "enabled": true,
+      "description": "Provider NP network identifier (appears as bppId in Beckn context)."
+    },
+    {
+      "key": "transaction_id",
+      "value": "c3d4e5f6-a7b8-4012-8d34-ef5678901aba",
+      "enabled": true,
+      "description": "UC1 transaction UUID — regenerate for each test run."
+    },
+    {
+      "key": "contract_id",
+      "value": "d4e5f6a7-b8c9-4123-8e45-fa6789012bcb",
+      "enabled": true,
+      "description": "UC1 contract UUID — assigned by Provider NP at on_select."
+    },
+    {
+      "key": "payment_ref",
+      "value": "UPI-20260512-103000-HDFC-001",
+      "enabled": true,
+      "description": "UC1 UPI payment transaction reference."
+    }
+  ]
+}

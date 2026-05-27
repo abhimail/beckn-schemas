@@ -1,0 +1,459 @@
+{
+  "info": {
+    "name": "VS — UC2: EV Fleet Driver KYC (Aadhaar eKYC)",
+    "description": "## Verification Service Network — UC2: EV Fleet Driver KYC\n\n**Scenario:** GreenMove EV Fleet Operations (Requesting NP) performs Aadhaar\neKYC on driver applicant Priya Sharma via IDVerify Solutions (Provider NP) for\nKYC compliance before onboarding her to the fleet. Real-time UIDAI OTP flow;\nresult returned synchronously at on_confirm within PT5M.\n\n**Protocol:** Beckn v2.0.0 + Verification Service schema pack v2.1.0\n**Verification type:** IDENTITY (Aadhaar eKYC) | **Method:** REAL_TIME_API | **Turnaround:** PT5M\n**Purpose:** KYC_COMPLIANCE | **Consent:** AADHAAR_EKYC\n\n### Structural conventions\n\n- Synchronous flow — aggregateResult VERIFIED already at on_confirm\n- issuedCredentials (W3C VC) present in on_confirm contractAttributes\n- on_status confirms the stable VERIFIED state and records the settlement\n- Subject (Priya Sharma) introduced at init under Aadhaar eKYC consent\n\n### Consideration lifecycle\n\n| Call | status.code | price |\n|---|---|---|\n| catalog (on_discover) | *(none)* | ₹150 |\n| on_select | PENDING | ₹150 |\n| init | PENDING | ₹150 |\n| on_init | QUOTED | ₹150 |\n| confirm / on_confirm / on_status | ACTIVE | ₹150 |\n\n### Quick-start: environment setup\n\n1. Import **VS_Environment.json** and select the environment.\n2. Set `base_url`, `requesting_np_uri`, `provider_np_uri`, and `auth_token`.\n3. Run folders 01–10 in order.\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "",
+      "type": "string",
+      "description": "Provider NP (BPP) endpoint — set per environment"
+    },
+    {
+      "key": "requesting_np_uri",
+      "value": "",
+      "type": "string",
+      "description": "Requesting NP (BAP) callback URI — set per environment"
+    },
+    {
+      "key": "provider_np_uri",
+      "value": "",
+      "type": "string",
+      "description": "Provider NP (BPP) URI — set per environment"
+    },
+    {
+      "key": "requesting_np_id",
+      "value": "greenmove-ev.in",
+      "type": "string",
+      "description": "Requesting NP network identifier (maps to bapId in Beckn context)"
+    },
+    {
+      "key": "provider_np_id",
+      "value": "idverify.in",
+      "type": "string",
+      "description": "Provider NP network identifier (maps to bppId in Beckn context)"
+    },
+    {
+      "key": "domain",
+      "value": "vs:verification",
+      "type": "string",
+      "description": "Confirm exact domain prefix with network team"
+    },
+    {
+      "key": "network_id",
+      "value": "vs.in/verification",
+      "type": "string",
+      "description": "Confirm exact value with network registry team"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Network-issued JWT — set before running"
+    },
+    {
+      "key": "transaction_id",
+      "value": "a3b4c5d6-e7f8-4012-8b34-cd5678901ef2",
+      "type": "string",
+      "description": "UUID — regenerate for separate test runs"
+    },
+    {
+      "key": "contract_id",
+      "value": "b4c5d6e7-f8a9-4123-8c45-de6789012fa3",
+      "type": "string",
+      "description": "Assigned by Provider NP at on_select"
+    },
+    {
+      "key": "payment_ref",
+      "value": "UPI-20260515-141200-ICICI-007",
+      "type": "string",
+      "description": "UPI transaction reference"
+    },
+    {
+      "key": "aadhaar_ref",
+      "value": "{{aadhaar_ref}}",
+      "type": "string",
+      "description": "Aadhaar number — never store plaintext; handle server-side"
+    },
+    {
+      "key": "subject_mobile_masked",
+      "value": "XXXXXXX8832",
+      "type": "string",
+      "description": "Masked mobile for display only"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — discover",
+      "description": "Requesting NP (GreenMove) discovers identity verification services.",
+      "item": [
+        {
+          "name": "discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"a3b4c5d6-e7f8-4012-8b34-cd5678901ef2\",\n    \"timestamp\": \"2026-05-15T14:05:00+05:30\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"intent\": {\n      \"filters\": \"$.catalogs[*].resources[*] ? (@.resourceAttributes.verificationType.code == \\\"IDENTITY\\\")\",\n      \"textSearch\": \"Aadhaar eKYC\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/discover"
+            },
+            "description": "**discover** — Requesting NP → Gateway\n\nGreenMove EV Fleet Operations filters for IDENTITY verification resources with textSearch hint 'Aadhaar eKYC'. schemaContext included (catalog phase)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 — on_discover",
+      "description": "Provider NP (IDVerify Solutions) returns its identity verification catalog.",
+      "item": [
+        {
+          "name": "on_discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"b4c5d6e7-f8a9-4123-8c45-de6789012fa3\",\n    \"timestamp\": \"2026-05-15T14:05:04+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"cat-vs-idverify-001\",\n        \"descriptor\": {\n          \"name\": \"IDVerify Solutions — Verification Service Catalog\",\n          \"shortDesc\": \"Identity and Aadhaar eKYC verification for the mobility sector\"\n        },\n        \"provider\": {\n          \"id\": \"{{provider_np_id}}\",\n          \"descriptor\": {\n            \"name\": \"IDVerify Solutions Pvt. Ltd.\",\n            \"shortDesc\": \"UIDAI-authorised AUA; DPDPA 2023 compliant\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"res-vs-identity-001\",\n            \"descriptor\": {\n              \"name\": \"Identity Verification — Aadhaar eKYC\",\n              \"shortDesc\": \"Real-time identity verification via UIDAI Aadhaar eKYC\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n              \"@type\": \"vr:VerificationResource\",\n              \"verificationType\": {\n                \"code\": \"IDENTITY\",\n                \"name\": \"Identity Verification\"\n              },\n              \"supportedDocumentTypes\": [\n                {\n                  \"code\": \"AADHAAR\",\n                  \"name\": \"Aadhaar Card\"\n                },\n                {\n                  \"code\": \"PAN\",\n                  \"name\": \"Permanent Account Number Card\"\n                }\n              ],\n              \"supportedJurisdictions\": [\n                {\n                  \"code\": \"IN\",\n                  \"name\": \"India\"\n                }\n              ],\n              \"verificationMethod\": \"REAL_TIME_API\",\n              \"requiredInputFields\": [\n                {\n                  \"fieldName\": \"aadhaarNumber\",\n                  \"displayName\": \"Aadhaar Number\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true,\n                  \"validationPattern\": \"^[2-9][0-9]{11}$\"\n                },\n                {\n                  \"fieldName\": \"consentOtp\",\n                  \"displayName\": \"OTP (sent to registered mobile)\",\n                  \"fieldType\": \"STRING\",\n                  \"isRequired\": true\n                }\n              ],\n              \"authoritativeSource\": {\n                \"name\": \"UIDAI — Unique Identification Authority of India\",\n                \"url\": \"https://uidai.gov.in\",\n                \"type\": \"GOVERNMENT_DATABASE\"\n              },\n              \"outputFields\": [\n                {\n                  \"fieldName\": \"name\",\n                  \"displayName\": \"Full Name\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"dateOfBirth\",\n                  \"displayName\": \"Date of Birth\",\n                  \"fieldType\": \"DATE\"\n                },\n                {\n                  \"fieldName\": \"gender\",\n                  \"displayName\": \"Gender\",\n                  \"fieldType\": \"STRING\"\n                },\n                {\n                  \"fieldName\": \"address\",\n                  \"displayName\": \"Address\",\n                  \"fieldType\": \"OBJECT\"\n                },\n                {\n                  \"fieldName\": \"photo\",\n                  \"displayName\": \"Photo\",\n                  \"fieldType\": \"IMAGE\"\n                }\n              ],\n              \"complianceStandards\": [\n                {\n                  \"code\": \"UIDAI_AUA\",\n                  \"name\": \"UIDAI AUA/KUA Regulations\"\n                },\n                {\n                  \"code\": \"DPDPA_2023\",\n                  \"name\": \"Digital Personal Data Protection Act, 2023\"\n                }\n              ]\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"offer-vs-identity-instant-001\",\n            \"resourceIds\": [\n              \"res-vs-identity-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Identity Verification — Instant KYC\",\n              \"shortDesc\": \"Aadhaar eKYC with verified result in under 5 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT5M\",\n              \"resultValidityPeriod\": \"P1Y\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"PREMIUM\",\n              \"dataRetentionPolicy\": \"P7D\",\n              \"supportedConsentMechanisms\": [\n                \"AADHAAR_EKYC\",\n                \"OTP\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-identity-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 150,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_discover"
+            },
+            "description": "**on_discover** — Provider NP → Requesting NP\n\nIDVerify Solutions returns its catalog. Requesting NP selects `offer-vs-identity-instant-001` (₹150/request, PT5M, PREMIUM tier)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 — select",
+      "description": "Requesting NP originates DRAFT contract for the identity verification offer.",
+      "item": [
+        {
+          "name": "select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"c5d6e7f8-a9b0-4234-8d56-ef7890123ab4\",\n    \"timestamp\": \"2026-05-15T14:10:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2-identity-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-identity-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-identity-instant-001\",\n            \"resourceIds\": [\n              \"res-vs-identity-001\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc2-greenmove-001\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/select"
+            },
+            "description": "**select** — Requesting NP → Provider NP\n\nDRAFT Contract with identity commitment (1 verification). Minimal participant at this stage — no PII, no subject reference yet."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 — on_select",
+      "description": "Provider NP assigns contract id and returns PENDING pricing.",
+      "item": [
+        {
+          "name": "on_select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"d6e7f8a9-b0c1-4345-8e67-fa8901234bc5\",\n    \"timestamp\": \"2026-05-15T14:10:02+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2-identity-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-identity-001\",\n              \"descriptor\": {\n                \"name\": \"Identity Verification — Aadhaar eKYC\",\n                \"shortDesc\": \"Real-time identity verification via UIDAI Aadhaar eKYC\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"IDENTITY\",\n                  \"name\": \"Identity Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"AADHAAR\",\n                    \"name\": \"Aadhaar Card\"\n                  },\n                  {\n                    \"code\": \"PAN\",\n                    \"name\": \"Permanent Account Number Card\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"REAL_TIME_API\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"aadhaarNumber\",\n                    \"displayName\": \"Aadhaar Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true,\n                    \"validationPattern\": \"^[2-9][0-9]{11}$\"\n                  },\n                  {\n                    \"fieldName\": \"consentOtp\",\n                    \"displayName\": \"OTP (sent to registered mobile)\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"UIDAI — Unique Identification Authority of India\",\n                  \"url\": \"https://uidai.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"name\",\n                    \"displayName\": \"Full Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"dateOfBirth\",\n                    \"displayName\": \"Date of Birth\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"gender\",\n                    \"displayName\": \"Gender\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"address\",\n                    \"displayName\": \"Address\",\n                    \"fieldType\": \"OBJECT\"\n                  },\n                  {\n                    \"fieldName\": \"photo\",\n                    \"displayName\": \"Photo\",\n                    \"fieldType\": \"IMAGE\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"UIDAI_AUA\",\n                    \"name\": \"UIDAI AUA/KUA Regulations\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-identity-instant-001\",\n            \"resourceIds\": [\n              \"res-vs-identity-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Identity Verification — Instant KYC\",\n              \"shortDesc\": \"Aadhaar eKYC with verified result in under 5 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT5M\",\n              \"resultValidityPeriod\": \"P1Y\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"PREMIUM\",\n              \"dataRetentionPolicy\": \"P7D\",\n              \"supportedConsentMechanisms\": [\n                \"AADHAAR_EKYC\",\n                \"OTP\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-identity-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 150,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-identity-cat-001\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 150,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc2-greenmove-001\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_select"
+            },
+            "description": "**on_select** — Provider NP → Requesting NP\n\nProvider NP assigns `{{contract_id}}`. PENDING consideration ₹150."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 — init",
+      "description": "Requesting NP submits Aadhaar eKYC subject reference, purpose, and consent.",
+      "item": [
+        {
+          "name": "init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"e7f8a9b0-c1d2-4456-8f78-ab9012345cd6\",\n    \"timestamp\": \"2026-05-15T14:11:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2-identity-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-identity-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-identity-instant-001\",\n            \"resourceIds\": [\n              \"res-vs-identity-001\"\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-identity-cat-001\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 150,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc2-greenmove-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"GreenMove EV Fleet Operations Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — EV fleet operator, Pune\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Priya Sharma\",\n          \"dateOfBirth\": \"1998-07-22\",\n          \"identifiers\": [\n            {\n              \"type\": \"AADHAAR\",\n              \"value\": \"{{aadhaar_ref}}\",\n              \"maskedValue\": \"XXXX-XXXX-4567\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX8832\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"KYC_COMPLIANCE\",\n          \"description\": \"Aadhaar eKYC for EV fleet driver onboarding compliance\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc2-ps-001\",\n          \"mechanism\": \"AADHAAR_EKYC\",\n          \"grantedAt\": \"2026-05-15T14:10:00+05:30\",\n          \"expiresAt\": \"2026-05-15T15:10:00+05:30\",\n          \"scope\": [\n            \"IDENTITY\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"GreenMove EV Fleet Operations Pvt. Ltd.\",\n          \"organizationType\": \"EMPLOYER\",\n          \"referenceId\": \"driver-application-gm-2026-0515-007\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/init"
+            },
+            "description": "**init** — Requesting NP → Provider NP\n\nRequesting NP introduces subject (Priya Sharma, masked Aadhaar), purpose (KYC_COMPLIANCE), and Aadhaar eKYC consent reference. The actual Aadhaar number is handled server-side — only masked reference and the consent token flow through the Beckn message."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 — on_init",
+      "description": "Provider NP returns QUOTED consideration.",
+      "item": [
+        {
+          "name": "on_init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"f8a9b0c1-d2e3-4567-8a89-bc0123456de7\",\n    \"timestamp\": \"2026-05-15T14:11:02+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2-identity-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-identity-001\",\n              \"descriptor\": {\n                \"name\": \"Identity Verification — Aadhaar eKYC\",\n                \"shortDesc\": \"Real-time identity verification via UIDAI Aadhaar eKYC\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"IDENTITY\",\n                  \"name\": \"Identity Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"AADHAAR\",\n                    \"name\": \"Aadhaar Card\"\n                  },\n                  {\n                    \"code\": \"PAN\",\n                    \"name\": \"Permanent Account Number Card\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"REAL_TIME_API\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"aadhaarNumber\",\n                    \"displayName\": \"Aadhaar Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true,\n                    \"validationPattern\": \"^[2-9][0-9]{11}$\"\n                  },\n                  {\n                    \"fieldName\": \"consentOtp\",\n                    \"displayName\": \"OTP (sent to registered mobile)\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"UIDAI — Unique Identification Authority of India\",\n                  \"url\": \"https://uidai.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"name\",\n                    \"displayName\": \"Full Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"dateOfBirth\",\n                    \"displayName\": \"Date of Birth\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"gender\",\n                    \"displayName\": \"Gender\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"address\",\n                    \"displayName\": \"Address\",\n                    \"fieldType\": \"OBJECT\"\n                  },\n                  {\n                    \"fieldName\": \"photo\",\n                    \"displayName\": \"Photo\",\n                    \"fieldType\": \"IMAGE\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"UIDAI_AUA\",\n                    \"name\": \"UIDAI AUA/KUA Regulations\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-identity-instant-001\",\n            \"resourceIds\": [\n              \"res-vs-identity-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Identity Verification — Instant KYC\",\n              \"shortDesc\": \"Aadhaar eKYC with verified result in under 5 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT5M\",\n              \"resultValidityPeriod\": \"P1Y\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"PREMIUM\",\n              \"dataRetentionPolicy\": \"P7D\",\n              \"supportedConsentMechanisms\": [\n                \"AADHAAR_EKYC\",\n                \"OTP\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-identity-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 150,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-identity-cat-001\",\n          \"status\": {\n            \"code\": \"QUOTED\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 150,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\",\n            \"selectedPaymentMethod\": \"UPI\",\n            \"paymentSchedule\": \"UPFRONT\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc2-greenmove-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"GreenMove EV Fleet Operations Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — EV fleet operator, Pune\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Priya Sharma\",\n          \"dateOfBirth\": \"1998-07-22\",\n          \"identifiers\": [\n            {\n              \"type\": \"AADHAAR\",\n              \"value\": \"{{aadhaar_ref}}\",\n              \"maskedValue\": \"XXXX-XXXX-4567\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX8832\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"KYC_COMPLIANCE\",\n          \"description\": \"Aadhaar eKYC for EV fleet driver onboarding compliance\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc2-ps-001\",\n          \"mechanism\": \"AADHAAR_EKYC\",\n          \"grantedAt\": \"2026-05-15T14:10:00+05:30\",\n          \"expiresAt\": \"2026-05-15T15:10:00+05:30\",\n          \"scope\": [\n            \"IDENTITY\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"GreenMove EV Fleet Operations Pvt. Ltd.\",\n          \"organizationType\": \"EMPLOYER\",\n          \"referenceId\": \"driver-application-gm-2026-0515-007\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_init"
+            },
+            "description": "**on_init** — Provider NP → Requesting NP\n\nQUOTED consideration (₹150 UPI UPFRONT). Payment instructions out-of-band."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 — confirm",
+      "description": "Requesting NP confirms the contract with payment authorisation.",
+      "item": [
+        {
+          "name": "confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"a9b0c1d2-e3f4-4678-8b90-cd1234567ef8\",\n    \"timestamp\": \"2026-05-15T14:12:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2-identity-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-identity-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-identity-instant-001\",\n            \"resourceIds\": [\n              \"res-vs-identity-001\"\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-identity-cat-001\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 150,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\",\n            \"selectedPaymentMethod\": \"UPI\",\n            \"transactionRef\": \"{{payment_ref}}\",\n            \"paymentAuthorisation\": {\n              \"authCode\": \"{{payment_ref}}\",\n              \"authProvider\": \"ICICI_UPI\",\n              \"authTimestamp\": \"2026-05-15T14:11:58+05:30\",\n              \"authAmount\": 150\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc2-greenmove-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"GreenMove EV Fleet Operations Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — EV fleet operator, Pune\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Priya Sharma\",\n          \"dateOfBirth\": \"1998-07-22\",\n          \"identifiers\": [\n            {\n              \"type\": \"AADHAAR\",\n              \"value\": \"{{aadhaar_ref}}\",\n              \"maskedValue\": \"XXXX-XXXX-4567\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX8832\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"KYC_COMPLIANCE\",\n          \"description\": \"Aadhaar eKYC for EV fleet driver onboarding compliance\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc2-ps-001\",\n          \"mechanism\": \"AADHAAR_EKYC\",\n          \"grantedAt\": \"2026-05-15T14:10:00+05:30\",\n          \"expiresAt\": \"2026-05-15T15:10:00+05:30\",\n          \"scope\": [\n            \"IDENTITY\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"GreenMove EV Fleet Operations Pvt. Ltd.\",\n          \"organizationType\": \"EMPLOYER\",\n          \"referenceId\": \"driver-application-gm-2026-0515-007\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/confirm"
+            },
+            "description": "**confirm** — Requesting NP → Provider NP\n\nACTIVE consideration with ICICI UPI payment authorisation (₹150). Provider NP initiates real-time Aadhaar eKYC immediately on receipt."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08 — on_confirm  ★ KYC Verified (Synchronous)",
+      "description": "Provider NP returns VERIFIED result synchronously — KYC complete at on_confirm.",
+      "item": [
+        {
+          "name": "on_confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"b0c1d2e3-f4a5-4789-8c01-de2345678fa9\",\n    \"timestamp\": \"2026-05-15T14:12:10+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"descriptor\": {\n        \"name\": \"Identity KYC — GreenMove / Priya Sharma\",\n        \"shortDesc\": \"Aadhaar eKYC verified — VERIFIED\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2-identity-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-identity-001\",\n              \"descriptor\": {\n                \"name\": \"Identity Verification — Aadhaar eKYC\",\n                \"shortDesc\": \"Real-time identity verification via UIDAI Aadhaar eKYC\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"IDENTITY\",\n                  \"name\": \"Identity Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"AADHAAR\",\n                    \"name\": \"Aadhaar Card\"\n                  },\n                  {\n                    \"code\": \"PAN\",\n                    \"name\": \"Permanent Account Number Card\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"REAL_TIME_API\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"aadhaarNumber\",\n                    \"displayName\": \"Aadhaar Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true,\n                    \"validationPattern\": \"^[2-9][0-9]{11}$\"\n                  },\n                  {\n                    \"fieldName\": \"consentOtp\",\n                    \"displayName\": \"OTP (sent to registered mobile)\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"UIDAI — Unique Identification Authority of India\",\n                  \"url\": \"https://uidai.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"name\",\n                    \"displayName\": \"Full Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"dateOfBirth\",\n                    \"displayName\": \"Date of Birth\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"gender\",\n                    \"displayName\": \"Gender\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"address\",\n                    \"displayName\": \"Address\",\n                    \"fieldType\": \"OBJECT\"\n                  },\n                  {\n                    \"fieldName\": \"photo\",\n                    \"displayName\": \"Photo\",\n                    \"fieldType\": \"IMAGE\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"UIDAI_AUA\",\n                    \"name\": \"UIDAI AUA/KUA Regulations\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-identity-instant-001\",\n            \"resourceIds\": [\n              \"res-vs-identity-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Identity Verification — Instant KYC\",\n              \"shortDesc\": \"Aadhaar eKYC with verified result in under 5 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT5M\",\n              \"resultValidityPeriod\": \"P1Y\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"PREMIUM\",\n              \"dataRetentionPolicy\": \"P7D\",\n              \"supportedConsentMechanisms\": [\n                \"AADHAAR_EKYC\",\n                \"OTP\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-identity-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 150,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-identity-cat-001\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 150,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\",\n            \"selectedPaymentMethod\": \"UPI\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc2-greenmove-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"GreenMove EV Fleet Operations Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — EV fleet operator, Pune\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2-identity-001\",\n          \"commitmentId\": \"commitment-uc2-identity-001\",\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/verification-service/VerificationPerformance/v2.1/context.jsonld\",\n            \"@type\": \"vp:VerificationPerformance\",\n            \"verificationResult\": {\n              \"status\": \"VERIFIED\",\n              \"matchScore\": 1.0,\n              \"remarks\": \"Identity verified against UIDAI Aadhaar database. OTP consent confirmed.\"\n            },\n            \"processingSteps\": [\n              {\n                \"stepName\": \"INPUT_VALIDATION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-15T14:12:01+05:30\"\n              },\n              {\n                \"stepName\": \"SOURCE_QUERY\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-15T14:12:03+05:30\",\n                \"details\": \"UIDAI eKYC API called; OTP verified\"\n              },\n              {\n                \"stepName\": \"DATA_EXTRACTION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-15T14:12:04+05:30\"\n              },\n              {\n                \"stepName\": \"RESULT_COMPILATION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-15T14:12:05+05:30\"\n              }\n            ],\n            \"verifiedData\": {\n              \"name\": \"PRIYA SHARMA\",\n              \"dateOfBirth\": \"1998-07-22\",\n              \"gender\": \"F\",\n              \"address\": {\n                \"house\": \"Flat 204\",\n                \"street\": \"Koregaon Park\",\n                \"city\": \"Pune\",\n                \"state\": \"MH\",\n                \"pincode\": \"411001\"\n              }\n            },\n            \"evidence\": [\n              {\n                \"type\": \"SOURCE_RESPONSE_HASH\",\n                \"hash\": \"sha256-b7c3e1f5a9d2b6e0c4f8a2d5b9c3e7f1a5d9b3e7c1f5a9d3b7e1f5a9c3d7b1e5\",\n                \"description\": \"SHA-256 hash of UIDAI eKYC API response\",\n                \"createdAt\": \"2026-05-15T14:12:04+05:30\"\n              }\n            ],\n            \"confidenceScore\": 1.0,\n            \"verifiedAt\": \"2026-05-15T14:12:05+05:30\",\n            \"validUntil\": \"2027-05-15T14:12:05+05:30\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Priya Sharma\",\n          \"dateOfBirth\": \"1998-07-22\",\n          \"identifiers\": [\n            {\n              \"type\": \"AADHAAR\",\n              \"value\": \"{{aadhaar_ref}}\",\n              \"maskedValue\": \"XXXX-XXXX-4567\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX8832\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"KYC_COMPLIANCE\",\n          \"description\": \"Aadhaar eKYC for EV fleet driver onboarding compliance\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc2-ps-001\",\n          \"mechanism\": \"AADHAAR_EKYC\",\n          \"grantedAt\": \"2026-05-15T14:10:00+05:30\",\n          \"expiresAt\": \"2026-05-15T15:10:00+05:30\",\n          \"scope\": [\n            \"IDENTITY\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"GreenMove EV Fleet Operations Pvt. Ltd.\",\n          \"organizationType\": \"EMPLOYER\",\n          \"referenceId\": \"driver-application-gm-2026-0515-007\"\n        },\n        \"aggregateResult\": {\n          \"status\": \"VERIFIED\",\n          \"summary\": \"Identity verified against UIDAI Aadhaar. Name, date of birth, gender, and address confirmed. OTP consent validated.\",\n          \"completedAt\": \"2026-05-15T14:12:05+05:30\"\n        },\n        \"expiresAt\": \"2027-05-15T14:12:10+05:30\",\n        \"issuedCredentials\": [\n          {\n            \"credentialId\": \"cred-uc2-identity-001\",\n            \"credentialType\": \"W3C_VC\",\n            \"format\": \"application/ld+json\",\n            \"url\": \"https://certs.idverify.in/vc/cred-uc2-identity-001\",\n            \"issuedAt\": \"2026-05-15T14:12:10+05:30\",\n            \"credentialExpiresAt\": \"2027-05-15T14:12:10+05:30\",\n            \"issuerId\": \"{{provider_np_id}}\"\n          }\n        ]\n      },\n      \"settlements\": [\n        {\n          \"id\": \"settlement-uc2-identity-001\",\n          \"considerationId\": \"cons-vs-identity-cat-001\",\n          \"status\": \"COMPLETE\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_confirm"
+            },
+            "description": "**on_confirm** — Provider NP → Requesting NP\n\nSynchronous result: aggregateResult VERIFIED within PT5M SLA. Performance record included (UIDAI eKYC response hash as evidence). issuedCredentials carries a W3C VC pointing to the signed KYC certificate. GreenMove can immediately proceed with driver onboarding."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "09 — status",
+      "description": "Requesting NP polls to confirm stable state (optional for sync use cases).",
+      "item": [
+        {
+          "name": "status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"c1d2e3f4-a5b6-4890-8d12-ef3456789ab0\",\n    \"timestamp\": \"2026-05-15T14:15:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2-identity-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-identity-001\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-identity-instant-001\",\n            \"resourceIds\": [\n              \"res-vs-identity-001\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/status"
+            },
+            "description": "**status** — Requesting NP → Provider NP\n\nStatus poll to confirm the stable VERIFIED state and retrieve the final settlement record. Optional for synchronous use cases where on_confirm already carries the result."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10 — on_status  ★ Stable Verified State",
+      "description": "Provider NP confirms VERIFIED state with settlement record.",
+      "item": [
+        {
+          "name": "on_status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{requesting_np_id}}\",\n    \"bapUri\": \"{{requesting_np_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"d2e3f4a5-b6c7-4901-8e23-fa4567890bc1\",\n    \"timestamp\": \"2026-05-15T14:15:02+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"descriptor\": {\n        \"name\": \"Identity KYC — GreenMove / Priya Sharma\",\n        \"shortDesc\": \"Verification complete and stable — VERIFIED\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2-identity-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"res-vs-identity-001\",\n              \"descriptor\": {\n                \"name\": \"Identity Verification — Aadhaar eKYC\",\n                \"shortDesc\": \"Real-time identity verification via UIDAI Aadhaar eKYC\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n                \"@type\": \"vr:VerificationResource\",\n                \"verificationType\": {\n                  \"code\": \"IDENTITY\",\n                  \"name\": \"Identity Verification\"\n                },\n                \"supportedDocumentTypes\": [\n                  {\n                    \"code\": \"AADHAAR\",\n                    \"name\": \"Aadhaar Card\"\n                  },\n                  {\n                    \"code\": \"PAN\",\n                    \"name\": \"Permanent Account Number Card\"\n                  }\n                ],\n                \"supportedJurisdictions\": [\n                  {\n                    \"code\": \"IN\",\n                    \"name\": \"India\"\n                  }\n                ],\n                \"verificationMethod\": \"REAL_TIME_API\",\n                \"requiredInputFields\": [\n                  {\n                    \"fieldName\": \"aadhaarNumber\",\n                    \"displayName\": \"Aadhaar Number\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true,\n                    \"validationPattern\": \"^[2-9][0-9]{11}$\"\n                  },\n                  {\n                    \"fieldName\": \"consentOtp\",\n                    \"displayName\": \"OTP (sent to registered mobile)\",\n                    \"fieldType\": \"STRING\",\n                    \"isRequired\": true\n                  }\n                ],\n                \"authoritativeSource\": {\n                  \"name\": \"UIDAI — Unique Identification Authority of India\",\n                  \"url\": \"https://uidai.gov.in\",\n                  \"type\": \"GOVERNMENT_DATABASE\"\n                },\n                \"outputFields\": [\n                  {\n                    \"fieldName\": \"name\",\n                    \"displayName\": \"Full Name\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"dateOfBirth\",\n                    \"displayName\": \"Date of Birth\",\n                    \"fieldType\": \"DATE\"\n                  },\n                  {\n                    \"fieldName\": \"gender\",\n                    \"displayName\": \"Gender\",\n                    \"fieldType\": \"STRING\"\n                  },\n                  {\n                    \"fieldName\": \"address\",\n                    \"displayName\": \"Address\",\n                    \"fieldType\": \"OBJECT\"\n                  },\n                  {\n                    \"fieldName\": \"photo\",\n                    \"displayName\": \"Photo\",\n                    \"fieldType\": \"IMAGE\"\n                  }\n                ],\n                \"complianceStandards\": [\n                  {\n                    \"code\": \"UIDAI_AUA\",\n                    \"name\": \"UIDAI AUA/KUA Regulations\"\n                  },\n                  {\n                    \"code\": \"DPDPA_2023\",\n                    \"name\": \"Digital Personal Data Protection Act, 2023\"\n                  }\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"offer-vs-identity-instant-001\",\n            \"resourceIds\": [\n              \"res-vs-identity-001\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Identity Verification — Instant KYC\",\n              \"shortDesc\": \"Aadhaar eKYC with verified result in under 5 minutes\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n              \"@type\": \"vo:VerificationOffer\",\n              \"turnaroundTime\": \"PT5M\",\n              \"resultValidityPeriod\": \"P1Y\",\n              \"pricingModel\": \"PER_REQUEST\",\n              \"serviceLevel\": \"PREMIUM\",\n              \"dataRetentionPolicy\": \"P7D\",\n              \"supportedConsentMechanisms\": [\n                \"AADHAAR_EKYC\",\n                \"OTP\"\n              ]\n            },\n            \"considerations\": [\n              {\n                \"id\": \"cons-vs-identity-cat-001\",\n                \"considerationAttributes\": {\n                  \"@type\": \"schema:PriceSpecification\",\n                  \"price\": 150,\n                  \"priceCurrency\": \"INR\",\n                  \"valueAddedTaxIncluded\": false,\n                  \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\"\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"cons-vs-identity-cat-001\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@type\": \"schema:PriceSpecification\",\n            \"price\": 150,\n            \"priceCurrency\": \"INR\",\n            \"valueAddedTaxIncluded\": false,\n            \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\",\n            \"selectedPaymentMethod\": \"UPI\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"part-uc2-greenmove-001\",\n          \"role\": \"REQUESTER\",\n          \"descriptor\": {\n            \"name\": \"GreenMove EV Fleet Operations Pvt. Ltd.\",\n            \"shortDesc\": \"Requesting NP — EV fleet operator, Pune\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2-identity-001\",\n          \"commitmentId\": \"commitment-uc2-identity-001\",\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/verification-service/VerificationPerformance/v2.1/context.jsonld\",\n            \"@type\": \"vp:VerificationPerformance\",\n            \"verificationResult\": {\n              \"status\": \"VERIFIED\",\n              \"matchScore\": 1.0,\n              \"remarks\": \"Identity verified against UIDAI Aadhaar database. OTP consent confirmed.\"\n            },\n            \"processingSteps\": [\n              {\n                \"stepName\": \"INPUT_VALIDATION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-15T14:12:01+05:30\"\n              },\n              {\n                \"stepName\": \"SOURCE_QUERY\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-15T14:12:03+05:30\",\n                \"details\": \"UIDAI eKYC API called; OTP verified\"\n              },\n              {\n                \"stepName\": \"DATA_EXTRACTION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-15T14:12:04+05:30\"\n              },\n              {\n                \"stepName\": \"RESULT_COMPILATION\",\n                \"status\": \"COMPLETED\",\n                \"timestamp\": \"2026-05-15T14:12:05+05:30\"\n              }\n            ],\n            \"verifiedData\": {\n              \"name\": \"PRIYA SHARMA\",\n              \"dateOfBirth\": \"1998-07-22\",\n              \"gender\": \"F\",\n              \"address\": {\n                \"house\": \"Flat 204\",\n                \"street\": \"Koregaon Park\",\n                \"city\": \"Pune\",\n                \"state\": \"MH\",\n                \"pincode\": \"411001\"\n              }\n            },\n            \"evidence\": [\n              {\n                \"type\": \"SOURCE_RESPONSE_HASH\",\n                \"hash\": \"sha256-b7c3e1f5a9d2b6e0c4f8a2d5b9c3e7f1a5d9b3e7c1f5a9d3b7e1f5a9c3d7b1e5\",\n                \"description\": \"SHA-256 hash of UIDAI eKYC API response\",\n                \"createdAt\": \"2026-05-15T14:12:04+05:30\"\n              }\n            ],\n            \"confidenceScore\": 1.0,\n            \"verifiedAt\": \"2026-05-15T14:12:05+05:30\",\n            \"validUntil\": \"2027-05-15T14:12:05+05:30\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/verification-service/VerificationContract/v2.1/context.jsonld\",\n        \"@type\": \"vc:VerificationContract\",\n        \"subject\": {\n          \"name\": \"Priya Sharma\",\n          \"dateOfBirth\": \"1998-07-22\",\n          \"identifiers\": [\n            {\n              \"type\": \"AADHAAR\",\n              \"value\": \"{{aadhaar_ref}}\",\n              \"maskedValue\": \"XXXX-XXXX-4567\"\n            },\n            {\n              \"type\": \"MOBILE\",\n              \"value\": \"{{subject_mobile_masked}}\",\n              \"maskedValue\": \"XXXXXXX8832\"\n            }\n          ]\n        },\n        \"purpose\": {\n          \"code\": \"KYC_COMPLIANCE\",\n          \"description\": \"Aadhaar eKYC for EV fleet driver onboarding compliance\"\n        },\n        \"consentReference\": {\n          \"consentId\": \"consent-uc2-ps-001\",\n          \"mechanism\": \"AADHAAR_EKYC\",\n          \"grantedAt\": \"2026-05-15T14:10:00+05:30\",\n          \"expiresAt\": \"2026-05-15T15:10:00+05:30\",\n          \"scope\": [\n            \"IDENTITY\"\n          ]\n        },\n        \"requestedBy\": {\n          \"organizationName\": \"GreenMove EV Fleet Operations Pvt. Ltd.\",\n          \"organizationType\": \"EMPLOYER\",\n          \"referenceId\": \"driver-application-gm-2026-0515-007\"\n        },\n        \"aggregateResult\": {\n          \"status\": \"VERIFIED\",\n          \"summary\": \"Identity verified against UIDAI Aadhaar. Stable result. W3C VC credential issued.\",\n          \"completedAt\": \"2026-05-15T14:12:05+05:30\"\n        },\n        \"expiresAt\": \"2027-05-15T14:12:10+05:30\",\n        \"issuedCredentials\": [\n          {\n            \"credentialId\": \"cred-uc2-identity-001\",\n            \"credentialType\": \"W3C_VC\",\n            \"format\": \"application/ld+json\",\n            \"url\": \"https://certs.idverify.in/vc/cred-uc2-identity-001\",\n            \"issuedAt\": \"2026-05-15T14:12:10+05:30\",\n            \"credentialExpiresAt\": \"2027-05-15T14:12:10+05:30\",\n            \"issuerId\": \"{{provider_np_id}}\"\n          }\n        ]\n      },\n      \"settlements\": [\n        {\n          \"id\": \"settlement-uc2-identity-001\",\n          \"considerationId\": \"cons-vs-identity-cat-001\",\n          \"status\": \"COMPLETE\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{requesting_np_uri}}/on_status"
+            },
+            "description": "**on_status** — Provider NP → Requesting NP\n\nStable VERIFIED result with settlement COMPLETE. W3C VC credential valid for 1 year (credentialExpiresAt 2027-05-15)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

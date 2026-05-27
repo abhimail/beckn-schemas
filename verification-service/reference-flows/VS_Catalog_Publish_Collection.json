@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "VS — Catalog Publish",
+    "description": "## Verification Service Network — Catalog Publish\n\n**Scenario:** TrustVerify India (Provider NP) publishes its verification service\ncatalog to the network registry / CDS, advertising three verification resources:\ndriving licence, identity (Aadhaar eKYC), and skill certificate verification.\n\n**Protocol:** Beckn v2.0.0 + Verification Service schema pack v2.1.0\n\n### Resources published\n\n| Resource ID | Verification Type | Method | Turnaround |\n|---|---|---|---|\n| res-vs-dl-001 | DRIVING_LICENCE | REAL_TIME_API | PT30M |\n| res-vs-identity-001 | IDENTITY (Aadhaar eKYC) | REAL_TIME_API | PT5M |\n| res-vs-skill-001 | SKILL_CERTIFICATE | HYBRID | P1D |\n\n### Pricing\n\n| Offer ID | Rate | Model |\n|---|---|---|\n| offer-vs-dl-std-001 | ₹250/request | PER_REQUEST |\n| offer-vs-identity-instant-001 | ₹150/request | PER_REQUEST |\n| offer-vs-skill-hybrid-001 | ₹350/request | PER_REQUEST |\n\nNo status field on catalog considerations — status is a transaction-flow concept.\n\n### Quick-start: environment setup\n\n1. Import **VS_Environment.json** into Postman (Environments → Import).\n2. Select the **Verification Service Network** environment.\n3. Set `base_url` / `provider_np_uri` and `auth_token` for your target environment.\n4. `network_id` is a placeholder — confirm the exact value with the network registry team.\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "registry_url",
+      "value": "",
+      "type": "string",
+      "description": "Network registry / CDS endpoint — set per environment"
+    },
+    {
+      "key": "provider_np_uri",
+      "value": "",
+      "type": "string",
+      "description": "Provider NP (BPP) callback URI"
+    },
+    {
+      "key": "provider_np_id",
+      "value": "trustverify.in",
+      "type": "string",
+      "description": "Provider NP network identifier"
+    },
+    {
+      "key": "domain",
+      "value": "vs:verification",
+      "type": "string",
+      "description": "Confirm exact domain prefix with network team"
+    },
+    {
+      "key": "network_id",
+      "value": "vs.in/verification",
+      "type": "string",
+      "description": "Confirm exact value with network registry team"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Network-issued JWT — set before running"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — catalog/publish",
+      "description": "Provider NP sends its full catalog (3 verification resources + offers) to the network registry / CDS.",
+      "item": [
+        {
+          "name": "catalog/publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/publish\",\n    \"version\": \"2.0.0\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\",\n    \"messageId\": \"a1b2c3d4-e5f6-4789-8b12-cd34ef567890\",\n    \"timestamp\": \"2026-05-01T08:00:00+05:30\"\n  },\n  \"message\": {\n    \"catalog\": {\n      \"id\": \"cat-vs-trustverify-001\",\n      \"descriptor\": {\n        \"name\": \"TrustVerify India — Verification Service Catalog\",\n        \"shortDesc\": \"DL, identity, and skill certificate verification for the shared mobility sector\"\n      },\n      \"provider\": {\n        \"id\": \"{{provider_np_id}}\",\n        \"descriptor\": {\n          \"name\": \"TrustVerify India Pvt. Ltd.\",\n          \"shortDesc\": \"CERT-In empanelled verification service provider; authorised UIDAI AUA\"\n        }\n      },\n      \"resources\": [\n        {\n          \"id\": \"res-vs-dl-001\",\n          \"descriptor\": {\n            \"name\": \"Driving Licence Verification\",\n            \"shortDesc\": \"Real-time DL verification against Parivahan Sewa (MoRTH)\"\n          },\n          \"resourceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n            \"@type\": \"vr:VerificationResource\",\n            \"verificationType\": {\n              \"code\": \"DRIVING_LICENCE\",\n              \"name\": \"Driving Licence Verification\"\n            },\n            \"supportedDocumentTypes\": [\n              {\n                \"code\": \"DRIVING_LICENCE\",\n                \"name\": \"Motor Vehicle Driving Licence\"\n              }\n            ],\n            \"supportedJurisdictions\": [\n              {\n                \"code\": \"IN\",\n                \"name\": \"India\"\n              }\n            ],\n            \"verificationMethod\": \"REAL_TIME_API\",\n            \"requiredInputFields\": [\n              {\n                \"fieldName\": \"licenceNumber\",\n                \"displayName\": \"Driving Licence Number\",\n                \"fieldType\": \"STRING\",\n                \"isRequired\": true,\n                \"validationPattern\": \"^[A-Z]{2}[0-9]{2}[0-9]{4}[0-9]{7}$\"\n              },\n              {\n                \"fieldName\": \"dateOfBirth\",\n                \"displayName\": \"Date of Birth\",\n                \"fieldType\": \"DATE\",\n                \"isRequired\": true\n              },\n              {\n                \"fieldName\": \"holderName\",\n                \"displayName\": \"Holder Name (as on DL)\",\n                \"fieldType\": \"STRING\",\n                \"isRequired\": true\n              }\n            ],\n            \"authoritativeSource\": {\n              \"name\": \"Parivahan Sewa — Ministry of Road Transport and Highways\",\n              \"url\": \"https://parivahan.gov.in\",\n              \"type\": \"GOVERNMENT_DATABASE\"\n            },\n            \"outputFields\": [\n              {\n                \"fieldName\": \"holderName\",\n                \"displayName\": \"Holder Name\",\n                \"fieldType\": \"STRING\"\n              },\n              {\n                \"fieldName\": \"licenceNumber\",\n                \"displayName\": \"Licence Number\",\n                \"fieldType\": \"STRING\"\n              },\n              {\n                \"fieldName\": \"issueDate\",\n                \"displayName\": \"Issue Date\",\n                \"fieldType\": \"DATE\"\n              },\n              {\n                \"fieldName\": \"expiryDate\",\n                \"displayName\": \"Expiry Date\",\n                \"fieldType\": \"DATE\"\n              },\n              {\n                \"fieldName\": \"vehicleClasses\",\n                \"displayName\": \"Authorised Classes\",\n                \"fieldType\": \"STRING\"\n              },\n              {\n                \"fieldName\": \"issuingAuthority\",\n                \"displayName\": \"Issuing RTO\",\n                \"fieldType\": \"STRING\"\n              }\n            ],\n            \"complianceStandards\": [\n              {\n                \"code\": \"IT_ACT_2000\",\n                \"name\": \"Information Technology Act, 2000\"\n              },\n              {\n                \"code\": \"DPDPA_2023\",\n                \"name\": \"Digital Personal Data Protection Act, 2023\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"res-vs-identity-001\",\n          \"descriptor\": {\n            \"name\": \"Identity Verification — Aadhaar eKYC\",\n            \"shortDesc\": \"Real-time identity verification via UIDAI Aadhaar eKYC\"\n          },\n          \"resourceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n            \"@type\": \"vr:VerificationResource\",\n            \"verificationType\": {\n              \"code\": \"IDENTITY\",\n              \"name\": \"Identity Verification\"\n            },\n            \"supportedDocumentTypes\": [\n              {\n                \"code\": \"AADHAAR\",\n                \"name\": \"Aadhaar Card\"\n              },\n              {\n                \"code\": \"PAN\",\n                \"name\": \"Permanent Account Number Card\"\n              }\n            ],\n            \"supportedJurisdictions\": [\n              {\n                \"code\": \"IN\",\n                \"name\": \"India\"\n              }\n            ],\n            \"verificationMethod\": \"REAL_TIME_API\",\n            \"requiredInputFields\": [\n              {\n                \"fieldName\": \"aadhaarNumber\",\n                \"displayName\": \"Aadhaar Number\",\n                \"fieldType\": \"STRING\",\n                \"isRequired\": true,\n                \"validationPattern\": \"^[2-9][0-9]{11}$\"\n              },\n              {\n                \"fieldName\": \"consentOtp\",\n                \"displayName\": \"OTP (sent to registered mobile)\",\n                \"fieldType\": \"STRING\",\n                \"isRequired\": true\n              }\n            ],\n            \"authoritativeSource\": {\n              \"name\": \"UIDAI — Unique Identification Authority of India\",\n              \"url\": \"https://uidai.gov.in\",\n              \"type\": \"GOVERNMENT_DATABASE\"\n            },\n            \"outputFields\": [\n              {\n                \"fieldName\": \"name\",\n                \"displayName\": \"Full Name\",\n                \"fieldType\": \"STRING\"\n              },\n              {\n                \"fieldName\": \"dateOfBirth\",\n                \"displayName\": \"Date of Birth\",\n                \"fieldType\": \"DATE\"\n              },\n              {\n                \"fieldName\": \"gender\",\n                \"displayName\": \"Gender\",\n                \"fieldType\": \"STRING\"\n              },\n              {\n                \"fieldName\": \"address\",\n                \"displayName\": \"Address\",\n                \"fieldType\": \"OBJECT\"\n              },\n              {\n                \"fieldName\": \"photo\",\n                \"displayName\": \"Photo\",\n                \"fieldType\": \"IMAGE\"\n              }\n            ],\n            \"complianceStandards\": [\n              {\n                \"code\": \"UIDAI_AUA\",\n                \"name\": \"UIDAI AUA/KUA Regulations\"\n              },\n              {\n                \"code\": \"DPDPA_2023\",\n                \"name\": \"Digital Personal Data Protection Act, 2023\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"res-vs-skill-001\",\n          \"descriptor\": {\n            \"name\": \"Skill Certificate Verification\",\n            \"shortDesc\": \"Hybrid verification of NSDC and Sector Skill Council certificates\"\n          },\n          \"resourceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/verification-service/VerificationResource/v2.1/context.jsonld\",\n            \"@type\": \"vr:VerificationResource\",\n            \"verificationType\": {\n              \"code\": \"SKILL_CERTIFICATE\",\n              \"name\": \"Skill Certificate Verification\"\n            },\n            \"supportedDocumentTypes\": [\n              {\n                \"code\": \"SKILL_CERT\",\n                \"name\": \"NSDC / Sector Skill Council Certificate\"\n              },\n              {\n                \"code\": \"DEGREE_CERT\",\n                \"name\": \"Vocational Training Degree Certificate\"\n              }\n            ],\n            \"supportedJurisdictions\": [\n              {\n                \"code\": \"IN\",\n                \"name\": \"India\"\n              }\n            ],\n            \"verificationMethod\": \"HYBRID\",\n            \"requiredInputFields\": [\n              {\n                \"fieldName\": \"certificateNumber\",\n                \"displayName\": \"Certificate Number\",\n                \"fieldType\": \"STRING\",\n                \"isRequired\": true\n              },\n              {\n                \"fieldName\": \"holderName\",\n                \"displayName\": \"Certificate Holder Name\",\n                \"fieldType\": \"STRING\",\n                \"isRequired\": true\n              },\n              {\n                \"fieldName\": \"issuingBody\",\n                \"displayName\": \"Issuing Body / Sector Skill Council\",\n                \"fieldType\": \"STRING\",\n                \"isRequired\": true\n              },\n              {\n                \"fieldName\": \"issueYear\",\n                \"displayName\": \"Year of Issue\",\n                \"fieldType\": \"NUMBER\",\n                \"isRequired\": false\n              }\n            ],\n            \"authoritativeSource\": {\n              \"name\": \"Skill India Portal — National Skill Development Corporation\",\n              \"url\": \"https://www.skillindia.gov.in\",\n              \"type\": \"GOVERNMENT_DATABASE\"\n            },\n            \"outputFields\": [\n              {\n                \"fieldName\": \"holderName\",\n                \"displayName\": \"Holder Name\",\n                \"fieldType\": \"STRING\"\n              },\n              {\n                \"fieldName\": \"certificateNumber\",\n                \"displayName\": \"Certificate Number\",\n                \"fieldType\": \"STRING\"\n              },\n              {\n                \"fieldName\": \"skillName\",\n                \"displayName\": \"Skill / Trade Name\",\n                \"fieldType\": \"STRING\"\n              },\n              {\n                \"fieldName\": \"qualificationPack\",\n                \"displayName\": \"Qualification Pack ID\",\n                \"fieldType\": \"STRING\"\n              },\n              {\n                \"fieldName\": \"issuingBody\",\n                \"displayName\": \"Issuing Body\",\n                \"fieldType\": \"STRING\"\n              },\n              {\n                \"fieldName\": \"issueDate\",\n                \"displayName\": \"Issue Date\",\n                \"fieldType\": \"DATE\"\n              },\n              {\n                \"fieldName\": \"expiryDate\",\n                \"displayName\": \"Expiry Date\",\n                \"fieldType\": \"DATE\"\n              }\n            ],\n            \"complianceStandards\": [\n              {\n                \"code\": \"NSQF\",\n                \"name\": \"National Skills Qualifications Framework\"\n              },\n              {\n                \"code\": \"DPDPA_2023\",\n                \"name\": \"Digital Personal Data Protection Act, 2023\"\n              }\n            ]\n          }\n        }\n      ],\n      \"offers\": [\n        {\n          \"id\": \"offer-vs-dl-std-001\",\n          \"resourceIds\": [\n            \"res-vs-dl-001\"\n          ],\n          \"descriptor\": {\n            \"name\": \"DL Verification — Standard\",\n            \"shortDesc\": \"Real-time DL verification, result within 30 minutes\"\n          },\n          \"offerAttributes\": {\n            \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n            \"@type\": \"vo:VerificationOffer\",\n            \"turnaroundTime\": \"PT30M\",\n            \"resultValidityPeriod\": \"P90D\",\n            \"pricingModel\": \"PER_REQUEST\",\n            \"serviceLevel\": \"STANDARD\",\n            \"dataRetentionPolicy\": \"P30D\",\n            \"supportedConsentMechanisms\": [\n              \"OTP\",\n              \"DIGITAL_SIGNATURE\"\n            ]\n          },\n          \"considerations\": [\n            {\n              \"id\": \"cons-vs-dl-cat-001\",\n              \"considerationAttributes\": {\n                \"@type\": \"schema:PriceSpecification\",\n                \"price\": 250,\n                \"priceCurrency\": \"INR\",\n                \"valueAddedTaxIncluded\": false,\n                \"description\": \"Per-request DL verification fee, excluding GST\"\n              }\n            }\n          ]\n        },\n        {\n          \"id\": \"offer-vs-identity-instant-001\",\n          \"resourceIds\": [\n            \"res-vs-identity-001\"\n          ],\n          \"descriptor\": {\n            \"name\": \"Identity Verification — Instant KYC\",\n            \"shortDesc\": \"Aadhaar eKYC with verified result in under 5 minutes\"\n          },\n          \"offerAttributes\": {\n            \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n            \"@type\": \"vo:VerificationOffer\",\n            \"turnaroundTime\": \"PT5M\",\n            \"resultValidityPeriod\": \"P1Y\",\n            \"pricingModel\": \"PER_REQUEST\",\n            \"serviceLevel\": \"PREMIUM\",\n            \"dataRetentionPolicy\": \"P7D\",\n            \"supportedConsentMechanisms\": [\n              \"AADHAAR_EKYC\",\n              \"OTP\"\n            ]\n          },\n          \"considerations\": [\n            {\n              \"id\": \"cons-vs-identity-cat-001\",\n              \"considerationAttributes\": {\n                \"@type\": \"schema:PriceSpecification\",\n                \"price\": 150,\n                \"priceCurrency\": \"INR\",\n                \"valueAddedTaxIncluded\": false,\n                \"description\": \"Per-request Aadhaar eKYC fee, excluding GST\"\n              }\n            }\n          ]\n        },\n        {\n          \"id\": \"offer-vs-skill-hybrid-001\",\n          \"resourceIds\": [\n            \"res-vs-skill-001\"\n          ],\n          \"descriptor\": {\n            \"name\": \"Skill Certificate Verification — Hybrid\",\n            \"shortDesc\": \"NSDC skill certificate verification, result within 1 business day\"\n          },\n          \"offerAttributes\": {\n            \"@context\": \"https://schema.beckn.io/verification-service/VerificationOffer/v2.1/context.jsonld\",\n            \"@type\": \"vo:VerificationOffer\",\n            \"turnaroundTime\": \"P1D\",\n            \"resultValidityPeriod\": \"P6M\",\n            \"pricingModel\": \"PER_REQUEST\",\n            \"serviceLevel\": \"STANDARD\",\n            \"dataRetentionPolicy\": \"P30D\",\n            \"supportedConsentMechanisms\": [\n              \"OTP\",\n              \"DIGITAL_SIGNATURE\",\n              \"OFFLINE_CONSENT\"\n            ]\n          },\n          \"considerations\": [\n            {\n              \"id\": \"cons-vs-skill-cat-001\",\n              \"considerationAttributes\": {\n                \"@type\": \"schema:PriceSpecification\",\n                \"price\": 350,\n                \"priceCurrency\": \"INR\",\n                \"valueAddedTaxIncluded\": false,\n                \"description\": \"Per-request skill certificate verification fee, excluding GST\"\n              }\n            }\n          ]\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{registry_url}}/catalog/publish"
+            },
+            "description": "**catalog/publish** — Provider NP → Registry/CDS\n\nTrustVerify India publishes its verification service catalog advertising DL, identity, and skill certificate verification services."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 — catalog/on_publish",
+      "description": "Registry / CDS acknowledges successful catalog ingestion.",
+      "item": [
+        {
+          "name": "catalog/on_publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT — set before running the collection."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/on_publish\",\n    \"version\": \"2.0.0\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{provider_np_uri}}\",\n    \"messageId\": \"b2c3d4e5-f6a7-4890-8c23-de45fa678901\",\n    \"timestamp\": \"2026-05-01T08:00:05+05:30\"\n  },\n  \"message\": {\n    \"ack\": {\n      \"status\": \"ACK\"\n    },\n    \"catalogId\": \"cat-vs-trustverify-001\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{provider_np_uri}}/catalog/on_publish"
+            },
+            "description": "**catalog/on_publish** — Registry/CDS → Provider NP\n\nRegistry acknowledges that the catalog has been successfully ingested and indexed."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
