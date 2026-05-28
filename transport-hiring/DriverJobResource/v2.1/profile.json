@@ -2,7 +2,7 @@
   "id": "https://schema.beckn.io/DriverJobResource/v1",
   "name": "DriverJobResource",
   "version": "2.1.0",
-  "protocol_version": "2.1",
+  "protocol_version": "2.0",
   "semantic_model": "generalised",
   "included_schemas": [
     "DriverJobResource"
@@ -11,22 +11,18 @@
   "discovery_fields": [
     "role_type",
     "vehicle_categories_required",
-    "shift_type"
+    "required_credentials"
   ],
   "indexable_paths": [
-    "role_type",
-    "shift_type"
+    "role_type"
   ],
   "filterable_paths": [
     "role_type",
     "vehicle_categories_required",
-    "shift_type",
     "required_credentials"
   ],
-  "sortable_paths": [
-    "application_deadline"
-  ],
+  "sortable_paths": [],
   "privacy_notes": [
-    "application_instructions: revealed at on_select only"
+    "application_instructions: revealed at on_select only (inherited from HiringJobResource)"
   ]
 }

@@ -1,0 +1,592 @@
+{
+  "info": {
+    "name": "Driver Network — UC1-B Gig Delivery Driver (Abbreviated)",
+    "_postman_id": "87209132",
+    "description": "## Driver Network — UC1-B: Gig Delivery Driver Application (Abbreviated)\n\n**Scenario:** A delivery driver applies for a GIG two-wheeler delivery role on QuickDeliver Platform. No interview required — background check passes, offer issued directly, driver accepts, onboarded same day.\n\n**Protocol:** Beckn v2.0.0 + DriverJobResource v2.1\n**BAP:** Driver Platform  |  **BPP:** Gig Delivery Operator\n**Category:** driver-job  |  **Role:** DELIVERY_DRIVER  |  **Employment:** GIG\n\n### Abbreviated hiring stage progression\nAPPLICATION_SUBMITTED → OFFER_ISSUED (background check only) → HIRING_CONFIRMED → ONBOARDING_COMPLETE\n\n### Key difference from UC1-A\nNo INTERVIEW_SCHEDULED or EVALUATION_COMPLETE stages. GIG roles skip the evaluation cycle — background check is sufficient.\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "",
+      "type": "string",
+      "description": "BPP sandbox endpoint (e.g. https://bpp.example.com)"
+    },
+    {
+      "key": "bap_url",
+      "value": "",
+      "type": "string",
+      "description": "BAP sandbox callback endpoint"
+    },
+    {
+      "key": "bpp_uri",
+      "value": "",
+      "type": "string",
+      "description": "BPP URI for context"
+    },
+    {
+      "key": "bap_uri",
+      "value": "",
+      "type": "string",
+      "description": "BAP URI for context"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Network-issued JWT — set before running"
+    },
+    {
+      "key": "network_id",
+      "value": "transport-hiring.in/driver-network",
+      "type": "string",
+      "description": "Confirm exact value with network registry team"
+    },
+    {
+      "key": "domain",
+      "value": "transport-hiring:driver",
+      "type": "string"
+    },
+    {
+      "key": "seeker_np_id",
+      "value": "seeker-np-001.example.com",
+      "type": "string"
+    },
+    {
+      "key": "provider_np_id",
+      "value": "provider-np-001.example.com",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "type": "string",
+      "description": "UUID format required by core spec"
+    },
+    {
+      "key": "contract_id",
+      "value": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "string",
+      "description": "Assigned by BPP at on_select"
+    },
+    {
+      "key": "catalog_id",
+      "value": "cat-drv-001",
+      "type": "string"
+    },
+    {
+      "key": "application_id",
+      "value": "app-drv-20260610-001",
+      "type": "string"
+    },
+    {
+      "key": "employee_id",
+      "value": "emp-drv-bmtc-4821",
+      "type": "string",
+      "description": "Issued by BPP at on_confirm"
+    },
+    {
+      "key": "passport_reference",
+      "value": "DPP-KA-2021-084721",
+      "type": "string",
+      "description": "PII — Driver Passport reference. Disclosed at init and later only."
+    },
+    {
+      "key": "dl_number",
+      "value": "KA01-2015-0042891",
+      "type": "string",
+      "description": "Driving licence number"
+    },
+    {
+      "key": "dl_cert_checksum",
+      "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "string"
+    },
+    {
+      "key": "mf_cert_ref",
+      "value": "MF-2025-KA-04821",
+      "type": "string"
+    },
+    {
+      "key": "pv_cert_ref",
+      "value": "PV-2025-KA-08432",
+      "type": "string"
+    },
+    {
+      "key": "interview_contact",
+      "value": "+91-80-22221234",
+      "type": "string"
+    },
+    {
+      "key": "job_resource_id",
+      "value": "job-bmtc-busdriver-001",
+      "type": "string"
+    },
+    {
+      "key": "hiring_offer_id",
+      "value": "offer-bmtc-busdriver-001",
+      "type": "string"
+    },
+    {
+      "key": "applicant_participant_id",
+      "value": "part-applicant-4821",
+      "type": "string"
+    },
+    {
+      "key": "employer_participant_id",
+      "value": "part-employer-bmtc",
+      "type": "string"
+    },
+    {
+      "key": "bgc_ref",
+      "value": "BGC-2026-04821",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — discover",
+      "description": "Driver searches GIG delivery jobs.",
+      "item": [
+        {
+          "name": "discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"11223344-5566-7788-9900-aabbccddeef0\",\n    \"timestamp\": \"2026-07-01T10:00:00+05:30\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"intent\": {\n      \"textSearch\": \"gig delivery driver Bengaluru two-wheeler\",\n      \"filters\": \"$.catalogs[*].resources[*] ? (@.resourceAttributes.role_type == \\\"DELIVERY_DRIVER\\\" && @.resourceAttributes.job_type == \\\"GIG\\\")\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/discover"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 — on_discover",
+      "description": "Platform returns gig job catalog.",
+      "item": [
+        {
+          "name": "on_discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"22334455-6677-8899-0011-bbccddeeff01\",\n    \"timestamp\": \"2026-07-01T10:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"{{catalog_id}}\",\n        \"descriptor\": {\n          \"name\": \"LastMile Gig Driver Jobs\"\n        },\n        \"provider\": {\n          \"id\": \"{{provider_np_id}}\",\n          \"descriptor\": {\n            \"name\": \"QuickDeliver Platform\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"{{job_resource_id}}\",\n            \"descriptor\": {\n              \"name\": \"Gig Delivery Driver — Last-Mile (Bengaluru)\",\n              \"shortDesc\": \"GIG delivery driver, two-wheeler, flexible shifts.\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"job_title\": \"Gig Delivery Driver — Last-Mile\",\n              \"job_type\": \"GIG\",\n              \"work_mode\": \"ONSITE\",\n              \"role_type\": \"DELIVERY_DRIVER\",\n              \"vehicle_categories_required\": [\n                \"MOTORCYCLE\",\n                \"LIGHT_MOTOR_VEHICLE\"\n              ],\n              \"shift_type\": \"FLEXIBLE\",\n              \"working_hours\": \"Flexible — minimum 4 hrs/day\",\n              \"min_experience_years\": 0,\n              \"required_credentials\": [\n                \"DRIVING_LICENCE\",\n                \"BACKGROUND_CHECK\"\n              ],\n              \"required_training\": [\n                \"Safe Riding\",\n                \"Parcel Handling\"\n              ],\n              \"benefits_summary\": [\n                \"Per-delivery incentives\",\n                \"Fuel allowance\",\n                \"Accident insurance\"\n              ],\n              \"operator_reputation\": {\n                \"rating_value\": 4.5,\n                \"rating_count\": 1820,\n                \"rating_agency\": \"DriverPassport-Network\"\n              },\n              \"vacancy_count\": 200,\n              \"is_urgent\": true,\n              \"application_deadline\": \"2026-07-15T23:59:59+05:30\"\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Gig Delivery — Per-Trip Rate\",\n              \"shortDesc\": \"Variable pay, no probation.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 18,\n                \"currency\": \"INR\",\n                \"frequency\": \"HOURLY\"\n              },\n              \"joiningDate\": \"2026-07-01\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"contractDuration\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_discover"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 — select",
+      "description": "BAP originates DRAFT contract.",
+      "item": [
+        {
+          "name": "select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"33445566-7788-99aa-1122-ccddeeff0012\",\n    \"timestamp\": \"2026-07-01T10:05:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{job_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{applicant_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"APPLICANT\",\n            \"credentialRefs\": [\n              {\n                \"label\": \"Driving Licence — LMV + HMV\",\n                \"url\": \"https://sarathi.parivahan.gov.in/verify/{{dl_number}}\",\n                \"mimeType\": \"application/pdf\",\n                \"standard\": \"DRIVING_LICENCE_INDIA\",\n                \"security\": {\n                  \"checksum\": \"{{dl_cert_checksum}}\",\n                  \"checksumAlgorithm\": \"SHA256\"\n                }\n              }\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/select"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 — on_select",
+      "description": "BPP assigns contract_id.",
+      "item": [
+        {
+          "name": "on_select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"44556677-8899-aabb-2233-ddeeff001123\",\n    \"timestamp\": \"2026-07-01T10:05:10+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{job_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Gig Delivery Driver — Last-Mile (Bengaluru)\",\n                \"shortDesc\": \"GIG delivery driver, two-wheeler, flexible shifts.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n                \"@type\": \"djra:DriverJobResource\",\n                \"job_title\": \"Gig Delivery Driver — Last-Mile\",\n                \"job_type\": \"GIG\",\n                \"work_mode\": \"ONSITE\",\n                \"role_type\": \"DELIVERY_DRIVER\",\n                \"vehicle_categories_required\": [\n                  \"MOTORCYCLE\",\n                  \"LIGHT_MOTOR_VEHICLE\"\n                ],\n                \"shift_type\": \"FLEXIBLE\",\n                \"working_hours\": \"Flexible — minimum 4 hrs/day\",\n                \"min_experience_years\": 0,\n                \"required_credentials\": [\n                  \"DRIVING_LICENCE\",\n                  \"BACKGROUND_CHECK\"\n                ],\n                \"required_training\": [\n                  \"Safe Riding\",\n                  \"Parcel Handling\"\n                ],\n                \"benefits_summary\": [\n                  \"Per-delivery incentives\",\n                  \"Fuel allowance\",\n                  \"Accident insurance\"\n                ],\n                \"operator_reputation\": {\n                  \"rating_value\": 4.5,\n                  \"rating_count\": 1820,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"vacancy_count\": 200,\n                \"is_urgent\": true,\n                \"application_deadline\": \"2026-07-15T23:59:59+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Gig Delivery — Per-Trip Rate\",\n              \"shortDesc\": \"Variable pay, no probation.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 18,\n                \"currency\": \"INR\",\n                \"frequency\": \"HOURLY\"\n              },\n              \"joiningDate\": \"2026-07-01\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"contractDuration\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{applicant_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"APPLICANT\",\n            \"credentialRefs\": [\n              {\n                \"label\": \"Driving Licence — LMV + HMV\",\n                \"url\": \"https://sarathi.parivahan.gov.in/verify/{{dl_number}}\",\n                \"mimeType\": \"application/pdf\",\n                \"standard\": \"DRIVING_LICENCE_INDIA\",\n                \"security\": {\n                  \"checksum\": \"{{dl_cert_checksum}}\",\n                  \"checksumAlgorithm\": \"SHA256\"\n                }\n              }\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_select"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 — init",
+      "description": "BAP sends passport_reference (PII).",
+      "item": [
+        {
+          "name": "init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"55667788-99aa-bbcc-3344-eeff00112234\",\n    \"timestamp\": \"2026-07-01T10:10:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{job_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{applicant_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-4821\",\n            \"shortDesc\": \"HMV/LMV licensed driver, 5 yrs exp, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"APPLICANT\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{job_resource_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"BACKGROUND_CHECK\",\n            \"credentialRef\": \"{{bgc_ref}}\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/init"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 — on_init",
+      "description": "APPLICATION_SUBMITTED.",
+      "item": [
+        {
+          "name": "on_init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"66778899-aabb-ccdd-4455-ff0011223345\",\n    \"timestamp\": \"2026-07-01T10:10:15+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{job_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Gig Delivery Driver — Last-Mile (Bengaluru)\",\n                \"shortDesc\": \"GIG delivery driver, two-wheeler, flexible shifts.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n                \"@type\": \"djra:DriverJobResource\",\n                \"job_title\": \"Gig Delivery Driver — Last-Mile\",\n                \"job_type\": \"GIG\",\n                \"work_mode\": \"ONSITE\",\n                \"role_type\": \"DELIVERY_DRIVER\",\n                \"vehicle_categories_required\": [\n                  \"MOTORCYCLE\",\n                  \"LIGHT_MOTOR_VEHICLE\"\n                ],\n                \"shift_type\": \"FLEXIBLE\",\n                \"working_hours\": \"Flexible — minimum 4 hrs/day\",\n                \"min_experience_years\": 0,\n                \"required_credentials\": [\n                  \"DRIVING_LICENCE\",\n                  \"BACKGROUND_CHECK\"\n                ],\n                \"required_training\": [\n                  \"Safe Riding\",\n                  \"Parcel Handling\"\n                ],\n                \"benefits_summary\": [\n                  \"Per-delivery incentives\",\n                  \"Fuel allowance\",\n                  \"Accident insurance\"\n                ],\n                \"operator_reputation\": {\n                  \"rating_value\": 4.5,\n                  \"rating_count\": 1820,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"vacancy_count\": 200,\n                \"is_urgent\": true,\n                \"application_deadline\": \"2026-07-15T23:59:59+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Gig Delivery — Per-Trip Rate\",\n              \"shortDesc\": \"Variable pay, no probation.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 18,\n                \"currency\": \"INR\",\n                \"frequency\": \"HOURLY\"\n              },\n              \"joiningDate\": \"2026-07-01\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"contractDuration\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{applicant_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-4821\",\n            \"shortDesc\": \"HMV/LMV licensed driver, 5 yrs exp, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"APPLICANT\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc1b-001\",\n          \"commitmentIds\": [\n            \"commitment-uc1b-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"APPLICATION_SUBMITTED\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{job_resource_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_init"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 — update  ★ OFFER_ISSUED (background check only)",
+      "description": "No interview for GIG role — offer issued after background check.",
+      "item": [
+        {
+          "name": "update (offer issued)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"7788990a-bbcc-ddee-5566-001122334456\",\n    \"timestamp\": \"2026-07-01T14:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{job_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc1b-001\",\n          \"commitmentIds\": [\n            \"commitment-uc1b-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"OFFER_ISSUED\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"offerStatus\": \"OFFER_PENDING\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/update"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08 — on_update ★ OFFER_ISSUED",
+      "description": "",
+      "item": [
+        {
+          "name": "on_update (offer issued)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"8899aabb-ccdd-eeff-6677-112233445567\",\n    \"timestamp\": \"2026-07-01T14:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{job_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Gig Delivery Driver — Last-Mile (Bengaluru)\",\n                \"shortDesc\": \"GIG delivery driver, two-wheeler, flexible shifts.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n                \"@type\": \"djra:DriverJobResource\",\n                \"job_title\": \"Gig Delivery Driver — Last-Mile\",\n                \"job_type\": \"GIG\",\n                \"work_mode\": \"ONSITE\",\n                \"role_type\": \"DELIVERY_DRIVER\",\n                \"vehicle_categories_required\": [\n                  \"MOTORCYCLE\",\n                  \"LIGHT_MOTOR_VEHICLE\"\n                ],\n                \"shift_type\": \"FLEXIBLE\",\n                \"working_hours\": \"Flexible — minimum 4 hrs/day\",\n                \"min_experience_years\": 0,\n                \"required_credentials\": [\n                  \"DRIVING_LICENCE\",\n                  \"BACKGROUND_CHECK\"\n                ],\n                \"required_training\": [\n                  \"Safe Riding\",\n                  \"Parcel Handling\"\n                ],\n                \"benefits_summary\": [\n                  \"Per-delivery incentives\",\n                  \"Fuel allowance\",\n                  \"Accident insurance\"\n                ],\n                \"operator_reputation\": {\n                  \"rating_value\": 4.5,\n                  \"rating_count\": 1820,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"vacancy_count\": 200,\n                \"is_urgent\": true,\n                \"application_deadline\": \"2026-07-15T23:59:59+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Gig Delivery — Per-Trip Rate\",\n              \"shortDesc\": \"Variable pay, no probation.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 18,\n                \"currency\": \"INR\",\n                \"frequency\": \"HOURLY\"\n              },\n              \"joiningDate\": \"2026-07-01\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"contractDuration\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{applicant_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-4821\",\n            \"shortDesc\": \"HMV/LMV licensed driver, 5 yrs exp, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"APPLICANT\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc1b-001\",\n          \"commitmentIds\": [\n            \"commitment-uc1b-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"OFFER_ISSUED\",\n            \"screeningNotes\": \"Background check passed. No interview required for GIG role.\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"offerStatus\": \"OFFER_PENDING\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_update"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "09 — confirm",
+      "description": "Driver accepts offer.",
+      "item": [
+        {
+          "name": "confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"99aabbcc-ddee-ff00-7788-223344556678\",\n    \"timestamp\": \"2026-07-02T09:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{job_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{applicant_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-4821\",\n            \"shortDesc\": \"HMV/LMV licensed driver, 5 yrs exp, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"APPLICANT\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"offerStatus\": \"OFFER_ACCEPTED_STATUS\",\n        \"acceptanceTimestamp\": \"2026-07-02T09:00:00+05:30\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/confirm"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10 — on_confirm  ★ HIRING_CONFIRMED + employeeId",
+      "description": "",
+      "item": [
+        {
+          "name": "on_confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"aabbccdd-eeff-0011-8899-334455667789\",\n    \"timestamp\": \"2026-07-02T09:00:30+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{job_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Gig Delivery Driver — Last-Mile (Bengaluru)\",\n                \"shortDesc\": \"GIG delivery driver, two-wheeler, flexible shifts.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n                \"@type\": \"djra:DriverJobResource\",\n                \"job_title\": \"Gig Delivery Driver — Last-Mile\",\n                \"job_type\": \"GIG\",\n                \"work_mode\": \"ONSITE\",\n                \"role_type\": \"DELIVERY_DRIVER\",\n                \"vehicle_categories_required\": [\n                  \"MOTORCYCLE\",\n                  \"LIGHT_MOTOR_VEHICLE\"\n                ],\n                \"shift_type\": \"FLEXIBLE\",\n                \"working_hours\": \"Flexible — minimum 4 hrs/day\",\n                \"min_experience_years\": 0,\n                \"required_credentials\": [\n                  \"DRIVING_LICENCE\",\n                  \"BACKGROUND_CHECK\"\n                ],\n                \"required_training\": [\n                  \"Safe Riding\",\n                  \"Parcel Handling\"\n                ],\n                \"benefits_summary\": [\n                  \"Per-delivery incentives\",\n                  \"Fuel allowance\",\n                  \"Accident insurance\"\n                ],\n                \"operator_reputation\": {\n                  \"rating_value\": 4.5,\n                  \"rating_count\": 1820,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"vacancy_count\": 200,\n                \"is_urgent\": true,\n                \"application_deadline\": \"2026-07-15T23:59:59+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Gig Delivery — Per-Trip Rate\",\n              \"shortDesc\": \"Variable pay, no probation.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 18,\n                \"currency\": \"INR\",\n                \"frequency\": \"HOURLY\"\n              },\n              \"joiningDate\": \"2026-07-01\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"contractDuration\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{applicant_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-4821\",\n            \"shortDesc\": \"HMV/LMV licensed driver, 5 yrs exp, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"APPLICANT\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc1b-001\",\n          \"commitmentIds\": [\n            \"commitment-uc1b-001\"\n          ],\n          \"status\": {\n            \"code\": \"COMPLETE\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"HIRING_CONFIRMED\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"employeeId\": \"{{employee_id}}\",\n        \"offerStatus\": \"OFFER_ACCEPTED_STATUS\",\n        \"onboardingStatus\": \"ONBOARDING_IN_PROGRESS\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_confirm"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "11 — status",
+      "description": "BAP polls final state.",
+      "item": [
+        {
+          "name": "status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"bbccddee-ff00-1122-99aa-44556677889a\",\n    \"timestamp\": \"2026-07-03T09:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{job_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/status"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "12 — on_status  ★ ONBOARDING_COMPLETE",
+      "description": "",
+      "item": [
+        {
+          "name": "on_status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"ccddeeff-0011-2233-aabb-5566778899ab\",\n    \"timestamp\": \"2026-07-03T09:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc1b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{job_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Gig Delivery Driver — Last-Mile (Bengaluru)\",\n                \"shortDesc\": \"GIG delivery driver, two-wheeler, flexible shifts.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n                \"@type\": \"djra:DriverJobResource\",\n                \"job_title\": \"Gig Delivery Driver — Last-Mile\",\n                \"job_type\": \"GIG\",\n                \"work_mode\": \"ONSITE\",\n                \"role_type\": \"DELIVERY_DRIVER\",\n                \"vehicle_categories_required\": [\n                  \"MOTORCYCLE\",\n                  \"LIGHT_MOTOR_VEHICLE\"\n                ],\n                \"shift_type\": \"FLEXIBLE\",\n                \"working_hours\": \"Flexible — minimum 4 hrs/day\",\n                \"min_experience_years\": 0,\n                \"required_credentials\": [\n                  \"DRIVING_LICENCE\",\n                  \"BACKGROUND_CHECK\"\n                ],\n                \"required_training\": [\n                  \"Safe Riding\",\n                  \"Parcel Handling\"\n                ],\n                \"benefits_summary\": [\n                  \"Per-delivery incentives\",\n                  \"Fuel allowance\",\n                  \"Accident insurance\"\n                ],\n                \"operator_reputation\": {\n                  \"rating_value\": 4.5,\n                  \"rating_count\": 1820,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"vacancy_count\": 200,\n                \"is_urgent\": true,\n                \"application_deadline\": \"2026-07-15T23:59:59+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{hiring_offer_id}}\",\n            \"resourceIds\": [\n              \"{{job_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Gig Delivery — Per-Trip Rate\",\n              \"shortDesc\": \"Variable pay, no probation.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 18,\n                \"currency\": \"INR\",\n                \"frequency\": \"HOURLY\"\n              },\n              \"joiningDate\": \"2026-07-01\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"contractDuration\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{applicant_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-4821\",\n            \"shortDesc\": \"HMV/LMV licensed driver, 5 yrs exp, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"APPLICANT\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc1b-001\",\n          \"commitmentIds\": [\n            \"commitment-uc1b-001\"\n          ],\n          \"status\": {\n            \"code\": \"COMPLETE\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"ONBOARDING_COMPLETE\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"employeeId\": \"{{employee_id}}\",\n        \"onboardingStatus\": \"ONBOARDING_COMPLETE_STATUS\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_status"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

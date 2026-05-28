@@ -1,0 +1,159 @@
+{
+  "id": "dn-dev-env-001-2026",
+  "name": "Driver Network Dev",
+  "_postman_variable_scope": "environment",
+  "values": [
+    {
+      "key": "base_url",
+      "value": "",
+      "enabled": true,
+      "description": "BPP sandbox endpoint"
+    },
+    {
+      "key": "bap_url",
+      "value": "",
+      "enabled": true,
+      "description": "BAP sandbox callback endpoint"
+    },
+    {
+      "key": "bpp_uri",
+      "value": "",
+      "enabled": true,
+      "description": "BPP URI"
+    },
+    {
+      "key": "bap_uri",
+      "value": "",
+      "enabled": true,
+      "description": "BAP URI"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "enabled": true,
+      "description": "Network JWT — set before running"
+    },
+    {
+      "key": "network_id",
+      "value": "transport-hiring.in/driver-network",
+      "enabled": true,
+      "description": "Confirm with network registry"
+    },
+    {
+      "key": "domain",
+      "value": "transport-hiring:driver",
+      "enabled": true
+    },
+    {
+      "key": "seeker_np_id",
+      "value": "seeker-np-001.example.com",
+      "enabled": true
+    },
+    {
+      "key": "provider_np_id",
+      "value": "provider-np-001.example.com",
+      "enabled": true
+    },
+    {
+      "key": "transaction_id",
+      "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "enabled": true
+    },
+    {
+      "key": "contract_id",
+      "value": "550e8400-e29b-41d4-a716-446655440000",
+      "enabled": true
+    },
+    {
+      "key": "job_resource_id",
+      "value": "job-bmtc-busdriver-001",
+      "enabled": true
+    },
+    {
+      "key": "hiring_offer_id",
+      "value": "offer-bmtc-busdriver-001",
+      "enabled": true
+    },
+    {
+      "key": "catalog_id",
+      "value": "cat-drv-001",
+      "enabled": true
+    },
+    {
+      "key": "application_id",
+      "value": "app-drv-20260610-001",
+      "enabled": true
+    },
+    {
+      "key": "employee_id",
+      "value": "emp-drv-bmtc-4821",
+      "enabled": true
+    },
+    {
+      "key": "applicant_participant_id",
+      "value": "part-applicant-4821",
+      "enabled": true
+    },
+    {
+      "key": "employer_participant_id",
+      "value": "part-employer-bmtc",
+      "enabled": true
+    },
+    {
+      "key": "candidate_resource_id",
+      "value": "cand-drv-7301",
+      "enabled": true
+    },
+    {
+      "key": "recruitment_offer_id",
+      "value": "offer-recruit-hmv-001",
+      "enabled": true
+    },
+    {
+      "key": "operator_participant_id",
+      "value": "part-operator-rf-001",
+      "enabled": true
+    },
+    {
+      "key": "candidate_participant_id",
+      "value": "part-candidate-7301",
+      "enabled": true
+    },
+    {
+      "key": "passport_reference",
+      "value": "DPP-KA-2021-084721",
+      "enabled": true,
+      "description": "PII — set to real value in production"
+    },
+    {
+      "key": "dl_number",
+      "value": "KA01-2015-0042891",
+      "enabled": true
+    },
+    {
+      "key": "dl_cert_checksum",
+      "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "enabled": true
+    },
+    {
+      "key": "mf_cert_ref",
+      "value": "MF-2025-KA-04821",
+      "enabled": true
+    },
+    {
+      "key": "pv_cert_ref",
+      "value": "PV-2025-KA-08432",
+      "enabled": true
+    },
+    {
+      "key": "bgc_ref",
+      "value": "BGC-2026-04821",
+      "enabled": true
+    },
+    {
+      "key": "interview_contact",
+      "value": "+91-80-22221234",
+      "enabled": true
+    }
+  ]
+}

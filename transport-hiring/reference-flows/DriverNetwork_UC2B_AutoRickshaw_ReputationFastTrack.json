@@ -1,0 +1,587 @@
+{
+  "info": {
+    "name": "Driver Network — UC2-B Auto-Rickshaw Recruitment (Reputation Fast-Track)",
+    "_postman_id": "77310506",
+    "description": "## Driver Network — UC2-B: Auto-Rickshaw Recruitment (Reputation Fast-Track)\n\n**Scenario:** Namma Yatri Fleet Operations (Operator) searches for auto-rickshaw drivers with reputation score ≥ 4.5 on DriverPassport-Network. High reputation score fast-tracks the hiring — no formal interview required. Offer issued after licence verification only.\n\n**Protocol:** Beckn v2.0.0 + DriverCandidateProfileResource v2.1\n**BAP:** Operator Platform (Namma Yatri)  |  **BPP:** Driver Platform (AutoConnect)\n**Category:** driver-candidate  |  **Role:** AUTO_DRIVER  |  **Employment:** GIG/DAILY\n\n### PII Audit — Candidate Profiles\nThe on_discover catalog (folder 02) contains DriverCandidateProfileResource payloads.\nVERIFIED SAFE:\n  ✓ passport_reference: EXCLUDED — appears only at init+ (folder 05)\n  ✓ home_location.gps: EXCLUDED — locality-level only (Jayanagar, Karnataka)\n  ✓ descriptor.name: ANONYMISED — \"Driver Profile D-2156\"\n  ✓ reputation_summary (4.8★, 312 ratings): NOT PII — aggregated network stats\n  ✓ credential_summary, training_summary: NOT PII\n\n### Reputation filter in discover intent\n`filters` JSONPath: `@.resourceAttributes.reputation_summary.rating_value >= 4.5`\nThis is a discovery-time filter — BPP filters candidates whose reputation meets threshold before returning the catalog.\n\n### Abbreviated stage progression\nAPPLICATION_SUBMITTED → OFFER_ISSUED (reputation fast-track, no interview) → HIRING_CONFIRMED\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "",
+      "type": "string",
+      "description": "BPP sandbox endpoint (e.g. https://bpp.example.com)"
+    },
+    {
+      "key": "bap_url",
+      "value": "",
+      "type": "string",
+      "description": "BAP sandbox callback endpoint"
+    },
+    {
+      "key": "bpp_uri",
+      "value": "",
+      "type": "string",
+      "description": "BPP URI for context"
+    },
+    {
+      "key": "bap_uri",
+      "value": "",
+      "type": "string",
+      "description": "BAP URI for context"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Network-issued JWT — set before running"
+    },
+    {
+      "key": "network_id",
+      "value": "transport-hiring.in/driver-network",
+      "type": "string",
+      "description": "Confirm exact value with network registry team"
+    },
+    {
+      "key": "domain",
+      "value": "transport-hiring:driver",
+      "type": "string"
+    },
+    {
+      "key": "seeker_np_id",
+      "value": "seeker-np-001.example.com",
+      "type": "string"
+    },
+    {
+      "key": "provider_np_id",
+      "value": "provider-np-001.example.com",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "type": "string",
+      "description": "UUID format required by core spec"
+    },
+    {
+      "key": "contract_id",
+      "value": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "string",
+      "description": "Assigned by BPP at on_select"
+    },
+    {
+      "key": "catalog_id",
+      "value": "cat-drv-001",
+      "type": "string"
+    },
+    {
+      "key": "application_id",
+      "value": "app-drv-20260610-001",
+      "type": "string"
+    },
+    {
+      "key": "employee_id",
+      "value": "emp-drv-bmtc-4821",
+      "type": "string",
+      "description": "Issued by BPP at on_confirm"
+    },
+    {
+      "key": "passport_reference",
+      "value": "DPP-KA-2021-084721",
+      "type": "string",
+      "description": "PII — Driver Passport reference. Disclosed at init and later only."
+    },
+    {
+      "key": "dl_number",
+      "value": "KA01-2015-0042891",
+      "type": "string",
+      "description": "Driving licence number"
+    },
+    {
+      "key": "dl_cert_checksum",
+      "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "string"
+    },
+    {
+      "key": "mf_cert_ref",
+      "value": "MF-2025-KA-04821",
+      "type": "string"
+    },
+    {
+      "key": "pv_cert_ref",
+      "value": "PV-2025-KA-08432",
+      "type": "string"
+    },
+    {
+      "key": "interview_contact",
+      "value": "+91-80-22221234",
+      "type": "string"
+    },
+    {
+      "key": "candidate_resource_id",
+      "value": "cand-drv-7301",
+      "type": "string"
+    },
+    {
+      "key": "recruitment_offer_id",
+      "value": "offer-recruit-hmv-001",
+      "type": "string"
+    },
+    {
+      "key": "operator_participant_id",
+      "value": "part-operator-rf-001",
+      "type": "string"
+    },
+    {
+      "key": "candidate_participant_id",
+      "value": "part-candidate-7301",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — discover",
+      "description": "Operator filters candidates by role + reputation score ≥ 4.5.",
+      "item": [
+        {
+          "name": "discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"aa01bb02-cc03-dd04-ee05-ff0607080910\",\n    \"timestamp\": \"2026-07-05T10:00:00+05:30\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"intent\": {\n      \"textSearch\": \"auto-rickshaw driver Bengaluru high rating\",\n      \"filters\": \"$.catalogs[*].resources[*] ? (@.resourceAttributes.driver_role_types[*] == \\\"AUTO_DRIVER\\\" && @.resourceAttributes.reputation_summary.rating_value >= 4.5)\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/discover"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 — on_discover",
+      "description": "★ PII AUDIT: passport_reference absent, home_location GPS absent, names anonymised.",
+      "item": [
+        {
+          "name": "on_discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"bb02cc03-dd04-ee05-ff06-070809101112\",\n    \"timestamp\": \"2026-07-05T10:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"{{catalog_id}}\",\n        \"descriptor\": {\n          \"name\": \"Auto-Rickshaw Driver Candidates — Bengaluru\"\n        },\n        \"provider\": {\n          \"id\": \"{{provider_np_id}}\",\n          \"descriptor\": {\n            \"name\": \"AutoConnect Driver Platform\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"{{candidate_resource_id}}\",\n            \"descriptor\": {\n              \"name\": \"Driver Profile D-2156\",\n              \"shortDesc\": \"Auto-rickshaw driver, 4.8★ rated, Bengaluru.\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n              \"@type\": \"dcpra:DriverCandidateProfileResource\",\n              \"experience_level\": \"MID\",\n              \"total_experience_years\": 4,\n              \"availability_status\": \"OPEN_TO_OFFERS\",\n              \"preferred_work_mode\": \"ONSITE\",\n              \"driver_role_types\": [\n                \"AUTO_DRIVER\"\n              ],\n              \"vehicle_categories\": [\n                \"AUTO_RICKSHAW\",\n                \"LIGHT_MOTOR_VEHICLE\"\n              ],\n              \"home_location\": {\n                \"address_locality\": \"Jayanagar\",\n                \"address_region\": \"Karnataka\",\n                \"address_country\": \"IN\",\n                \"postal_code\": \"560041\"\n              },\n              \"reputation_summary\": {\n                \"rating_value\": 4.8,\n                \"rating_count\": 312,\n                \"rating_agency\": \"DriverPassport-Network\"\n              },\n              \"credential_summary\": [\n                \"DRIVING_LICENCE\",\n                \"POLICE_VERIFICATION\"\n              ],\n              \"training_summary\": [\n                \"Passenger Safety\",\n                \"Route Optimisation\"\n              ],\n              \"last_updated\": \"2026-06-01T07:00:00+05:30\"\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Auto-Rickshaw Driver — Namma Yatri Fleet\",\n              \"shortDesc\": \"Platform-based auto operation, Bengaluru.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 800,\n                \"currency\": \"INR\",\n                \"frequency\": \"DAILY\"\n              },\n              \"joiningDate\": \"2026-07-15\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"routeType\": \"LOCAL\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_discover"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 — select",
+      "description": "",
+      "item": [
+        {
+          "name": "select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"cc03dd04-ee05-ff06-0708-091011121314\",\n    \"timestamp\": \"2026-07-05T10:05:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Namma Yatri Fleet Operations\",\n            \"shortDesc\": \"Auto-rickshaw aggregator, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\"\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/select"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 — on_select",
+      "description": "",
+      "item": [
+        {
+          "name": "on_select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"dd04ee05-ff06-0708-0910-111213141516\",\n    \"timestamp\": \"2026-07-05T10:05:10+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-2156\",\n                \"shortDesc\": \"Auto-rickshaw driver, 4.8★ rated, Bengaluru.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"MID\",\n                \"total_experience_years\": 4,\n                \"availability_status\": \"OPEN_TO_OFFERS\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"AUTO_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"AUTO_RICKSHAW\",\n                  \"LIGHT_MOTOR_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Jayanagar\",\n                  \"address_region\": \"Karnataka\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"560041\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.8,\n                  \"rating_count\": 312,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Passenger Safety\",\n                  \"Route Optimisation\"\n                ],\n                \"last_updated\": \"2026-06-01T07:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Auto-Rickshaw Driver — Namma Yatri Fleet\",\n              \"shortDesc\": \"Platform-based auto operation, Bengaluru.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 800,\n                \"currency\": \"INR\",\n                \"frequency\": \"DAILY\"\n              },\n              \"joiningDate\": \"2026-07-15\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"routeType\": \"LOCAL\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Namma Yatri Fleet Operations\",\n            \"shortDesc\": \"Auto-rickshaw aggregator, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\"\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_select"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 — init",
+      "description": "passport_reference disclosed here (PII gate: init).",
+      "item": [
+        {
+          "name": "init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"ee05ff06-0708-0910-1112-131415161718\",\n    \"timestamp\": \"2026-07-05T10:15:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Namma Yatri Fleet Operations\",\n            \"shortDesc\": \"Auto-rickshaw aggregator, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-2156\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/init"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 — on_init",
+      "description": "APPLICATION_SUBMITTED.",
+      "item": [
+        {
+          "name": "on_init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"ff060708-0910-1112-1314-151617181920\",\n    \"timestamp\": \"2026-07-05T10:15:15+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-2156\",\n                \"shortDesc\": \"Auto-rickshaw driver, 4.8★ rated, Bengaluru.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"MID\",\n                \"total_experience_years\": 4,\n                \"availability_status\": \"OPEN_TO_OFFERS\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"AUTO_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"AUTO_RICKSHAW\",\n                  \"LIGHT_MOTOR_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Jayanagar\",\n                  \"address_region\": \"Karnataka\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"560041\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.8,\n                  \"rating_count\": 312,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Passenger Safety\",\n                  \"Route Optimisation\"\n                ],\n                \"last_updated\": \"2026-06-01T07:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Auto-Rickshaw Driver — Namma Yatri Fleet\",\n              \"shortDesc\": \"Platform-based auto operation, Bengaluru.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 800,\n                \"currency\": \"INR\",\n                \"frequency\": \"DAILY\"\n              },\n              \"joiningDate\": \"2026-07-15\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"routeType\": \"LOCAL\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Namma Yatri Fleet Operations\",\n            \"shortDesc\": \"Auto-rickshaw aggregator, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-2156\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2b-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2b-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"APPLICATION_SUBMITTED\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_init"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 — update  ★ OFFER_ISSUED (reputation fast-track)",
+      "description": "Licence verified; reputation score 4.8/5 ≥ threshold — no interview required.",
+      "item": [
+        {
+          "name": "update (offer issued)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"00070809-1011-1213-1415-161718192021\",\n    \"timestamp\": \"2026-07-07T09:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2b-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2b-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"OFFER_ISSUED\",\n            \"screeningNotes\": \"Licence verified; reputation score 4.8/5 meets threshold. No interview required.\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"offerStatus\": \"OFFER_PENDING\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/update"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08 — on_update ★ OFFER_ISSUED",
+      "description": "",
+      "item": [
+        {
+          "name": "on_update (offer issued)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"01080910-1112-1314-1516-171819202122\",\n    \"timestamp\": \"2026-07-07T09:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-2156\",\n                \"shortDesc\": \"Auto-rickshaw driver, 4.8★ rated, Bengaluru.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"MID\",\n                \"total_experience_years\": 4,\n                \"availability_status\": \"OPEN_TO_OFFERS\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"AUTO_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"AUTO_RICKSHAW\",\n                  \"LIGHT_MOTOR_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Jayanagar\",\n                  \"address_region\": \"Karnataka\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"560041\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.8,\n                  \"rating_count\": 312,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Passenger Safety\",\n                  \"Route Optimisation\"\n                ],\n                \"last_updated\": \"2026-06-01T07:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Auto-Rickshaw Driver — Namma Yatri Fleet\",\n              \"shortDesc\": \"Platform-based auto operation, Bengaluru.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 800,\n                \"currency\": \"INR\",\n                \"frequency\": \"DAILY\"\n              },\n              \"joiningDate\": \"2026-07-15\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"routeType\": \"LOCAL\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Namma Yatri Fleet Operations\",\n            \"shortDesc\": \"Auto-rickshaw aggregator, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-2156\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2b-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2b-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"OFFER_ISSUED\",\n            \"screeningNotes\": \"Reputation score 4.8/5 — fast-track approved.\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"offerStatus\": \"OFFER_PENDING\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_update"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "09 — confirm",
+      "description": "Driver accepts offer.",
+      "item": [
+        {
+          "name": "confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"02091011-1213-1415-1617-181920212223\",\n    \"timestamp\": \"2026-07-10T08:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Namma Yatri Fleet Operations\",\n            \"shortDesc\": \"Auto-rickshaw aggregator, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-2156\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"offerStatus\": \"OFFER_ACCEPTED_STATUS\",\n        \"acceptanceTimestamp\": \"2026-07-10T08:00:00+05:30\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/confirm"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10 — on_confirm  ★ HIRING_CONFIRMED + employeeId",
+      "description": "",
+      "item": [
+        {
+          "name": "on_confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"03101112-1314-1516-1718-192021222324\",\n    \"timestamp\": \"2026-07-10T08:00:30+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-2156\",\n                \"shortDesc\": \"Auto-rickshaw driver, 4.8★ rated, Bengaluru.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"MID\",\n                \"total_experience_years\": 4,\n                \"availability_status\": \"OPEN_TO_OFFERS\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"AUTO_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"AUTO_RICKSHAW\",\n                  \"LIGHT_MOTOR_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Jayanagar\",\n                  \"address_region\": \"Karnataka\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"560041\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.8,\n                  \"rating_count\": 312,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Passenger Safety\",\n                  \"Route Optimisation\"\n                ],\n                \"last_updated\": \"2026-06-01T07:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Auto-Rickshaw Driver — Namma Yatri Fleet\",\n              \"shortDesc\": \"Platform-based auto operation, Bengaluru.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 800,\n                \"currency\": \"INR\",\n                \"frequency\": \"DAILY\"\n              },\n              \"joiningDate\": \"2026-07-15\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"routeType\": \"LOCAL\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Namma Yatri Fleet Operations\",\n            \"shortDesc\": \"Auto-rickshaw aggregator, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-2156\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2b-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2b-001\"\n          ],\n          \"status\": {\n            \"code\": \"COMPLETE\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"HIRING_CONFIRMED\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"employeeId\": \"{{employee_id}}\",\n        \"offerStatus\": \"OFFER_ACCEPTED_STATUS\",\n        \"onboardingStatus\": \"ONBOARDING_IN_PROGRESS\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_confirm"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "11 — status",
+      "description": "",
+      "item": [
+        {
+          "name": "status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"04111213-1415-1617-1819-202122232425\",\n    \"timestamp\": \"2026-07-15T09:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/status"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "12 — on_status  ★ ONBOARDING_COMPLETE",
+      "description": "",
+      "item": [
+        {
+          "name": "on_status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"05121314-1516-1718-1920-212223242526\",\n    \"timestamp\": \"2026-07-15T09:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2b-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-2156\",\n                \"shortDesc\": \"Auto-rickshaw driver, 4.8★ rated, Bengaluru.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"MID\",\n                \"total_experience_years\": 4,\n                \"availability_status\": \"OPEN_TO_OFFERS\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"AUTO_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"AUTO_RICKSHAW\",\n                  \"LIGHT_MOTOR_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Jayanagar\",\n                  \"address_region\": \"Karnataka\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"560041\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.8,\n                  \"rating_count\": 312,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Passenger Safety\",\n                  \"Route Optimisation\"\n                ],\n                \"last_updated\": \"2026-06-01T07:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Auto-Rickshaw Driver — Namma Yatri Fleet\",\n              \"shortDesc\": \"Platform-based auto operation, Bengaluru.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 800,\n                \"currency\": \"INR\",\n                \"frequency\": \"DAILY\"\n              },\n              \"joiningDate\": \"2026-07-15\",\n              \"shiftAssignment\": \"FLEXIBLE\",\n              \"routeType\": \"LOCAL\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": false,\n              \"probationPeriod\": null,\n              \"offerValidity\": \"2026-07-10T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Namma Yatri Fleet Operations\",\n            \"shortDesc\": \"Auto-rickshaw aggregator, Bengaluru\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-2156\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"kn\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2b-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2b-001\"\n          ],\n          \"status\": {\n            \"code\": \"COMPLETE\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"ONBOARDING_COMPLETE\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"employeeId\": \"{{employee_id}}\",\n        \"onboardingStatus\": \"ONBOARDING_COMPLETE_STATUS\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_status"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

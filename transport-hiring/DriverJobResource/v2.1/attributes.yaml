@@ -1,4 +1,5 @@
 openapi: 3.1.1
+$id: "https://schema.beckn.io/DriverJobResource/v2.1/attributes.yaml"
 info:
   title: DriverJobResource
   version: "2.1.0"
@@ -22,7 +23,9 @@ components:
         - transport-hiring
         - hiring
         - resource
-      x-jsonld-context: "./context.jsonld"
+      x-jsonld:
+        "@context": "https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld"
+        "@type": "djra:DriverJobResource"
       description: >
         Driver-specific extension of HiringJobResource. Adds role type, required
         vehicle categories, credential requirements, and training requirements.

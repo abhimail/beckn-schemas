@@ -1,51 +1,24 @@
 {
-  "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
   "@context": {
     "@import": "https://schema.beckn.io/core/v2/vocab.jsonld",
     "dcpra": "https://schema.beckn.io/DriverCandidateProfileResource#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "DriverCandidateProfileResource": "dcpra:DriverCandidateProfileResource",
-    "NetworkLocation": "dcpra:NetworkLocation",
     "DriverRoleType": "dcpra:DriverRoleType",
-    "DriverVehicleCategory": "dcpra:DriverVehicleCategory",
-    "AvailabilityStatus": "dcpra:AvailabilityStatus",
-    "BUS_DRIVER": "dcpra:BUS_DRIVER",
-    "TRUCK_DRIVER": "dcpra:TRUCK_DRIVER",
-    "TAXI_DRIVER": "dcpra:TAXI_DRIVER",
-    "AUTO_DRIVER": "dcpra:AUTO_DRIVER",
-    "DELIVERY_DRIVER": "dcpra:DELIVERY_DRIVER",
-    "HEAVY_VEHICLE_DRIVER": "dcpra:HEAVY_VEHICLE_DRIVER",
-    "LIGHT_VEHICLE_DRIVER": "dcpra:LIGHT_VEHICLE_DRIVER",
-    "SCHOOL_BUS_DRIVER": "dcpra:SCHOOL_BUS_DRIVER",
-    "AMBULANCE_DRIVER": "dcpra:AMBULANCE_DRIVER",
-    "LIGHT_MOTOR_VEHICLE": "dcpra:LIGHT_MOTOR_VEHICLE",
-    "HEAVY_MOTOR_VEHICLE": "dcpra:HEAVY_MOTOR_VEHICLE",
-    "TRANSPORT_VEHICLE": "dcpra:TRANSPORT_VEHICLE",
-    "MOTORCYCLE": "dcpra:MOTORCYCLE",
-    "AUTO_RICKSHAW": "dcpra:AUTO_RICKSHAW",
-    "BUS": "dcpra:BUS",
-    "TRUCK": "dcpra:TRUCK",
-    "AMBULANCE": "dcpra:AMBULANCE",
-    "AVAILABLE": "dcpra:AVAILABLE",
-    "OPEN_TO_OFFERS": "dcpra:OPEN_TO_OFFERS",
-    "UNAVAILABLE": "dcpra:UNAVAILABLE"
+    "DriverVehicleCategory": "dcpra:DriverVehicleCategory"
   },
   "@graph": [
     {
       "@id": "dcpra:DriverCandidateProfileResource",
       "@type": "rdfs:Class",
-      "rdfs:label": "Driver Candidate Profile Resource"
-    },
-    {
-      "@id": "dcpra:NetworkLocation",
-      "@type": "rdfs:Class",
-      "rdfs:label": "Network Location",
-      "rdfs:comment": "Flat location type with GPS and postal address fields."
+      "rdfs:label": "Driver Candidate Profile Resource",
+      "rdfs:comment": "Extension attributes for a driver candidate profile resource."
     },
     {
       "@id": "dcpra:DriverRoleType",
       "@type": "rdfs:Class",
-      "rdfs:label": "Driver Role Type"
+      "rdfs:label": "Driver Role Type",
+      "rdfs:comment": "Classification of driver roles a candidate can perform."
     },
     {
       "@id": "dcpra:BUS_DRIVER",
@@ -95,7 +68,8 @@
     {
       "@id": "dcpra:DriverVehicleCategory",
       "@type": "rdfs:Class",
-      "rdfs:label": "Driver Vehicle Category"
+      "rdfs:label": "Driver Vehicle Category",
+      "rdfs:comment": "Vehicle categories for licensing purposes."
     },
     {
       "@id": "dcpra:LIGHT_MOTOR_VEHICLE",
@@ -136,26 +110,6 @@
       "@id": "dcpra:AMBULANCE",
       "@type": "dcpra:DriverVehicleCategory",
       "rdfs:label": "Ambulance"
-    },
-    {
-      "@id": "dcpra:AvailabilityStatus",
-      "@type": "rdfs:Class",
-      "rdfs:label": "Availability Status"
-    },
-    {
-      "@id": "dcpra:AVAILABLE",
-      "@type": "dcpra:AvailabilityStatus",
-      "rdfs:label": "Available"
-    },
-    {
-      "@id": "dcpra:OPEN_TO_OFFERS",
-      "@type": "dcpra:AvailabilityStatus",
-      "rdfs:label": "Open to Offers"
-    },
-    {
-      "@id": "dcpra:UNAVAILABLE",
-      "@type": "dcpra:AvailabilityStatus",
-      "rdfs:label": "Unavailable"
     }
   ]
 }

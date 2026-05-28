@@ -1,0 +1,735 @@
+{
+  "info": {
+    "name": "Driver Network — UC2-A HMV Truck Recruitment (Full Lifecycle)",
+    "_postman_id": "28140979",
+    "description": "## Driver Network — UC2-A: HMV Truck Driver Recruitment (Full Lifecycle)\n\n**Scenario:** RoadFreight Logistics (Operator, acting as BAP) discovers and recruits an experienced HMV truck driver from TruckLink Driver Platform. Full evaluation cycle with in-person interview + driving test on highway track.\n\n**Protocol:** Beckn v2.0.0 + DriverCandidateProfileResource v2.1\n**BAP:** Operator Platform (RoadFreight Logistics)  |  **BPP:** Driver Platform (TruckLink)\n**Category:** driver-candidate  |  **Role:** TRUCK_DRIVER  |  **Employment:** PERMANENT\n\n### PII Audit — Candidate Profiles\nThe on_discover catalog (folder 02) contains DriverCandidateProfileResource payloads.\nVERIFIED SAFE — the following PII fields are explicitly absent:\n  ✓ passport_reference: EXCLUDED (x-pii-disclosure-stage: init — appears only at init+)\n  ✓ home_location.gps: EXCLUDED (locality-level only per privacy_notes — address_locality,\n    address_region, postal_code, address_country only)\n  ✓ descriptor.name: ANONYMISED — \"Driver Profile D-XXXX\" (no real name)\n  ✓ reputation_summary / credential_summary / training_summary: NOT PII — included safely\n\n### Role reversal vs UC1\nBAP = Operator Platform (initiates recruitment), BPP = Driver Platform (publishes profiles).\nThe `seeker_np_id` variable should be set to the Operator Platform's network ID.\n\n### Hiring stage progression\nAPPLICATION_SUBMITTED → INTERVIEW_SCHEDULED → EVALUATION_COMPLETE → OFFER_ISSUED → OFFER_ACCEPTED → HIRING_CONFIRMED → ONBOARDING_COMPLETE\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "",
+      "type": "string",
+      "description": "BPP sandbox endpoint (e.g. https://bpp.example.com)"
+    },
+    {
+      "key": "bap_url",
+      "value": "",
+      "type": "string",
+      "description": "BAP sandbox callback endpoint"
+    },
+    {
+      "key": "bpp_uri",
+      "value": "",
+      "type": "string",
+      "description": "BPP URI for context"
+    },
+    {
+      "key": "bap_uri",
+      "value": "",
+      "type": "string",
+      "description": "BAP URI for context"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Network-issued JWT — set before running"
+    },
+    {
+      "key": "network_id",
+      "value": "transport-hiring.in/driver-network",
+      "type": "string",
+      "description": "Confirm exact value with network registry team"
+    },
+    {
+      "key": "domain",
+      "value": "transport-hiring:driver",
+      "type": "string"
+    },
+    {
+      "key": "seeker_np_id",
+      "value": "seeker-np-001.example.com",
+      "type": "string"
+    },
+    {
+      "key": "provider_np_id",
+      "value": "provider-np-001.example.com",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "type": "string",
+      "description": "UUID format required by core spec"
+    },
+    {
+      "key": "contract_id",
+      "value": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "string",
+      "description": "Assigned by BPP at on_select"
+    },
+    {
+      "key": "catalog_id",
+      "value": "cat-drv-001",
+      "type": "string"
+    },
+    {
+      "key": "application_id",
+      "value": "app-drv-20260610-001",
+      "type": "string"
+    },
+    {
+      "key": "employee_id",
+      "value": "emp-drv-bmtc-4821",
+      "type": "string",
+      "description": "Issued by BPP at on_confirm"
+    },
+    {
+      "key": "passport_reference",
+      "value": "DPP-KA-2021-084721",
+      "type": "string",
+      "description": "PII — Driver Passport reference. Disclosed at init and later only."
+    },
+    {
+      "key": "dl_number",
+      "value": "KA01-2015-0042891",
+      "type": "string",
+      "description": "Driving licence number"
+    },
+    {
+      "key": "dl_cert_checksum",
+      "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "string"
+    },
+    {
+      "key": "mf_cert_ref",
+      "value": "MF-2025-KA-04821",
+      "type": "string"
+    },
+    {
+      "key": "pv_cert_ref",
+      "value": "PV-2025-KA-08432",
+      "type": "string"
+    },
+    {
+      "key": "interview_contact",
+      "value": "+91-80-22221234",
+      "type": "string"
+    },
+    {
+      "key": "candidate_resource_id",
+      "value": "cand-drv-7301",
+      "type": "string"
+    },
+    {
+      "key": "recruitment_offer_id",
+      "value": "offer-recruit-hmv-001",
+      "type": "string"
+    },
+    {
+      "key": "operator_participant_id",
+      "value": "part-operator-rf-001",
+      "type": "string"
+    },
+    {
+      "key": "candidate_participant_id",
+      "value": "part-candidate-7301",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — discover",
+      "description": "Operator (BAP) searches candidate profiles. Roles reversed: BAP=Operator, BPP=Driver Platform.",
+      "item": [
+        {
+          "name": "discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"10203040-5060-7080-9000-a0b0c0d0e0f0\",\n    \"timestamp\": \"2026-07-10T09:00:00+05:30\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"intent\": {\n      \"textSearch\": \"HMV truck driver available Telangana\",\n      \"filters\": \"$.catalogs[*].resources[*] ? (@.resourceAttributes.driver_role_types[*] == \\\"TRUCK_DRIVER\\\" && @.resourceAttributes.availability_status == \\\"AVAILABLE\\\")\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/discover"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 — on_discover",
+      "description": "BPP returns candidate catalog. ★ PII AUDIT: passport_reference absent; home_location GPS absent; names anonymised.",
+      "item": [
+        {
+          "name": "on_discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"20304050-6070-8090-0010-b0c0d0e0f001\",\n    \"timestamp\": \"2026-07-10T09:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"{{catalog_id}}\",\n        \"descriptor\": {\n          \"name\": \"Driver Candidates — Telangana HMV Pool\"\n        },\n        \"provider\": {\n          \"id\": \"{{provider_np_id}}\",\n          \"descriptor\": {\n            \"name\": \"TruckLink Driver Platform\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"{{candidate_resource_id}}\",\n            \"descriptor\": {\n              \"name\": \"Driver Profile D-7301\",\n              \"shortDesc\": \"HMV/Truck licensed driver, 8 yrs exp, Hyderabad.\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n              \"@type\": \"dcpra:DriverCandidateProfileResource\",\n              \"experience_level\": \"SENIOR\",\n              \"total_experience_years\": 8,\n              \"availability_status\": \"AVAILABLE\",\n              \"preferred_work_mode\": \"ONSITE\",\n              \"driver_role_types\": [\n                \"TRUCK_DRIVER\",\n                \"HEAVY_VEHICLE_DRIVER\"\n              ],\n              \"vehicle_categories\": [\n                \"HEAVY_MOTOR_VEHICLE\",\n                \"TRUCK\",\n                \"TRANSPORT_VEHICLE\"\n              ],\n              \"home_location\": {\n                \"address_locality\": \"Uppal\",\n                \"address_region\": \"Telangana\",\n                \"address_country\": \"IN\",\n                \"postal_code\": \"500039\"\n              },\n              \"reputation_summary\": {\n                \"rating_value\": 4.7,\n                \"rating_count\": 124,\n                \"rating_agency\": \"DriverPassport-Network\"\n              },\n              \"credential_summary\": [\n                \"DRIVING_LICENCE\",\n                \"MEDICAL_FITNESS\",\n                \"POLICE_VERIFICATION\"\n              ],\n              \"training_summary\": [\n                \"Defensive Driving\",\n                \"Hazardous Materials\"\n              ],\n              \"last_updated\": \"2026-05-15T08:00:00+05:30\"\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"HMV Truck Driver — Long-Haul, Telangana\",\n              \"shortDesc\": \"Permanent role, competitive salary.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 35000,\n                \"currency\": \"INR\",\n                \"frequency\": \"MONTHLY\"\n              },\n              \"joiningDate\": \"2026-08-01\",\n              \"shiftAssignment\": \"ROTATIONAL\",\n              \"routeType\": \"HIGHWAY\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": true,\n              \"otherBenefits\": [\n                \"DA\",\n                \"Night Allowance\",\n                \"Vehicle Maintenance Allowance\"\n              ],\n              \"probationPeriod\": \"P6M\",\n              \"offerValidity\": \"2026-08-15T23:59:59+05:30\"\n            }\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_discover"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 — select",
+      "description": "",
+      "item": [
+        {
+          "name": "select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"30405060-7080-9000-1020-c0d0e0f00102\",\n    \"timestamp\": \"2026-07-10T09:10:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"RoadFreight Logistics Pvt Ltd\",\n            \"shortDesc\": \"Long-haul freight operator, Telangana\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\"\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/select"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 — on_select",
+      "description": "",
+      "item": [
+        {
+          "name": "on_select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"40506070-8090-0010-2030-d0e0f0010203\",\n    \"timestamp\": \"2026-07-10T09:10:10+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-7301\",\n                \"shortDesc\": \"HMV/Truck licensed driver, 8 yrs exp, Hyderabad.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"SENIOR\",\n                \"total_experience_years\": 8,\n                \"availability_status\": \"AVAILABLE\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"TRUCK_DRIVER\",\n                  \"HEAVY_VEHICLE_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"HEAVY_MOTOR_VEHICLE\",\n                  \"TRUCK\",\n                  \"TRANSPORT_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Uppal\",\n                  \"address_region\": \"Telangana\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"500039\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.7,\n                  \"rating_count\": 124,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"MEDICAL_FITNESS\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Defensive Driving\",\n                  \"Hazardous Materials\"\n                ],\n                \"last_updated\": \"2026-05-15T08:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"HMV Truck Driver — Long-Haul, Telangana\",\n              \"shortDesc\": \"Permanent role, competitive salary.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 35000,\n                \"currency\": \"INR\",\n                \"frequency\": \"MONTHLY\"\n              },\n              \"joiningDate\": \"2026-08-01\",\n              \"shiftAssignment\": \"ROTATIONAL\",\n              \"routeType\": \"HIGHWAY\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": true,\n              \"otherBenefits\": [\n                \"DA\",\n                \"Night Allowance\",\n                \"Vehicle Maintenance Allowance\"\n              ],\n              \"probationPeriod\": \"P6M\",\n              \"offerValidity\": \"2026-08-15T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"RoadFreight Logistics Pvt Ltd\",\n            \"shortDesc\": \"Long-haul freight operator, Telangana\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\"\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_select"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 — init",
+      "description": "Operator sends recruitment invitation. passport_reference disclosed here (PII gate: init).",
+      "item": [
+        {
+          "name": "init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"50607080-9000-1020-3040-e0f001020304\",\n    \"timestamp\": \"2026-07-10T09:20:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"RoadFreight Logistics Pvt Ltd\",\n            \"shortDesc\": \"Long-haul freight operator, Telangana\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-7301\",\n            \"shortDesc\": \"HMV/Truck licensed, 8 yrs\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"te\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/init"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 — on_init",
+      "description": "APPLICATION_SUBMITTED — driver platform acknowledges recruitment invitation.",
+      "item": [
+        {
+          "name": "on_init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"60708090-0010-2030-4050-f00102030405\",\n    \"timestamp\": \"2026-07-10T09:20:15+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-7301\",\n                \"shortDesc\": \"HMV/Truck licensed driver, 8 yrs exp, Hyderabad.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"SENIOR\",\n                \"total_experience_years\": 8,\n                \"availability_status\": \"AVAILABLE\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"TRUCK_DRIVER\",\n                  \"HEAVY_VEHICLE_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"HEAVY_MOTOR_VEHICLE\",\n                  \"TRUCK\",\n                  \"TRANSPORT_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Uppal\",\n                  \"address_region\": \"Telangana\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"500039\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.7,\n                  \"rating_count\": 124,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"MEDICAL_FITNESS\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Defensive Driving\",\n                  \"Hazardous Materials\"\n                ],\n                \"last_updated\": \"2026-05-15T08:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"HMV Truck Driver — Long-Haul, Telangana\",\n              \"shortDesc\": \"Permanent role, competitive salary.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 35000,\n                \"currency\": \"INR\",\n                \"frequency\": \"MONTHLY\"\n              },\n              \"joiningDate\": \"2026-08-01\",\n              \"shiftAssignment\": \"ROTATIONAL\",\n              \"routeType\": \"HIGHWAY\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": true,\n              \"otherBenefits\": [\n                \"DA\",\n                \"Night Allowance\",\n                \"Vehicle Maintenance Allowance\"\n              ],\n              \"probationPeriod\": \"P6M\",\n              \"offerValidity\": \"2026-08-15T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"RoadFreight Logistics Pvt Ltd\",\n            \"shortDesc\": \"Long-haul freight operator, Telangana\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-7301\",\n            \"shortDesc\": \"HMV/Truck licensed, 8 yrs\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"te\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2a-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2a-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"APPLICATION_SUBMITTED\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_init"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 — update  ★ INTERVIEW_SCHEDULED",
+      "description": "",
+      "item": [
+        {
+          "name": "update (interview scheduled)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"70809000-1020-3040-5060-001020304050\",\n    \"timestamp\": \"2026-07-14T09:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2a-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2a-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"INTERVIEW_SCHEDULED\",\n            \"interviewSchedule\": [\n              {\n                \"interviewType\": \"IN_PERSON\",\n                \"scheduledAt\": \"2026-07-15T10:00:00+05:30\",\n                \"locationOrLink\": \"RoadFreight Logistics Head Office, Hyderabad\",\n                \"interviewer\": \"Fleet Manager\",\n                \"status\": \"SCHEDULED\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/update"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08 — on_update ★ INTERVIEW_SCHEDULED",
+      "description": "",
+      "item": [
+        {
+          "name": "on_update (interview scheduled)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"80900010-2030-4050-6070-102030405060\",\n    \"timestamp\": \"2026-07-14T09:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-7301\",\n                \"shortDesc\": \"HMV/Truck licensed driver, 8 yrs exp, Hyderabad.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"SENIOR\",\n                \"total_experience_years\": 8,\n                \"availability_status\": \"AVAILABLE\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"TRUCK_DRIVER\",\n                  \"HEAVY_VEHICLE_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"HEAVY_MOTOR_VEHICLE\",\n                  \"TRUCK\",\n                  \"TRANSPORT_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Uppal\",\n                  \"address_region\": \"Telangana\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"500039\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.7,\n                  \"rating_count\": 124,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"MEDICAL_FITNESS\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Defensive Driving\",\n                  \"Hazardous Materials\"\n                ],\n                \"last_updated\": \"2026-05-15T08:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"HMV Truck Driver — Long-Haul, Telangana\",\n              \"shortDesc\": \"Permanent role, competitive salary.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 35000,\n                \"currency\": \"INR\",\n                \"frequency\": \"MONTHLY\"\n              },\n              \"joiningDate\": \"2026-08-01\",\n              \"shiftAssignment\": \"ROTATIONAL\",\n              \"routeType\": \"HIGHWAY\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": true,\n              \"otherBenefits\": [\n                \"DA\",\n                \"Night Allowance\",\n                \"Vehicle Maintenance Allowance\"\n              ],\n              \"probationPeriod\": \"P6M\",\n              \"offerValidity\": \"2026-08-15T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"RoadFreight Logistics Pvt Ltd\",\n            \"shortDesc\": \"Long-haul freight operator, Telangana\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-7301\",\n            \"shortDesc\": \"HMV/Truck licensed, 8 yrs\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"te\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2a-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2a-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"INTERVIEW_SCHEDULED\",\n            \"interviewSchedule\": [\n              {\n                \"interviewType\": \"IN_PERSON\",\n                \"scheduledAt\": \"2026-07-15T10:00:00+05:30\",\n                \"locationOrLink\": \"RoadFreight Logistics Head Office, Hyderabad\",\n                \"interviewer\": \"Fleet Manager\",\n                \"status\": \"SCHEDULED\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_update"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "09 — update  ★ EVALUATION_COMPLETE",
+      "description": "",
+      "item": [
+        {
+          "name": "update (evaluation complete)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"90001020-3040-5060-7080-203040506070\",\n    \"timestamp\": \"2026-07-16T17:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2a-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2a-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"EVALUATION_COMPLETE\",\n            \"interviewSchedule\": [\n              {\n                \"interviewType\": \"IN_PERSON\",\n                \"scheduledAt\": \"2026-07-15T10:00:00+05:30\",\n                \"locationOrLink\": \"RoadFreight Logistics Head Office\",\n                \"interviewer\": \"Fleet Manager\",\n                \"status\": \"COMPLETED\",\n                \"remarks\": \"Strong candidate — proceeding to driving test.\"\n              }\n            ],\n            \"drivingTestSchedule\": [\n              {\n                \"scheduledAt\": \"2026-07-16T08:00:00+05:30\",\n                \"location\": \"NH-65 Test Track, Hyderabad\",\n                \"vehicleCategory\": \"TRUCK\",\n                \"evaluator\": \"Senior Fleet Inspector\",\n                \"result\": \"PASS\",\n                \"remarks\": \"Safe driving, correct gear use on inclines.\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/update"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10 — on_update ★ EVALUATION_COMPLETE",
+      "description": "",
+      "item": [
+        {
+          "name": "on_update (evaluation complete)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"00102030-4050-6070-8090-304050607080\",\n    \"timestamp\": \"2026-07-16T17:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-7301\",\n                \"shortDesc\": \"HMV/Truck licensed driver, 8 yrs exp, Hyderabad.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"SENIOR\",\n                \"total_experience_years\": 8,\n                \"availability_status\": \"AVAILABLE\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"TRUCK_DRIVER\",\n                  \"HEAVY_VEHICLE_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"HEAVY_MOTOR_VEHICLE\",\n                  \"TRUCK\",\n                  \"TRANSPORT_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Uppal\",\n                  \"address_region\": \"Telangana\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"500039\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.7,\n                  \"rating_count\": 124,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"MEDICAL_FITNESS\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Defensive Driving\",\n                  \"Hazardous Materials\"\n                ],\n                \"last_updated\": \"2026-05-15T08:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"HMV Truck Driver — Long-Haul, Telangana\",\n              \"shortDesc\": \"Permanent role, competitive salary.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 35000,\n                \"currency\": \"INR\",\n                \"frequency\": \"MONTHLY\"\n              },\n              \"joiningDate\": \"2026-08-01\",\n              \"shiftAssignment\": \"ROTATIONAL\",\n              \"routeType\": \"HIGHWAY\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": true,\n              \"otherBenefits\": [\n                \"DA\",\n                \"Night Allowance\",\n                \"Vehicle Maintenance Allowance\"\n              ],\n              \"probationPeriod\": \"P6M\",\n              \"offerValidity\": \"2026-08-15T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"RoadFreight Logistics Pvt Ltd\",\n            \"shortDesc\": \"Long-haul freight operator, Telangana\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-7301\",\n            \"shortDesc\": \"HMV/Truck licensed, 8 yrs\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"te\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2a-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2a-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"EVALUATION_COMPLETE\",\n            \"interviewSchedule\": [\n              {\n                \"interviewType\": \"IN_PERSON\",\n                \"scheduledAt\": \"2026-07-15T10:00:00+05:30\",\n                \"locationOrLink\": \"RoadFreight Logistics Head Office\",\n                \"interviewer\": \"Fleet Manager\",\n                \"status\": \"COMPLETED\",\n                \"remarks\": \"Strong candidate — proceeding to driving test.\"\n              }\n            ],\n            \"drivingTestSchedule\": [\n              {\n                \"scheduledAt\": \"2026-07-16T08:00:00+05:30\",\n                \"location\": \"NH-65 Test Track, Hyderabad\",\n                \"vehicleCategory\": \"TRUCK\",\n                \"evaluator\": \"Senior Fleet Inspector\",\n                \"result\": \"PASS\",\n                \"remarks\": \"Safe driving, correct gear use on inclines.\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_update"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "11 — update  ★ OFFER_ISSUED",
+      "description": "",
+      "item": [
+        {
+          "name": "update (offer issued)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"10203040-5060-7080-9001-405060708091\",\n    \"timestamp\": \"2026-07-20T10:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2a-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2a-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"OFFER_ISSUED\",\n            \"interviewSchedule\": [\n              {\n                \"interviewType\": \"IN_PERSON\",\n                \"scheduledAt\": \"2026-07-15T10:00:00+05:30\",\n                \"locationOrLink\": \"RoadFreight Logistics Head Office\",\n                \"interviewer\": \"Fleet Manager\",\n                \"status\": \"COMPLETED\",\n                \"remarks\": \"Strong candidate — proceeding to driving test.\"\n              }\n            ],\n            \"drivingTestSchedule\": [\n              {\n                \"scheduledAt\": \"2026-07-16T08:00:00+05:30\",\n                \"location\": \"NH-65 Test Track, Hyderabad\",\n                \"vehicleCategory\": \"TRUCK\",\n                \"evaluator\": \"Senior Fleet Inspector\",\n                \"result\": \"PASS\",\n                \"remarks\": \"Safe driving, correct gear use on inclines.\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ],\n        \"offerStatus\": \"OFFER_PENDING\",\n        \"acceptanceTimestamp\": \"2026-07-30T11:00:00+05:30\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/update"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "12 — on_update ★ OFFER_ISSUED",
+      "description": "",
+      "item": [
+        {
+          "name": "on_update (offer issued)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"20304050-6070-8091-0011-506070809102\",\n    \"timestamp\": \"2026-07-20T10:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-7301\",\n                \"shortDesc\": \"HMV/Truck licensed driver, 8 yrs exp, Hyderabad.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"SENIOR\",\n                \"total_experience_years\": 8,\n                \"availability_status\": \"AVAILABLE\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"TRUCK_DRIVER\",\n                  \"HEAVY_VEHICLE_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"HEAVY_MOTOR_VEHICLE\",\n                  \"TRUCK\",\n                  \"TRANSPORT_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Uppal\",\n                  \"address_region\": \"Telangana\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"500039\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.7,\n                  \"rating_count\": 124,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"MEDICAL_FITNESS\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Defensive Driving\",\n                  \"Hazardous Materials\"\n                ],\n                \"last_updated\": \"2026-05-15T08:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"HMV Truck Driver — Long-Haul, Telangana\",\n              \"shortDesc\": \"Permanent role, competitive salary.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 35000,\n                \"currency\": \"INR\",\n                \"frequency\": \"MONTHLY\"\n              },\n              \"joiningDate\": \"2026-08-01\",\n              \"shiftAssignment\": \"ROTATIONAL\",\n              \"routeType\": \"HIGHWAY\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": true,\n              \"otherBenefits\": [\n                \"DA\",\n                \"Night Allowance\",\n                \"Vehicle Maintenance Allowance\"\n              ],\n              \"probationPeriod\": \"P6M\",\n              \"offerValidity\": \"2026-08-15T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"RoadFreight Logistics Pvt Ltd\",\n            \"shortDesc\": \"Long-haul freight operator, Telangana\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-7301\",\n            \"shortDesc\": \"HMV/Truck licensed, 8 yrs\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"te\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2a-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2a-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"OFFER_ISSUED\",\n            \"interviewSchedule\": [\n              {\n                \"interviewType\": \"IN_PERSON\",\n                \"scheduledAt\": \"2026-07-15T10:00:00+05:30\",\n                \"locationOrLink\": \"RoadFreight Logistics Head Office\",\n                \"interviewer\": \"Fleet Manager\",\n                \"status\": \"COMPLETED\",\n                \"remarks\": \"Strong candidate — proceeding to driving test.\"\n              }\n            ],\n            \"drivingTestSchedule\": [\n              {\n                \"scheduledAt\": \"2026-07-16T08:00:00+05:30\",\n                \"location\": \"NH-65 Test Track, Hyderabad\",\n                \"vehicleCategory\": \"TRUCK\",\n                \"evaluator\": \"Senior Fleet Inspector\",\n                \"result\": \"PASS\",\n                \"remarks\": \"Safe driving, correct gear use on inclines.\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ],\n        \"offerStatus\": \"OFFER_PENDING\",\n        \"acceptanceTimestamp\": \"2026-07-30T11:00:00+05:30\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_update"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "13 — confirm",
+      "description": "Operator confirms driver acceptance; contract ACTIVE.",
+      "item": [
+        {
+          "name": "confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"30405060-7081-9001-1021-607080910213\",\n    \"timestamp\": \"2026-07-25T11:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"RoadFreight Logistics Pvt Ltd\",\n            \"shortDesc\": \"Long-haul freight operator, Telangana\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-7301\",\n            \"shortDesc\": \"HMV/Truck licensed, 8 yrs\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"te\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ],\n        \"offerStatus\": \"OFFER_ACCEPTED_STATUS\",\n        \"acceptanceTimestamp\": \"2026-07-30T11:00:00+05:30\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/confirm"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "14 — on_confirm  ★ HIRING_CONFIRMED + employeeId",
+      "description": "",
+      "item": [
+        {
+          "name": "on_confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"40506071-8091-0011-2031-708091021324\",\n    \"timestamp\": \"2026-07-25T11:00:30+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-7301\",\n                \"shortDesc\": \"HMV/Truck licensed driver, 8 yrs exp, Hyderabad.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"SENIOR\",\n                \"total_experience_years\": 8,\n                \"availability_status\": \"AVAILABLE\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"TRUCK_DRIVER\",\n                  \"HEAVY_VEHICLE_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"HEAVY_MOTOR_VEHICLE\",\n                  \"TRUCK\",\n                  \"TRANSPORT_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Uppal\",\n                  \"address_region\": \"Telangana\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"500039\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.7,\n                  \"rating_count\": 124,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"MEDICAL_FITNESS\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Defensive Driving\",\n                  \"Hazardous Materials\"\n                ],\n                \"last_updated\": \"2026-05-15T08:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"HMV Truck Driver — Long-Haul, Telangana\",\n              \"shortDesc\": \"Permanent role, competitive salary.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 35000,\n                \"currency\": \"INR\",\n                \"frequency\": \"MONTHLY\"\n              },\n              \"joiningDate\": \"2026-08-01\",\n              \"shiftAssignment\": \"ROTATIONAL\",\n              \"routeType\": \"HIGHWAY\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": true,\n              \"otherBenefits\": [\n                \"DA\",\n                \"Night Allowance\",\n                \"Vehicle Maintenance Allowance\"\n              ],\n              \"probationPeriod\": \"P6M\",\n              \"offerValidity\": \"2026-08-15T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"RoadFreight Logistics Pvt Ltd\",\n            \"shortDesc\": \"Long-haul freight operator, Telangana\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-7301\",\n            \"shortDesc\": \"HMV/Truck licensed, 8 yrs\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"te\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2a-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2a-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"HIRING_CONFIRMED\",\n            \"interviewSchedule\": [\n              {\n                \"interviewType\": \"IN_PERSON\",\n                \"scheduledAt\": \"2026-07-15T10:00:00+05:30\",\n                \"locationOrLink\": \"RoadFreight Logistics Head Office\",\n                \"interviewer\": \"Fleet Manager\",\n                \"status\": \"COMPLETED\",\n                \"remarks\": \"Strong candidate — proceeding to driving test.\"\n              }\n            ],\n            \"drivingTestSchedule\": [\n              {\n                \"scheduledAt\": \"2026-07-16T08:00:00+05:30\",\n                \"location\": \"NH-65 Test Track, Hyderabad\",\n                \"vehicleCategory\": \"TRUCK\",\n                \"evaluator\": \"Senior Fleet Inspector\",\n                \"result\": \"PASS\",\n                \"remarks\": \"Safe driving, correct gear use on inclines.\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ],\n        \"employeeId\": \"{{employee_id}}\",\n        \"onboardingStatus\": \"ONBOARDING_IN_PROGRESS\",\n        \"offerStatus\": \"OFFER_ACCEPTED_STATUS\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_confirm"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "15 — status",
+      "description": "",
+      "item": [
+        {
+          "name": "status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"50607081-9001-1021-3041-809102132435\",\n    \"timestamp\": \"2026-08-01T09:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/status"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "16 — on_status  ★ ONBOARDING_COMPLETE",
+      "description": "",
+      "item": [
+        {
+          "name": "on_status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id}}\",\n    \"messageId\": \"60708091-0011-2031-4051-910213243546\",\n    \"timestamp\": \"2026-08-01T09:00:05+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{contract_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-uc2a-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{candidate_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Driver Profile D-7301\",\n                \"shortDesc\": \"HMV/Truck licensed driver, 8 yrs exp, Hyderabad.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n                \"@type\": \"dcpra:DriverCandidateProfileResource\",\n                \"experience_level\": \"SENIOR\",\n                \"total_experience_years\": 8,\n                \"availability_status\": \"AVAILABLE\",\n                \"preferred_work_mode\": \"ONSITE\",\n                \"driver_role_types\": [\n                  \"TRUCK_DRIVER\",\n                  \"HEAVY_VEHICLE_DRIVER\"\n                ],\n                \"vehicle_categories\": [\n                  \"HEAVY_MOTOR_VEHICLE\",\n                  \"TRUCK\",\n                  \"TRANSPORT_VEHICLE\"\n                ],\n                \"home_location\": {\n                  \"address_locality\": \"Uppal\",\n                  \"address_region\": \"Telangana\",\n                  \"address_country\": \"IN\",\n                  \"postal_code\": \"500039\"\n                },\n                \"reputation_summary\": {\n                  \"rating_value\": 4.7,\n                  \"rating_count\": 124,\n                  \"rating_agency\": \"DriverPassport-Network\"\n                },\n                \"credential_summary\": [\n                  \"DRIVING_LICENCE\",\n                  \"MEDICAL_FITNESS\",\n                  \"POLICE_VERIFICATION\"\n                ],\n                \"training_summary\": [\n                  \"Defensive Driving\",\n                  \"Hazardous Materials\"\n                ],\n                \"last_updated\": \"2026-05-15T08:00:00+05:30\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{recruitment_offer_id}}\",\n            \"resourceIds\": [\n              \"{{candidate_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"HMV Truck Driver — Long-Haul, Telangana\",\n              \"shortDesc\": \"Permanent role, competitive salary.\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n              \"@type\": \"djra:DriverJobResource\",\n              \"salarySpecification\": {\n                \"value\": 35000,\n                \"currency\": \"INR\",\n                \"frequency\": \"MONTHLY\"\n              },\n              \"joiningDate\": \"2026-08-01\",\n              \"shiftAssignment\": \"ROTATIONAL\",\n              \"routeType\": \"HIGHWAY\",\n              \"insuranceProvided\": true,\n              \"accommodationProvided\": true,\n              \"otherBenefits\": [\n                \"DA\",\n                \"Night Allowance\",\n                \"Vehicle Maintenance Allowance\"\n              ],\n              \"probationPeriod\": \"P6M\",\n              \"offerValidity\": \"2026-08-15T23:59:59+05:30\"\n            }\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{operator_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"RoadFreight Logistics Pvt Ltd\",\n            \"shortDesc\": \"Long-haul freight operator, Telangana\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"participantRole\": \"RECRUITER\"\n          }\n        },\n        {\n          \"id\": \"{{candidate_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-7301\",\n            \"shortDesc\": \"HMV/Truck licensed, 8 yrs\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"participantRole\": \"CANDIDATE\",\n            \"primaryLanguage\": \"te\"\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"perf-uc2a-001\",\n          \"commitmentIds\": [\n            \"commitment-uc2a-001\"\n          ],\n          \"status\": {\n            \"code\": \"IN_PROGRESS\"\n          },\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"hiringStage\": \"ONBOARDING_COMPLETE\",\n            \"interviewSchedule\": [\n              {\n                \"interviewType\": \"IN_PERSON\",\n                \"scheduledAt\": \"2026-07-15T10:00:00+05:30\",\n                \"locationOrLink\": \"RoadFreight Logistics Head Office\",\n                \"interviewer\": \"Fleet Manager\",\n                \"status\": \"COMPLETED\",\n                \"remarks\": \"Strong candidate — proceeding to driving test.\"\n              }\n            ],\n            \"drivingTestSchedule\": [\n              {\n                \"scheduledAt\": \"2026-07-16T08:00:00+05:30\",\n                \"location\": \"NH-65 Test Track, Hyderabad\",\n                \"vehicleCategory\": \"TRUCK\",\n                \"evaluator\": \"Senior Fleet Inspector\",\n                \"result\": \"PASS\",\n                \"remarks\": \"Safe driving, correct gear use on inclines.\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n        \"@type\": \"djra:DriverJobResource\",\n        \"applicationId\": \"{{application_id}}\",\n        \"jobId\": \"{{recruitment_offer_id}}\",\n        \"driverPassportReference\": \"{{passport_reference}}\",\n        \"submittedDocuments\": [\n          {\n            \"credentialType\": \"DRIVING_LICENCE\",\n            \"credentialRef\": \"{{dl_number}}\"\n          },\n          {\n            \"credentialType\": \"MEDICAL_FITNESS\",\n            \"credentialRef\": \"{{mf_cert_ref}}\"\n          },\n          {\n            \"credentialType\": \"POLICE_VERIFICATION\",\n            \"credentialRef\": \"{{pv_cert_ref}}\"\n          }\n        ],\n        \"employeeId\": \"{{employee_id}}\",\n        \"onboardingStatus\": \"ONBOARDING_IN_PROGRESS\",\n        \"offerStatus\": \"OFFER_ACCEPTED_STATUS\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_url}}/on_status"
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
