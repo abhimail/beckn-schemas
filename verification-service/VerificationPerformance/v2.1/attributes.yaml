@@ -49,17 +49,15 @@ components:
         verifiedData:
           x-jsonld-id: "vp:verifiedData"
           description: >
-            The structured data returned by the verification. This is the
-            actual verified information extracted from the authoritative
-            source. The shape depends on the verification type.
-          type: object
-          additionalProperties: true
-          description: >
-            Key-value pairs of verified data fields. For a driving licence
-            verification this might include holderName, licenceNumber,
-            issueDate, expiryDate, vehicleClasses, issuingAuthority.
+            The structured data returned by the verification — the actual
+            verified information extracted from the authoritative source.
+            Key-value pairs whose shape depends on the verification type.
+            For a driving licence verification this might include holderName,
+            licenceNumber, issueDate, expiryDate, vehicleClasses, issuingAuthority.
             For identity verification: name, dateOfBirth, gender, address.
             Schema is intentionally open to support diverse verification types.
+          type: object
+          additionalProperties: true
 
         evidence:
           x-jsonld-id: "vp:evidence"
