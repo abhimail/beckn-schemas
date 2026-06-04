@@ -1,0 +1,250 @@
+{
+  "info": {
+    "name": "Driver Network — Catalog Publish (BPP → CDS)",
+    "_postman_id": "69042452",
+    "description": "## Driver Network — Catalog Publish (BPP → CDS)\n\n**Purpose:** Publishes driver-domain catalogs to the Catalog Discovery Service (CDS) so they are indexed and discoverable by BAPs. This collection is a **prerequisite** for all transaction flow collections — run it before UC1-A, UC1-B, UC2-A, or UC2-B.\n\n**Protocol:** Beckn v2.0.0 — catalog management flow\n**Endpoint:**  (set  to the CDS sandbox URL)\n\n### Quick-start\n1. Import **DriverNetwork_Dev_Environment.json** and set .\n2. Run folder 01 to publish job catalog (prerequisite for UC1).\n3. Run folder 03 to publish candidate catalog (prerequisite for UC2).\n4. Folders 02 and 04 simulate the async on_publish callbacks from CDS to BPP.\n\n### Scenarios\n- **Scenario 1 (folders 01–02):** Operator Platform publishes  resources. Used by UC1-A (BMTC Bus Driver) and UC1-B (Gig Delivery).\n- **Scenario 2 (folders 03–04):** Driver/Aggregator Platform publishes  resources. Used by UC2-A (HMV Truck) and UC2-B (Auto-Rickshaw).\n\n### PII note — Candidate Catalog\nThe candidate catalog payload (folder 03) is PII-safe:  absent,  absent,  anonymised. Consistent with UC2 on_discover payloads.\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "cds_url",
+      "value": "",
+      "type": "string",
+      "description": "Catalog Discovery Service endpoint — confirm with network team"
+    },
+    {
+      "key": "cds_id",
+      "value": "cds.driver-network.in",
+      "type": "string"
+    },
+    {
+      "key": "bpp_url",
+      "value": "",
+      "type": "string",
+      "description": "Operator BPP callback URL (for on_publish)"
+    },
+    {
+      "key": "candidate_bpp_url",
+      "value": "",
+      "type": "string",
+      "description": "Driver Platform BPP callback URL (for on_publish)"
+    },
+    {
+      "key": "candidate_bpp_uri",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "candidate_provider_np_id",
+      "value": "provider-drv-platform-001.example.com",
+      "type": "string"
+    },
+    {
+      "key": "network_id",
+      "value": "transport-hiring.in/driver-network",
+      "type": "string",
+      "description": "Confirm with registry"
+    },
+    {
+      "key": "domain",
+      "value": "transport-hiring:driver",
+      "type": "string"
+    },
+    {
+      "key": "provider_np_id",
+      "value": "provider-np-001.example.com",
+      "type": "string"
+    },
+    {
+      "key": "bpp_uri",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "publish_transaction_id",
+      "value": "e29b41d4-a716-4466-5544-000055440000",
+      "type": "string",
+      "description": "UUID for this publish transaction"
+    },
+    {
+      "key": "job_catalog_id",
+      "value": "cat-jobs-bmtc-202606",
+      "type": "string"
+    },
+    {
+      "key": "candidate_catalog_id",
+      "value": "cat-cands-trucklink-202606",
+      "type": "string"
+    },
+    {
+      "key": "job_resource_id",
+      "value": "job-bmtc-busdriver-001",
+      "type": "string"
+    },
+    {
+      "key": "hiring_offer_id",
+      "value": "offer-bmtc-busdriver-001",
+      "type": "string"
+    },
+    {
+      "key": "candidate_resource_id",
+      "value": "cand-drv-7301",
+      "type": "string"
+    },
+    {
+      "key": "recruitment_offer_id",
+      "value": "offer-recruit-hmv-001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — catalog/publish  [Job Catalog — Operator BPP → CDS]",
+      "description": "Operator Platform (BPP) publishes driver-job resources to the CDS. Prerequisite for UC1-A and UC1-B transaction flows.",
+      "item": [
+        {
+          "name": "catalog/publish (job catalog)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/publish\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{provider_np_id}}\",\n    \"bapUri\": \"{{bpp_uri}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"aa11bb22-cc33-dd44-ee55-ff6677889900\",\n    \"timestamp\": \"2026-06-10T08:00:00+05:30\"\n  },\n  \"message\": {\n    \"catalog\": {\n      \"id\": \"{{job_catalog_id}}\",\n      \"descriptor\": {\n        \"name\": \"BMTC Driver Jobs — June 2026\",\n        \"shortDesc\": \"Active driver job vacancies published by BMTC.\"\n      },\n      \"provider\": {\n        \"id\": \"{{provider_np_id}}\",\n        \"descriptor\": {\n          \"name\": \"Bengaluru Metropolitan Transport Corporation\"\n        }\n      },\n      \"resources\": [\n        {\n          \"id\": \"{{job_resource_id}}\",\n          \"descriptor\": {\n            \"name\": \"Bus Driver — BMTC City Routes\",\n            \"shortDesc\": \"Full-time bus driver for BMTC city routes, DAY shift, Bengaluru.\"\n          },\n          \"resourceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"job_title\": \"Bus Driver — BMTC City Routes\",\n            \"job_type\": \"FULL_TIME\",\n            \"work_mode\": \"ONSITE\",\n            \"role_type\": \"BUS_DRIVER\",\n            \"vehicle_categories_required\": [\n              \"BUS\",\n              \"HEAVY_MOTOR_VEHICLE\"\n            ],\n            \"shift_type\": \"MORNING\",\n            \"working_hours\": \"6:00am–2:00pm, Mon–Sat\",\n            \"min_experience_years\": 3,\n            \"required_credentials\": [\n              \"DRIVING_LICENCE\",\n              \"MEDICAL_FITNESS\",\n              \"POLICE_VERIFICATION\"\n            ],\n            \"required_training\": [\n              \"Defensive Driving\",\n              \"Passenger Safety\"\n            ],\n            \"benefits_summary\": [\n              \"PF\",\n              \"ESI\",\n              \"Gratuity\",\n              \"Uniform Allowance\"\n            ],\n            \"operator_reputation\": {\n              \"rating_value\": 4.2,\n              \"rating_count\": 340,\n              \"rating_agency\": \"DriverPassport-Network\"\n            },\n            \"vacancy_count\": 12,\n            \"is_urgent\": false,\n            \"application_deadline\": \"2026-06-30T23:59:59+05:30\"\n          }\n        }\n      ],\n      \"offers\": [\n        {\n          \"id\": \"{{hiring_offer_id}}\",\n          \"resourceIds\": [\n            \"{{job_resource_id}}\"\n          ],\n          \"descriptor\": {\n            \"name\": \"BMTC Bus Driver — Standard Employment Offer\",\n            \"shortDesc\": \"Full-time permanent role with probation period.\"\n          },\n          \"offerAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"salarySpecification\": {\n              \"value\": 22000,\n              \"currency\": \"INR\",\n              \"frequency\": \"MONTHLY\"\n            },\n            \"joiningDate\": \"2026-07-15\",\n            \"shiftAssignment\": \"DAY\",\n            \"assignedDepot\": \"Yeshwanthpur Bus Depot\",\n            \"routeType\": \"CITY\",\n            \"insuranceProvided\": true,\n            \"accommodationProvided\": false,\n            \"otherBenefits\": [\n              \"DA\",\n              \"TA\",\n              \"Medical Allowance\"\n            ],\n            \"probationPeriod\": \"P3M\",\n            \"contractDuration\": null,\n            \"offerValidity\": \"2026-07-01T23:59:59+05:30\"\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{cds_url}}/catalog/publish"
+            },
+            "description": "BPP → CDS: publish driver-job catalog. Must run before UC1 discover calls."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 — catalog/on_publish  [Job Catalog — CDS → Operator BPP]",
+      "description": "CDS confirms job catalog indexed. Async callback to BPP callback URL.",
+      "item": [
+        {
+          "name": "catalog/on_publish (job catalog)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/on_publish\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cds_id}}\",\n    \"bapUri\": \"{{cds_url}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"bb22cc33-dd44-ee55-ff66-778899001122\",\n    \"timestamp\": \"2026-06-10T08:00:05+05:30\"\n  },\n  \"message\": {\n    \"ack\": {\n      \"status\": \"ACK\"\n    },\n    \"catalogId\": \"{{job_catalog_id}}\",\n    \"indexedAt\": \"2026-06-10T08:00:05+05:30\",\n    \"resourceCount\": 1,\n    \"offerCount\": 1,\n    \"notes\": \"Job catalog indexed successfully. Resources available for discovery.\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_url}}/catalog/on_publish"
+            },
+            "description": "CDS → BPP: ACK with resourceCount and indexedAt timestamp."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 — catalog/publish  [Candidate Catalog — Driver Platform BPP → CDS]",
+      "description": "Driver/Aggregator Platform (BPP) publishes driver-candidate resources to the CDS. Prerequisite for UC2-A and UC2-B transaction flows. ★ PII AUDIT: candidate resourceAttributes contain no passport_reference, no home_location.gps, anonymised descriptor names.",
+      "item": [
+        {
+          "name": "catalog/publish (candidate catalog)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/publish\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{candidate_provider_np_id}}\",\n    \"bapUri\": \"{{candidate_bpp_uri}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"cc33dd44-ee55-ff66-0077-889900112233\",\n    \"timestamp\": \"2026-06-10T08:30:00+05:30\"\n  },\n  \"message\": {\n    \"catalog\": {\n      \"id\": \"{{candidate_catalog_id}}\",\n      \"descriptor\": {\n        \"name\": \"TruckLink Driver Candidates — June 2026\",\n        \"shortDesc\": \"Active driver candidate profiles published by TruckLink.\"\n      },\n      \"provider\": {\n        \"id\": \"{{candidate_provider_np_id}}\",\n        \"descriptor\": {\n          \"name\": \"TruckLink Driver Platform\"\n        }\n      },\n      \"resources\": [\n        {\n          \"id\": \"{{candidate_resource_id}}\",\n          \"descriptor\": {\n            \"name\": \"Driver Profile D-7301\",\n            \"shortDesc\": \"HMV/Truck licensed driver, 8 yrs exp, Hyderabad.\"\n          },\n          \"resourceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverCandidateProfileResource/v2.1/context.jsonld\",\n            \"@type\": \"dcpra:DriverCandidateProfileResource\",\n            \"experience_level\": \"SENIOR\",\n            \"total_experience_years\": 8,\n            \"availability_status\": \"ACTIVELY_LOOKING\",\n            \"preferred_work_mode\": \"ONSITE\",\n            \"driver_role_types\": [\n              \"TRUCK_DRIVER\",\n              \"HEAVY_VEHICLE_DRIVER\"\n            ],\n            \"vehicle_categories\": [\n              \"HEAVY_MOTOR_VEHICLE\",\n              \"TRUCK\",\n              \"TRANSPORT_VEHICLE\"\n            ],\n            \"home_location\": {\n              \"address_locality\": \"Uppal\",\n              \"address_region\": \"Telangana\",\n              \"address_country\": \"IN\",\n              \"postal_code\": \"500039\"\n            },\n            \"reputation_summary\": {\n              \"rating_value\": 4.7,\n              \"rating_count\": 124,\n              \"rating_agency\": \"DriverPassport-Network\"\n            },\n            \"credential_summary\": [\n              \"DRIVING_LICENCE\",\n              \"MEDICAL_FITNESS\",\n              \"POLICE_VERIFICATION\"\n            ],\n            \"training_summary\": [\n              \"Defensive Driving\",\n              \"Hazardous Materials\"\n            ],\n            \"last_updated\": \"2026-05-15T08:00:00+05:30\"\n          }\n        }\n      ],\n      \"offers\": [\n        {\n          \"id\": \"{{recruitment_offer_id}}\",\n          \"resourceIds\": [\n            \"{{candidate_resource_id}}\"\n          ],\n          \"descriptor\": {\n            \"name\": \"HMV Truck Driver — Long-Haul, Telangana\",\n            \"shortDesc\": \"Permanent role, competitive salary.\"\n          },\n          \"offerAttributes\": {\n            \"@context\": \"https://schema.beckn.io/DriverJobResource/v2.1/context.jsonld\",\n            \"@type\": \"djra:DriverJobResource\",\n            \"salarySpecification\": {\n              \"value\": 35000,\n              \"currency\": \"INR\",\n              \"frequency\": \"MONTHLY\"\n            },\n            \"joiningDate\": \"2026-08-01\",\n            \"shiftAssignment\": \"ROTATIONAL\",\n            \"routeType\": \"HIGHWAY\",\n            \"insuranceProvided\": true,\n            \"accommodationProvided\": true,\n            \"otherBenefits\": [\n              \"DA\",\n              \"Night Allowance\",\n              \"Vehicle Maintenance Allowance\"\n            ],\n            \"probationPeriod\": \"P6M\",\n            \"offerValidity\": \"2026-08-15T23:59:59+05:30\"\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{cds_url}}/catalog/publish"
+            },
+            "description": "BPP → CDS: publish driver-candidate catalog. Must run before UC2 discover calls."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 — catalog/on_publish  [Candidate Catalog — CDS → Driver Platform BPP]",
+      "description": "CDS confirms candidate catalog indexed.",
+      "item": [
+        {
+          "name": "catalog/on_publish (candidate catalog)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/on_publish\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cds_id}}\",\n    \"bapUri\": \"{{cds_url}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"dd44ee55-ff66-0077-1188-990011223344\",\n    \"timestamp\": \"2026-06-10T08:30:05+05:30\"\n  },\n  \"message\": {\n    \"ack\": {\n      \"status\": \"ACK\"\n    },\n    \"catalogId\": \"{{candidate_catalog_id}}\",\n    \"indexedAt\": \"2026-06-10T08:30:05+05:30\",\n    \"resourceCount\": 1,\n    \"offerCount\": 1,\n    \"notes\": \"Candidate catalog indexed successfully. Profiles available for discovery.\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{candidate_bpp_url}}/catalog/on_publish"
+            },
+            "description": "CDS → BPP: ACK with resourceCount and indexedAt timestamp."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
