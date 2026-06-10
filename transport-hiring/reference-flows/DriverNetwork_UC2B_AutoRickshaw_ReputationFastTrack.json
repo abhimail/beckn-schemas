@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Driver Network — UC2-B Auto-Rickshaw Recruitment (Reputation Fast-Track)",
-    "_postman_id": "71732959",
+    "_postman_id": "33962909",
     "description": "## Driver Network — UC2-B: Auto-Rickshaw Recruitment (Reputation Fast-Track)\n\n**Scenario:** Namma Yatri Fleet Operations (Operator) searches for auto-rickshaw drivers with reputation score ≥ 4.5 on DriverPassport-Network. High reputation score fast-tracks the hiring — no formal interview required. Offer issued after licence verification only.\n\n**Protocol:** Beckn v2.0.0 + DriverCandidateProfileResource v2.1\n**BAP:** Operator Platform (Namma Yatri)  |  **BPP:** Driver Platform (AutoConnect)\n**Category:** driver-candidate  |  **Role:** AUTO_DRIVER  |  **Employment:** GIG/DAILY\n\n### PII Audit — Candidate Profiles\nThe on_discover catalog (folder 02) contains DriverCandidateProfileResource payloads.\nVERIFIED SAFE:\n  ✓ passport_reference: EXCLUDED — appears only at init+ (folder 05)\n  ✓ home_location.gps: EXCLUDED — locality-level only (Jayanagar, Karnataka)\n  ✓ descriptor.name: ANONYMISED — \"Driver Profile D-2156\"\n  ✓ reputation_summary (4.8★, 312 ratings): NOT PII — aggregated network stats\n  ✓ credential_summary, training_summary: NOT PII\n\n### Reputation filter in discover intent\n`filters` JSONPath: `@.resourceAttributes.reputation_summary.rating_value >= 4.5`\nThis is a discovery-time filter — BPP filters candidates whose reputation meets threshold before returning the catalog.\n\n### Abbreviated stage progression\nAPPLICATION_SUBMITTED → OFFER_ISSUED (reputation fast-track, no interview) → HIRING_CONFIRMED\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },

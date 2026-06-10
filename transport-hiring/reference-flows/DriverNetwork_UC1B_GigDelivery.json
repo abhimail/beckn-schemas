@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Driver Network — UC1-B Gig Delivery Driver (Abbreviated)",
-    "_postman_id": "12787476",
+    "_postman_id": "55957113",
     "description": "## Driver Network — UC1-B: Gig Delivery Driver Application (Abbreviated)\n\n**Scenario:** A delivery driver applies for a GIG two-wheeler delivery role on QuickDeliver Platform. No interview required — background check passes, offer issued directly, driver accepts, onboarded same day.\n\n**Protocol:** Beckn v2.0.0 + DriverJobResource v2.1\n**BAP:** Driver Platform  |  **BPP:** Gig Delivery Operator\n**Category:** driver-job  |  **Role:** DELIVERY_DRIVER  |  **Employment:** GIG\n\n### Abbreviated hiring stage progression\nAPPLICATION_SUBMITTED → OFFER_ISSUED (background check only) → HIRING_CONFIRMED → ONBOARDING_COMPLETE\n\n### Key difference from UC1-A\nNo INTERVIEW_SCHEDULED or EVALUATION_COMPLETE stages. GIG roles skip the evaluation cycle — background check is sufficient.\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
