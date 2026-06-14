@@ -56,8 +56,38 @@ components:
             - PHYSICAL_CONSULTATION
             - RADIOLOGY
             - LAB_TEST
+            - PHARMACY_DISPENSING
           description: Health service type — drives conditional requirements
           x-jsonld-id: "hpe:healthServiceType"
+        attendanceStatus:
+          type: string
+          enum:
+            - ATTENDED
+            - NO_SHOW
+            - LEFT_WITHOUT_BEING_SEEN
+          description: >
+            Attendance outcome of the engagement. Drives the T1 referral lifecycle
+            (ATTENDED / NO_SHOW). Optional — set for referred / booked engagements.
+          x-jsonld-id: "hpe:attendanceStatus"
+        outcomeNoteRef:
+          type: string
+          description: >
+            Label of the credential-scoped outcome-note Document in the Performance's
+            Descriptor.docs[]. The structured outcome note returned to the referrer —
+            travels as a reference, never inline (the url lives in the core Document).
+            Optional.
+          x-jsonld-id: "hpe:outcomeNoteRef"
+        outcomeDeliveredAt:
+          type: string
+          format: date-time
+          description: Timestamp the structured outcome note was delivered to the referrer (ISO 8601). Optional.
+          x-jsonld-id: "hpe:outcomeDeliveredAt"
+        outcomeSlaBreached:
+          type: boolean
+          description: >
+            Whether the outcome SLA was breached. Feeds the T1 SLA_BREACHED lifecycle state.
+            Optional.
+          x-jsonld-id: "hpe:outcomeSlaBreached"
         followupRecommendationCode:
           type: string
           enum:

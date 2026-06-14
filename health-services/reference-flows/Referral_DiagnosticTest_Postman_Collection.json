@@ -1,0 +1,938 @@
+{
+  "info": {
+    "_postman_id": "ed6d7b6d-d80e-5d41-a1b1-84041037e191",
+    "name": "Referral — Diagnostic Test (Broad / Scoped)",
+    "description": "### Quick-start: environment setup\n\n1. Import **Referral_Dev_Environment.json** into Postman (Environments -> Import).\n2. Select the **Referral Dev** environment from the environment picker.\n3. Set `bpp_uri`, `bap_uri`, and `auth_token` for your sandbox. `bpp_uri` points at the\n   Care Coordinator for the T1 folder and at the Referred Provider for the T2 folder —\n   switch it between the two transactions.\n4. `network_id` is currently `example.net/health` (placeholder) — confirm with the registry team.\n5. UUID variable defaults are pre-filled; `coordination_id` is the load-bearing link\n   (T1 issues it, T2 carries it as `coordinationRef`). Keep it identical across both folders.\n\n## Referral — Diagnostic Test (Broad / Scoped)\n\n**Scenario:** A GP (Dr. Suresh Iyer) orders a fasting lipid panel for Meena Joshi but\nnames no lab. The Care Coordinator discovers and books a suitable NABL lab.\n\n**Two-transaction model**\n- **T1 — Referral Coordination:** BAP = Referrer, BPP = Care Coordinator. HealthReferral.\n- **T2 — Appointment / Booking:** BAP = the SAME CC, BPP = Lab. HealthContract,\n  `coordinationRef = {{coordination_id}}`, healthServiceType=LAB_TEST.\n\n**Targeting mode:** Broad / scoped — `recommendedTargetRef` ABSENT. targetCriteria carries\nserviceCategory=INVESTIGATION (+ procedureNeeds lipid panel). **T2 INCLUDES discover** —\nthe CC runs Discover 1 against targetCriteria to find a lab.\n\n**Consent class:** B (treatment-relationship).\n\n**Outcome:** lab report delivered at T2 on_status (outcomeNoteRef).\n\n**Deviation shown:** RESCHEDULED — lab reschedules (T2 `update`) -> T1 `update` with\ndeviation.reasonCode RESCHEDULED.\n\n**T1 -> T2 link:** `coordination_id` -> T2 `coordinationRef`; T1 `targetBookingRef = {{appointment_id}}`.\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "T1 · Referral Coordination  (BAP Referrer → BPP Care Coordinator)",
+      "description": "Broad/scoped referral — NO named lab. targetCriteria carries serviceCategory=INVESTIGATION plus a test descriptor; recommendedTargetRef ABSENT. Consent Class B.",
+      "item": [
+        {
+          "name": "01 — discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"987c2f18-29b4-5821-82d6-8b4953794f21\",\n    \"timestamp\": \"2026-06-14T09:00:00+05:30\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"intent\": {\n      \"textSearch\": \"care coordinator diagnostic Pune referral\",\n      \"filters\": {\n        \"type\": \"jsonpath\",\n        \"expression\": \"$.catalogs[*].resources[*] ? (@.resourceAttributes.acceptanceMode == \\\"AUTO_ACCEPT\\\")\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/discover"
+            },
+            "description": "Referrer discovers a Care Coordinator able to handle this referral category."
+          },
+          "response": []
+        },
+        {
+          "name": "02 — on_discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"cbc18b86-5509-544d-afd7-e45afc9c3062\",\n    \"timestamp\": \"2026-06-14T09:01:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"{{coord_catalog_id}}\",\n        \"bppId\": \"{{cc_np_id}}\",\n        \"bppUri\": \"{{bpp_uri}}\",\n        \"descriptor\": {\n          \"name\": \"Pune Diagnostic Coordination Desk — Catalogue\"\n        },\n        \"provider\": {\n          \"id\": \"{{cc_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Pune Diagnostic Coordination Desk\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"{{coord_resource_id}}\",\n            \"descriptor\": {\n              \"name\": \"Pune Diagnostic Coordination Desk\",\n              \"shortDesc\": \"Care coordination desk — referral handling\",\n              \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n              \"@type\": \"scres:ServiceCoordinationResource\",\n              \"coordinationScope\": {\n                \"referralCategories\": [\n                  {\n                    \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                    \"@type\": \"ReferralCategory\",\n                    \"code\": \"DIAGNOSTIC\",\n                    \"display\": \"Diagnostic\"\n                  }\n                ],\n                \"targetServiceTypes\": [\n                  {\n                    \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                    \"@type\": \"TargetServiceType\",\n                    \"code\": \"INVESTIGATION\",\n                    \"display\": \"Investigation\"\n                  }\n                ],\n                \"geographyScope\": [\n                  {\n                    \"@context\": \"https://lgd.gov.in\",\n                    \"@type\": \"District\",\n                    \"code\": \"LGD-521\",\n                    \"display\": \"Pune\"\n                  }\n                ]\n              },\n              \"acceptanceMode\": \"AUTO_ACCEPT\",\n              \"supportedUrgencyTiers\": [\n                \"ROUTINE\",\n                \"URGENT\"\n              ]\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 150,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_discover"
+            },
+            "description": "Care Coordinator returns its coordination catalogue entry."
+          },
+          "response": []
+        },
+        {
+          "name": "03 — select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"f7676977-de7f-5b4c-9efe-c0c2ebc2641a\",\n    \"timestamp\": \"2026-06-14T09:05:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{referrer_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"NOMINATOR\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-GP-0001\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 150,\n            \"currency\": \"INR\",\n            \"totalAmount\": 150,\n            \"netAmount\": 150,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"DRAFT\",\n        \"clinicalUrgencyTier\": \"ROUTINE\",\n        \"targetCriteria\": {\n          \"serviceCategory\": {\n            \"@context\": \"https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld\",\n            \"@type\": \"ServiceCategory\",\n            \"code\": \"INVESTIGATION\",\n            \"display\": \"Investigation\"\n          },\n          \"procedureNeeds\": [\n            \"LIPID_PANEL\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/select"
+            },
+            "description": "Referrer originates DRAFT coordination contract (no id; CC assigns at on_select)."
+          },
+          "response": []
+        },
+        {
+          "name": "04 — on_select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"3c6abc35-c35f-5b9a-b7c5-43a46cc41a73\",\n    \"timestamp\": \"2026-06-14T09:06:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Pune Diagnostic Coordination Desk\",\n                \"shortDesc\": \"Care coordination desk — referral handling\",\n                \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                \"@type\": \"scres:ServiceCoordinationResource\",\n                \"coordinationScope\": {\n                  \"referralCategories\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"ReferralCategory\",\n                      \"code\": \"DIAGNOSTIC\",\n                      \"display\": \"Diagnostic\"\n                    }\n                  ],\n                  \"targetServiceTypes\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"TargetServiceType\",\n                      \"code\": \"INVESTIGATION\",\n                      \"display\": \"Investigation\"\n                    }\n                  ],\n                  \"geographyScope\": [\n                    {\n                      \"@context\": \"https://lgd.gov.in\",\n                      \"@type\": \"District\",\n                      \"code\": \"LGD-521\",\n                      \"display\": \"Pune\"\n                    }\n                  ]\n                },\n                \"acceptanceMode\": \"AUTO_ACCEPT\",\n                \"supportedUrgencyTiers\": [\n                  \"ROUTINE\",\n                  \"URGENT\"\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 150,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 150,\n            \"currency\": \"INR\",\n            \"totalAmount\": 150,\n            \"netAmount\": 150,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"DRAFT\",\n        \"clinicalUrgencyTier\": \"ROUTINE\",\n        \"targetCriteria\": {\n          \"serviceCategory\": {\n            \"@context\": \"https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld\",\n            \"@type\": \"ServiceCategory\",\n            \"code\": \"INVESTIGATION\",\n            \"display\": \"Investigation\"\n          },\n          \"procedureNeeds\": [\n            \"LIPID_PANEL\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_select"
+            },
+            "description": "CC accepts; assigns coordination contract id. (= the Referral ID at on_confirm.)"
+          },
+          "response": []
+        },
+        {
+          "name": "05 — init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"10d9934a-17e0-5662-b3ae-78dad9433e72\",\n    \"timestamp\": \"2026-06-14T09:10:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{referrer_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Dr. Suresh Iyer\",\n            \"shortDesc\": \"General Practitioner (Nominator)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"NOMINATOR\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-GP-0001\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Meena Joshi\",\n            \"shortDesc\": \"Patient (Subject)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{observer_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Dr. Suresh Iyer — Front Desk\",\n            \"shortDesc\": \"Observer\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"OBSERVER\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-GP-0001\"\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 150,\n            \"currency\": \"INR\",\n            \"totalAmount\": 150,\n            \"netAmount\": 150,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"DRAFT\",\n        \"clinicalUrgencyTier\": \"ROUTINE\",\n        \"targetCriteria\": {\n          \"serviceCategory\": {\n            \"@context\": \"https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld\",\n            \"@type\": \"ServiceCategory\",\n            \"code\": \"INVESTIGATION\",\n            \"display\": \"Investigation\"\n          },\n          \"procedureNeeds\": [\n            \"LIPID_PANEL\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/init"
+            },
+            "description": "Referrer confirms binding intent; full participant detail supplied."
+          },
+          "response": []
+        },
+        {
+          "name": "06 — on_init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"017691fd-f94a-5c43-836a-4598281ebfd9\",\n    \"timestamp\": \"2026-06-14T09:11:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Pune Diagnostic Coordination Desk\",\n                \"shortDesc\": \"Care coordination desk — referral handling\",\n                \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                \"@type\": \"scres:ServiceCoordinationResource\",\n                \"coordinationScope\": {\n                  \"referralCategories\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"ReferralCategory\",\n                      \"code\": \"DIAGNOSTIC\",\n                      \"display\": \"Diagnostic\"\n                    }\n                  ],\n                  \"targetServiceTypes\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"TargetServiceType\",\n                      \"code\": \"INVESTIGATION\",\n                      \"display\": \"Investigation\"\n                    }\n                  ],\n                  \"geographyScope\": [\n                    {\n                      \"@context\": \"https://lgd.gov.in\",\n                      \"@type\": \"District\",\n                      \"code\": \"LGD-521\",\n                      \"display\": \"Pune\"\n                    }\n                  ]\n                },\n                \"acceptanceMode\": \"AUTO_ACCEPT\",\n                \"supportedUrgencyTiers\": [\n                  \"ROUTINE\",\n                  \"URGENT\"\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 150,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"QUOTED\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 150,\n            \"currency\": \"INR\",\n            \"totalAmount\": 150,\n            \"netAmount\": 150,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"paymentSchedule\": \"UPFRONT\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"DRAFT\",\n        \"clinicalUrgencyTier\": \"ROUTINE\",\n        \"targetCriteria\": {\n          \"serviceCategory\": {\n            \"@context\": \"https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld\",\n            \"@type\": \"ServiceCategory\",\n            \"code\": \"INVESTIGATION\",\n            \"display\": \"Investigation\"\n          },\n          \"procedureNeeds\": [\n            \"LIPID_PANEL\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_init"
+            },
+            "description": "CC returns binding quote for the coordination fee."
+          },
+          "response": []
+        },
+        {
+          "name": "07 — confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"f24eabb2-fa51-536f-b08d-a5b323fb2aa3\",\n    \"timestamp\": \"2026-06-14T09:15:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"descriptor\": {\n        \"name\": \"Referral — GP -> Lipid Panel\",\n        \"docs\": [\n          {\n            \"id\": \"{{referralnote_doc_ref}}\",\n            \"name\": \"Referral Note — Meena Joshi\",\n            \"url\": \"https://docs.example.org/referral/{{referralnote_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\",\n            \"standard\": \"FHIR/ServiceRequest\"\n          },\n          {\n            \"id\": \"{{consent_doc_ref}}\",\n            \"name\": \"Patient Consent — Referral\",\n            \"url\": \"https://docs.example.org/consent/{{consent_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\"\n          }\n        ]\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 150,\n            \"currency\": \"INR\",\n            \"totalAmount\": 150,\n            \"netAmount\": 150,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"ACTIVE\",\n        \"clinicalUrgencyTier\": \"ROUTINE\",\n        \"targetCriteria\": {\n          \"serviceCategory\": {\n            \"@context\": \"https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld\",\n            \"@type\": \"ServiceCategory\",\n            \"code\": \"INVESTIGATION\",\n            \"display\": \"Investigation\"\n          },\n          \"procedureNeeds\": [\n            \"LIPID_PANEL\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"coordinationId\": \"{{coordination_id}}\",\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        },\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"consentedBy\": \"{{referrer_participant_id}}\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ],\n          \"originatingConsentRef\": \"treatment-rel-{{referrer_participant_id}}\"\n        },\n        \"referralNote\": {\n          \"artifactRef\": \"{{referralnote_doc_ref}}\",\n          \"credentialScope\": \"did:example:provider:{{provider_participant_id}}\",\n          \"accessWindowStart\": \"2026-06-14T09:15:00+05:30\",\n          \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n          \"revocationStatus\": \"ACTIVE\",\n          \"specialty\": \"Pathology\",\n          \"urgency\": \"ROUTINE\",\n          \"priorResultRefs\": []\n        },\n        \"notificationRoster\": [\n          {\n            \"partyRef\": \"{{referrer_participant_id}}\",\n            \"partyRole\": \"NOMINATOR\",\n            \"notificationScope\": \"FULL\",\n            \"channelRef\": \"sms:+910000000010\"\n          },\n          {\n            \"partyRef\": \"{{patient_participant_id}}\",\n            \"partyRole\": \"SUBJECT\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000011\"\n          },\n          {\n            \"partyRef\": \"{{observer_participant_id}}\",\n            \"partyRole\": \"OBSERVER\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000012\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/confirm"
+            },
+            "description": "Referrer confirms. CONSENT (class B) is the precondition for issuance."
+          },
+          "response": []
+        },
+        {
+          "name": "08 — on_confirm  ★ Referral issued (coordinationId)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"2139a24c-4d8e-5c94-834d-e965f1f9be6c\",\n    \"timestamp\": \"2026-06-14T09:16:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"descriptor\": {\n        \"name\": \"Referral — GP -> Lipid Panel\",\n        \"docs\": [\n          {\n            \"id\": \"{{referralnote_doc_ref}}\",\n            \"name\": \"Referral Note — Meena Joshi\",\n            \"url\": \"https://docs.example.org/referral/{{referralnote_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\",\n            \"standard\": \"FHIR/ServiceRequest\"\n          },\n          {\n            \"id\": \"{{consent_doc_ref}}\",\n            \"name\": \"Patient Consent — Referral\",\n            \"url\": \"https://docs.example.org/consent/{{consent_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\"\n          }\n        ]\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Pune Diagnostic Coordination Desk\",\n                \"shortDesc\": \"Care coordination desk — referral handling\",\n                \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                \"@type\": \"scres:ServiceCoordinationResource\",\n                \"coordinationScope\": {\n                  \"referralCategories\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"ReferralCategory\",\n                      \"code\": \"DIAGNOSTIC\",\n                      \"display\": \"Diagnostic\"\n                    }\n                  ],\n                  \"targetServiceTypes\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"TargetServiceType\",\n                      \"code\": \"INVESTIGATION\",\n                      \"display\": \"Investigation\"\n                    }\n                  ],\n                  \"geographyScope\": [\n                    {\n                      \"@context\": \"https://lgd.gov.in\",\n                      \"@type\": \"District\",\n                      \"code\": \"LGD-521\",\n                      \"display\": \"Pune\"\n                    }\n                  ]\n                },\n                \"acceptanceMode\": \"AUTO_ACCEPT\",\n                \"supportedUrgencyTiers\": [\n                  \"ROUTINE\",\n                  \"URGENT\"\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 150,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 150,\n            \"currency\": \"INR\",\n            \"totalAmount\": 150,\n            \"netAmount\": 150,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{referrer_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Dr. Suresh Iyer\",\n            \"shortDesc\": \"General Practitioner (Nominator)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"NOMINATOR\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-GP-0001\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Meena Joshi\",\n            \"shortDesc\": \"Patient (Subject)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"ACTIVE\",\n        \"clinicalUrgencyTier\": \"ROUTINE\",\n        \"targetCriteria\": {\n          \"serviceCategory\": {\n            \"@context\": \"https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld\",\n            \"@type\": \"ServiceCategory\",\n            \"code\": \"INVESTIGATION\",\n            \"display\": \"Investigation\"\n          },\n          \"procedureNeeds\": [\n            \"LIPID_PANEL\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"coordinationId\": \"{{coordination_id}}\",\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        },\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"consentedBy\": \"{{referrer_participant_id}}\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ],\n          \"originatingConsentRef\": \"treatment-rel-{{referrer_participant_id}}\"\n        },\n        \"referralNote\": {\n          \"artifactRef\": \"{{referralnote_doc_ref}}\",\n          \"credentialScope\": \"did:example:provider:{{provider_participant_id}}\",\n          \"accessWindowStart\": \"2026-06-14T09:15:00+05:30\",\n          \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n          \"revocationStatus\": \"ACTIVE\",\n          \"specialty\": \"Pathology\",\n          \"urgency\": \"ROUTINE\",\n          \"priorResultRefs\": []\n        },\n        \"notificationRoster\": [\n          {\n            \"partyRef\": \"{{referrer_participant_id}}\",\n            \"partyRole\": \"NOMINATOR\",\n            \"notificationScope\": \"FULL\",\n            \"channelRef\": \"sms:+910000000010\"\n          },\n          {\n            \"partyRef\": \"{{patient_participant_id}}\",\n            \"partyRole\": \"SUBJECT\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000011\"\n          },\n          {\n            \"partyRef\": \"{{observer_participant_id}}\",\n            \"partyRole\": \"OBSERVER\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000012\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_confirm"
+            },
+            "description": "★ CC issues the Referral. coordinationId = {{coordination_id}} is the persistent Referral ID, consumed by T2 as coordinationRef."
+          },
+          "response": []
+        },
+        {
+          "name": "09 — status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"8228b4a5-aeb9-5339-b441-9da997297826\",\n    \"timestamp\": \"2026-06-14T09:20:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/status"
+            },
+            "description": "Referrer polls coordination state."
+          },
+          "response": []
+        },
+        {
+          "name": "10 — on_status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"2045adeb-0c67-54b4-928c-0f7f291025c8\",\n    \"timestamp\": \"2026-06-14T11:30:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Pune Diagnostic Coordination Desk\",\n                \"shortDesc\": \"Care coordination desk — referral handling\",\n                \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                \"@type\": \"scres:ServiceCoordinationResource\",\n                \"coordinationScope\": {\n                  \"referralCategories\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"ReferralCategory\",\n                      \"code\": \"DIAGNOSTIC\",\n                      \"display\": \"Diagnostic\"\n                    }\n                  ],\n                  \"targetServiceTypes\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"TargetServiceType\",\n                      \"code\": \"INVESTIGATION\",\n                      \"display\": \"Investigation\"\n                    }\n                  ],\n                  \"geographyScope\": [\n                    {\n                      \"@context\": \"https://lgd.gov.in\",\n                      \"@type\": \"District\",\n                      \"code\": \"LGD-521\",\n                      \"display\": \"Pune\"\n                    }\n                  ]\n                },\n                \"acceptanceMode\": \"AUTO_ACCEPT\",\n                \"supportedUrgencyTiers\": [\n                  \"ROUTINE\",\n                  \"URGENT\"\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 150,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"BOOKING_CONFIRMED\",\n        \"clinicalUrgencyTier\": \"ROUTINE\",\n        \"targetCriteria\": {\n          \"serviceCategory\": {\n            \"@context\": \"https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld\",\n            \"@type\": \"ServiceCategory\",\n            \"code\": \"INVESTIGATION\",\n            \"display\": \"Investigation\"\n          },\n          \"procedureNeeds\": [\n            \"LIPID_PANEL\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"coordinationId\": \"{{coordination_id}}\",\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        },\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"consentedBy\": \"{{referrer_participant_id}}\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ],\n          \"originatingConsentRef\": \"treatment-rel-{{referrer_participant_id}}\"\n        },\n        \"referralNote\": {\n          \"artifactRef\": \"{{referralnote_doc_ref}}\",\n          \"credentialScope\": \"did:example:provider:{{provider_participant_id}}\",\n          \"accessWindowStart\": \"2026-06-14T09:15:00+05:30\",\n          \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n          \"revocationStatus\": \"ACTIVE\",\n          \"specialty\": \"Pathology\",\n          \"urgency\": \"ROUTINE\",\n          \"priorResultRefs\": []\n        },\n        \"notificationRoster\": [\n          {\n            \"partyRef\": \"{{referrer_participant_id}}\",\n            \"partyRole\": \"NOMINATOR\",\n            \"notificationScope\": \"FULL\",\n            \"channelRef\": \"sms:+910000000010\"\n          },\n          {\n            \"partyRef\": \"{{patient_participant_id}}\",\n            \"partyRole\": \"SUBJECT\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000011\"\n          },\n          {\n            \"partyRef\": \"{{observer_participant_id}}\",\n            \"partyRole\": \"OBSERVER\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000012\"\n          }\n        ],\n        \"targetBookingRef\": \"{{appointment_id}}\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_status"
+            },
+            "description": "CC reports lifecycleState BOOKING_CONFIRMED; targetBookingRef = {{appointment_id}}."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "T2 · Appointment / Booking  (BAP Care Coordinator → BPP Referred Provider)",
+      "description": "CC runs **Discover 1** against the T1 targetCriteria to find a lab, then books it. healthServiceType=LAB_TEST. Lab report returned at on_status.",
+      "item": [
+        {
+          "name": "01 — discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"d178e724-70ae-557b-86dd-136fb17183f8\",\n    \"timestamp\": \"2026-06-14T09:25:00+05:30\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"intent\": {\n      \"textSearch\": \"NABL lab lipid panel Pune\",\n      \"filters\": {\n        \"type\": \"jsonpath\",\n        \"expression\": \"$.catalogs[*].resources[*] ? (@.resourceAttributes.healthServiceType == \\\"LAB_TEST\\\")\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/discover"
+            },
+            "description": "CC (now Seeker NP) discovers a downstream provider against the T1 targetCriteria."
+          },
+          "response": []
+        },
+        {
+          "name": "02 — on_discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"0270ac30-12a8-5d2d-bfeb-d4849a3c136b\",\n    \"timestamp\": \"2026-06-14T09:26:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"{{target_catalog_id}}\",\n        \"bppId\": \"{{provider_np_id}}\",\n        \"bppUri\": \"{{bpp_uri}}\",\n        \"descriptor\": {\n          \"name\": \"Sahyadri Pathology Lab — Catalogue\"\n        },\n        \"provider\": {\n          \"id\": \"{{provider_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Sahyadri Pathology Lab\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"{{target_resource_id}}\",\n            \"descriptor\": {\n              \"name\": \"Lipid panel (fasting)\",\n              \"shortDesc\": \"Fasting lipid profile, NABL-accredited lab\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n              \"@type\": \"hr:HealthResource\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"acceptedSchemes\": [\n                {\n                  \"@context\": \"https://nha.gov.in\",\n                  \"@type\": \"Scheme\",\n                  \"code\": \"PMJAY\",\n                  \"display\": \"Ayushman Bharat PM-JAY\"\n                }\n              ],\n              \"specialty\": \"Pathology\"\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Lab test — lipid panel\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 450,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_discover"
+            },
+            "description": "Referred provider returns its bookable catalogue."
+          },
+          "response": []
+        },
+        {
+          "name": "03 — select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"8691a32f-0b5a-5322-b02b-d79bf36f4e33\",\n    \"timestamp\": \"2026-06-14T09:30:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 450,\n            \"currency\": \"INR\",\n            \"totalAmount\": 450,\n            \"netAmount\": 450,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"LAB_TEST\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/select"
+            },
+            "description": "CC selects the discovered provider/offer. coordinationRef = {{coordination_id}} links this booking to T1."
+          },
+          "response": []
+        },
+        {
+          "name": "04 — on_select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"d81ea9db-d341-5b46-832e-bffa26b1393c\",\n    \"timestamp\": \"2026-06-14T09:31:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Lipid panel (fasting)\",\n                \"shortDesc\": \"Fasting lipid profile, NABL-accredited lab\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n                \"@type\": \"hr:HealthResource\",\n                \"healthServiceType\": \"LAB_TEST\",\n                \"acceptedSchemes\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\",\n                    \"display\": \"Ayushman Bharat PM-JAY\"\n                  }\n                ],\n                \"specialty\": \"Pathology\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Lab test — lipid panel\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 450,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 450,\n            \"currency\": \"INR\",\n            \"totalAmount\": 450,\n            \"netAmount\": 450,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"LAB_TEST\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_select"
+            },
+            "description": "Provider accepts; assigns appointment contract id."
+          },
+          "response": []
+        },
+        {
+          "name": "05 — init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"16975615-aeb3-5bcc-ad17-063455eb4909\",\n    \"timestamp\": \"2026-06-14T09:35:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Meena Joshi\",\n            \"shortDesc\": \"Patient (Subject)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{cc_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Pune Diagnostic Coordination Desk\",\n            \"shortDesc\": \"Care Coordinator (Seeker NP for T2)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"REFERRER\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-CC-0001\"\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 450,\n            \"currency\": \"INR\",\n            \"totalAmount\": 450,\n            \"netAmount\": 450,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"descriptor\": {\n        \"docs\": [\n          {\n            \"id\": \"{{referralnote_doc_ref}}\",\n            \"name\": \"Referral Note (handed over from T1)\",\n            \"url\": \"https://docs.example.org/referral/{{referralnote_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\",\n            \"standard\": \"FHIR/ServiceRequest\"\n          }\n        ]\n      },\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"LAB_TEST\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/init"
+            },
+            "description": "CC confirms binding intent; referral note handed over via descriptor.docs[] + inputArtifacts."
+          },
+          "response": []
+        },
+        {
+          "name": "06 — on_init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"b21abc23-e8b7-5f94-9f4f-6f68a59cc837\",\n    \"timestamp\": \"2026-06-14T09:36:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Lipid panel (fasting)\",\n                \"shortDesc\": \"Fasting lipid profile, NABL-accredited lab\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n                \"@type\": \"hr:HealthResource\",\n                \"healthServiceType\": \"LAB_TEST\",\n                \"acceptedSchemes\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\",\n                    \"display\": \"Ayushman Bharat PM-JAY\"\n                  }\n                ],\n                \"specialty\": \"Pathology\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Lab test — lipid panel\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 450,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"QUOTED\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 450,\n            \"currency\": \"INR\",\n            \"totalAmount\": 450,\n            \"netAmount\": 450,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"paymentSchedule\": \"UPFRONT\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"LAB_TEST\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_init"
+            },
+            "description": "Provider returns binding quote and confirmed appointment slot."
+          },
+          "response": []
+        },
+        {
+          "name": "07 — confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"1f575c9c-abbc-5e2c-b499-bf84dd85ce13\",\n    \"timestamp\": \"2026-06-14T09:40:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 450,\n            \"currency\": \"INR\",\n            \"totalAmount\": 450,\n            \"netAmount\": 450,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"descriptor\": {\n        \"docs\": [\n          {\n            \"id\": \"{{referralnote_doc_ref}}\",\n            \"name\": \"Referral Note (handed over from T1)\",\n            \"url\": \"https://docs.example.org/referral/{{referralnote_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\",\n            \"standard\": \"FHIR/ServiceRequest\"\n          }\n        ]\n      },\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"LAB_TEST\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/confirm"
+            },
+            "description": "CC confirms the appointment."
+          },
+          "response": []
+        },
+        {
+          "name": "08 — on_confirm  ★ Appointment booked",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"782cc634-1f9a-57b7-9493-9012e9c6407f\",\n    \"timestamp\": \"2026-06-14T09:41:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Lipid panel (fasting)\",\n                \"shortDesc\": \"Fasting lipid profile, NABL-accredited lab\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n                \"@type\": \"hr:HealthResource\",\n                \"healthServiceType\": \"LAB_TEST\",\n                \"acceptedSchemes\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\",\n                    \"display\": \"Ayushman Bharat PM-JAY\"\n                  }\n                ],\n                \"specialty\": \"Pathology\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Lab test — lipid panel\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 450,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 450,\n            \"currency\": \"INR\",\n            \"totalAmount\": 450,\n            \"netAmount\": 450,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Meena Joshi\",\n            \"shortDesc\": \"Patient (Subject)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{cc_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Pune Diagnostic Coordination Desk\",\n            \"shortDesc\": \"Care Coordinator (Seeker NP for T2)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"REFERRER\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-CC-0001\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"LAB_TEST\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_confirm"
+            },
+            "description": "★ Provider confirms appointment {{appointment_id}}. CC then sets T1 lifecycleState BOOKING_CONFIRMED."
+          },
+          "response": []
+        },
+        {
+          "name": "09 — status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"e9cebfe4-ec4c-50c5-a1f3-3f9c4f8dbc20\",\n    \"timestamp\": \"2026-06-14T10:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/status"
+            },
+            "description": "CC polls the appointment / awaits outcome."
+          },
+          "response": []
+        },
+        {
+          "name": "10 — on_status  ★ Outcome delivered",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"dfb3d13d-4c01-5816-903a-bd144c0da95c\",\n    \"timestamp\": \"2026-06-15T17:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"COMPLETE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Lipid panel (fasting)\",\n                \"shortDesc\": \"Fasting lipid profile, NABL-accredited lab\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n                \"@type\": \"hr:HealthResource\",\n                \"healthServiceType\": \"LAB_TEST\",\n                \"acceptedSchemes\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\",\n                    \"display\": \"Ayushman Bharat PM-JAY\"\n                  }\n                ],\n                \"specialty\": \"Pathology\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Lab test — lipid panel\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 450,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"performance-t2-001\",\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthPerformance/v2.1/context.jsonld\",\n            \"@type\": \"hpe:HealthPerformance\",\n            \"healthServiceType\": \"LAB_TEST\",\n            \"attendanceStatus\": \"ATTENDED\",\n            \"serviceLocation\": {\n              \"gps\": \"18.5204,73.8567\",\n              \"address\": \"FC Road, Pune\"\n            },\n            \"providerConfirmedCompletion\": true,\n            \"outcomeNoteRef\": \"{{outcomenote_doc_ref}}\",\n            \"outcomeDeliveredAt\": \"2026-06-15T17:00:00+05:30\",\n            \"artifactsGenerated\": [\n              \"{{outcomenote_doc_ref}}\"\n            ],\n            \"followupRecommendationCode\": \"ROUTINE\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"LAB_TEST\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_status"
+            },
+            "description": "★ Provider reports ATTENDED and delivers the lab report (outcomeNoteRef). CC projects outcome onto T1 (OUTCOME_RECEIVED)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Deviation — RESCHEDULED",
+      "description": "**Deviation: RESCHEDULED.** The lab reschedules the slot via T2 `update`; the CC reflects it on T1 with deviation.reasonCode=RESCHEDULED (lifecycle stays in-flight).",
+      "item": [
+        {
+          "name": "01 — T2 update — RESCHEDULED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"0eba69c3-dd13-594e-bb71-c3305c5f896a\",\n    \"timestamp\": \"2026-06-15T09:30:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"LAB_TEST\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/update"
+            },
+            "description": "Appointment Rescheduled on the T2 appointment."
+          },
+          "response": []
+        },
+        {
+          "name": "02 — T2 on_update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"85fa651f-ff95-5061-ae0a-67473422c351\",\n    \"timestamp\": \"2026-06-15T09:31:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Lipid panel (fasting)\",\n                \"shortDesc\": \"Fasting lipid profile, NABL-accredited lab\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n                \"@type\": \"hr:HealthResource\",\n                \"healthServiceType\": \"LAB_TEST\",\n                \"acceptedSchemes\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\",\n                    \"display\": \"Ayushman Bharat PM-JAY\"\n                  }\n                ],\n                \"specialty\": \"Pathology\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Lab test — lipid panel\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 450,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"LAB_TEST\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_update"
+            },
+            "description": "Provider acknowledges the T2 deviation."
+          },
+          "response": []
+        },
+        {
+          "name": "03 — T1 update — lifecycleState TARGET_SELECTED + deviation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"d4d0ecfc-0819-57a2-a260-34a1e1babd20\",\n    \"timestamp\": \"2026-06-15T10:00:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"TARGET_SELECTED\",\n        \"clinicalUrgencyTier\": \"ROUTINE\",\n        \"targetCriteria\": {\n          \"serviceCategory\": {\n            \"@context\": \"https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld\",\n            \"@type\": \"ServiceCategory\",\n            \"code\": \"INVESTIGATION\",\n            \"display\": \"Investigation\"\n          },\n          \"procedureNeeds\": [\n            \"LIPID_PANEL\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"coordinationId\": \"{{coordination_id}}\",\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        },\n        \"deviation\": {\n          \"reasonCode\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"DeviationReasonCode\",\n            \"code\": \"RESCHEDULED\",\n            \"display\": \"Appointment Rescheduled\"\n          },\n          \"detectedBy\": \"{{cc_np_id}}\",\n          \"detectedAt\": \"2026-06-15T10:00:00+05:30\",\n          \"note\": \"Lab rescheduled the collection slot to the following morning.\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/update"
+            },
+            "description": "CC mirrors the deviation onto T1: lifecycleState=TARGET_SELECTED, deviation.reasonCode=RESCHEDULED."
+          },
+          "response": []
+        },
+        {
+          "name": "04 — T1 on_update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"3d833a29-9ba8-5a6f-a258-81df032be91d\",\n    \"timestamp\": \"2026-06-15T10:01:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Pune Diagnostic Coordination Desk\",\n                \"shortDesc\": \"Care coordination desk — referral handling\",\n                \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                \"@type\": \"scres:ServiceCoordinationResource\",\n                \"coordinationScope\": {\n                  \"referralCategories\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"ReferralCategory\",\n                      \"code\": \"DIAGNOSTIC\",\n                      \"display\": \"Diagnostic\"\n                    }\n                  ],\n                  \"targetServiceTypes\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"TargetServiceType\",\n                      \"code\": \"INVESTIGATION\",\n                      \"display\": \"Investigation\"\n                    }\n                  ],\n                  \"geographyScope\": [\n                    {\n                      \"@context\": \"https://lgd.gov.in\",\n                      \"@type\": \"District\",\n                      \"code\": \"LGD-521\",\n                      \"display\": \"Pune\"\n                    }\n                  ]\n                },\n                \"acceptanceMode\": \"AUTO_ACCEPT\",\n                \"supportedUrgencyTiers\": [\n                  \"ROUTINE\",\n                  \"URGENT\"\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 150,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"TARGET_SELECTED\",\n        \"clinicalUrgencyTier\": \"ROUTINE\",\n        \"targetCriteria\": {\n          \"serviceCategory\": {\n            \"@context\": \"https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld\",\n            \"@type\": \"ServiceCategory\",\n            \"code\": \"INVESTIGATION\",\n            \"display\": \"Investigation\"\n          },\n          \"procedureNeeds\": [\n            \"LIPID_PANEL\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"coordinationId\": \"{{coordination_id}}\",\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        },\n        \"deviation\": {\n          \"reasonCode\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"DeviationReasonCode\",\n            \"code\": \"RESCHEDULED\",\n            \"display\": \"Appointment Rescheduled\"\n          },\n          \"detectedBy\": \"{{cc_np_id}}\",\n          \"detectedAt\": \"2026-06-15T10:00:00+05:30\",\n          \"note\": \"Lab rescheduled the collection slot to the following morning.\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_update"
+            },
+            "description": "Referrer acknowledges the updated referral lifecycle."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "domain",
+      "value": "health",
+      "type": "string"
+    },
+    {
+      "key": "network_id",
+      "value": "example.net/health",
+      "type": "string",
+      "description": "Confirm exact value with the network registry team."
+    },
+    {
+      "key": "bpp_uri",
+      "value": "",
+      "type": "string",
+      "description": "Target BPP base URL for the active transaction (CC for T1, Provider for T2)."
+    },
+    {
+      "key": "bap_uri",
+      "value": "",
+      "type": "string",
+      "description": "BAP callback base URL for on_* simulations."
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Network-issued JWT — set before running."
+    },
+    {
+      "key": "seeker_np_id",
+      "value": "referrer-np-diagnostic",
+      "type": "string",
+      "description": "Referrer NP (BAP in T1)."
+    },
+    {
+      "key": "cc_np_id",
+      "value": "cc-np-diagnostic",
+      "type": "string",
+      "description": "Care Coordinator NP (BPP in T1, BAP in T2)."
+    },
+    {
+      "key": "provider_np_id",
+      "value": "provider-np-diagnostic",
+      "type": "string",
+      "description": "Referred Provider NP (BPP in T2)."
+    },
+    {
+      "key": "transaction_id_t1",
+      "value": "d4d72443-2000-4b02-8b60-2210d060eafb",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id_t2",
+      "value": "a9046a23-4550-4cc1-b6ab-6aa5c86ce29f",
+      "type": "string"
+    },
+    {
+      "key": "coordination_id",
+      "value": "7a1ac527-8093-4b3c-b3cc-596421bfa311",
+      "type": "string",
+      "description": "T1 coordination contract id = Referral ID. Consumed by T2 as coordinationRef."
+    },
+    {
+      "key": "appointment_id",
+      "value": "b7b9a5c1-2b7b-449d-8a68-4203c3b638c2",
+      "type": "string",
+      "description": "T2 appointment contract id = T1.targetBookingRef."
+    },
+    {
+      "key": "referrer_participant_id",
+      "value": "participant-referrer-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "cc_participant_id",
+      "value": "participant-cc-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "patient_participant_id",
+      "value": "participant-patient-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "observer_participant_id",
+      "value": "participant-observer-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "provider_participant_id",
+      "value": "participant-provider-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "coord_resource_id",
+      "value": "res-coord-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "coord_offer_id",
+      "value": "offer-coord-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "coord_catalog_id",
+      "value": "catalog-coord-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "target_resource_id",
+      "value": "res-target-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "target_offer_id",
+      "value": "offer-target-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "target_catalog_id",
+      "value": "catalog-target-diagnostic",
+      "type": "string"
+    },
+    {
+      "key": "referralnote_doc_ref",
+      "value": "referralnote-diagnostic-001",
+      "type": "string"
+    },
+    {
+      "key": "outcomenote_doc_ref",
+      "value": "outcomenote-diagnostic-001",
+      "type": "string"
+    },
+    {
+      "key": "consent_id",
+      "value": "646b842b-ea43-4df6-a240-40dca4cd98b4",
+      "type": "string"
+    },
+    {
+      "key": "consent_doc_ref",
+      "value": "consent-diagnostic-001",
+      "type": "string"
+    },
+    {
+      "key": "scheme_ref",
+      "value": "PMJAY",
+      "type": "string"
+    },
+    {
+      "key": "coord_consideration_id",
+      "value": "cons-coord-diagnostic-001",
+      "type": "string"
+    },
+    {
+      "key": "appt_consideration_id",
+      "value": "cons-appt-diagnostic-001",
+      "type": "string"
+    },
+    {
+      "key": "payment_ref",
+      "value": "NEFT-DIAGNOSTIC-20260614",
+      "type": "string"
+    }
+  ]
+}

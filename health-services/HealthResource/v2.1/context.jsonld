@@ -19,6 +19,7 @@
 
     "healthServiceType": {"@id": "hr:healthServiceType"},
     "clinicalDeliveryUnit": {"@id": "hr:clinicalDeliveryUnit"},
+    "acceptedSchemes": {"@id": "hr:acceptedSchemes", "@container": "@set"},
     "clinicalValidation": {"@id": "hr:clinicalValidation"},
     "accreditationBody": {"@id": "hr:accreditationBody"},
     "registrationNumber": {"@id": "hr:registrationNumber"},

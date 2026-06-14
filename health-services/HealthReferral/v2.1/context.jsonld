@@ -1,0 +1,91 @@
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "beckn": "https://schema.beckn.io/",
+    "hrf": "https://schema.beckn.io/HealthReferral#",
+    "scoord": "https://schema.beckn.io/ServiceCoordination#",
+    "sc": "https://schema.beckn.io/ServiceContract#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+
+    "HealthReferral": "hrf:HealthReferral",
+    "LifecycleState": "hrf:LifecycleState",
+    "ConsentClass": "hrf:ConsentClass",
+    "DeviationReasonCode": "hrf:DeviationReasonCode",
+    "ConsultationModality": "hrf:ConsultationModality",
+    "ClinicalUrgencyTier": "hrf:ClinicalUrgencyTier",
+    "Specialty": "hrf:Specialty",
+    "SubSpecialty": "hrf:SubSpecialty",
+
+    "ServiceCoordination": "scoord:ServiceCoordination",
+
+    "lifecycleState": {"@id": "hrf:lifecycleState"},
+    "targetCriteria": {
+      "@id": "hrf:targetCriteria",
+      "@context": {
+        "specialty": {"@id": "hrf:tc_specialty"},
+        "subSpecialty": {"@id": "hrf:tc_subSpecialty"},
+        "equipmentNeeds": {"@id": "hrf:tc_equipmentNeeds", "@container": "@set"},
+        "procedureNeeds": {"@id": "hrf:tc_procedureNeeds", "@container": "@set"},
+        "consultationModality": {"@id": "hrf:tc_consultationModality"}
+      }
+    },
+    "consent": {
+      "@id": "hrf:consent",
+      "@context": {
+        "consentClass": {"@id": "hrf:consentClass"},
+        "consentDocRef": {"@id": "hrf:consentDocRef"},
+        "consentId": {"@id": "hrf:consentId"},
+        "patientParticipantId": {"@id": "hrf:patientParticipantId"},
+        "consentStandard": {"@id": "hrf:consentStandard"},
+        "consentedAt": {"@id": "hrf:consentedAt"},
+        "consentedBy": {"@id": "hrf:consentedBy"},
+        "purposeOfCollection": {"@id": "hrf:purposeOfCollection", "@container": "@set"},
+        "withdrawnAt": {"@id": "hrf:withdrawnAt"},
+        "mediatorCredentialRef": {"@id": "hrf:mediatorCredentialRef"},
+        "originatingConsentRef": {"@id": "hrf:originatingConsentRef"},
+        "deemedBasisCode": {"@id": "hrf:deemedBasisCode"},
+        "clinicalJustification": {"@id": "hrf:clinicalJustification"},
+        "ratifiedAt": {"@id": "hrf:ratifiedAt"}
+      }
+    },
+    "referralNote": {
+      "@id": "hrf:referralNote",
+      "@context": {
+        "artifactRef": {"@id": "hrf:rn_artifactRef"},
+        "credentialScope": {"@id": "hrf:rn_credentialScope"},
+        "accessWindowStart": {"@id": "hrf:rn_accessWindowStart"},
+        "accessWindowEnd": {"@id": "hrf:rn_accessWindowEnd"},
+        "revocationStatus": {"@id": "hrf:rn_revocationStatus"},
+        "revokedAt": {"@id": "hrf:rn_revokedAt"},
+        "specialty": {"@id": "hrf:rn_specialty"},
+        "urgency": {"@id": "hrf:rn_urgency"},
+        "priorResultRefs": {"@id": "hrf:rn_priorResultRefs", "@container": "@set"}
+      }
+    },
+    "schemeRef": {"@id": "hrf:schemeRef"},
+    "clinicalUrgencyTier": {"@id": "hrf:clinicalUrgencyTier"},
+    "deviation": {
+      "@id": "hrf:deviation",
+      "@context": {
+        "reasonCode": {"@id": "hrf:dv_reasonCode"},
+        "detectedBy": {"@id": "hrf:dv_detectedBy"},
+        "detectedAt": {"@id": "hrf:dv_detectedAt"},
+        "note": {"@id": "hrf:dv_note"}
+      }
+    },
+
+    "coordinationId": {"@id": "scoord:coordinationId"},
+    "recommendedTargetRef": {"@id": "scoord:recommendedTargetRef"},
+    "targetBookingRef": {"@id": "scoord:targetBookingRef"},
+    "handoverDocument": {"@id": "scoord:handoverDocument"},
+    "notificationRoster": {"@id": "scoord:notificationRoster", "@container": "@list"},
+    "grievanceRef": {"@id": "scoord:grievanceRef"},
+    "handoff": {"@id": "scoord:handoff"},
+
+    "bookingChannel": {"@id": "sc:bookingChannel"},
+    "clientNotes": {"@id": "sc:clientNotes"},
+    "cancellationReason": {"@id": "sc:cancellationReason"},
+    "facilitatorId": {"@id": "sc:facilitatorId"},
+    "reminderSentAt": {"@id": "sc:reminderSentAt"}
+  }
+}

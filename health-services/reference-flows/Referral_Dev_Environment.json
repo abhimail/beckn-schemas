@@ -1,0 +1,274 @@
+{
+  "id": "a663f574-5cd9-52e2-9463-e03809cdbbcd",
+  "name": "Referral Dev",
+  "_postman_variable_scope": "environment",
+  "values": [
+    {
+      "key": "domain",
+      "value": "health",
+      "enabled": true
+    },
+    {
+      "key": "network_id",
+      "value": "example.net/health",
+      "enabled": true,
+      "description": "Confirm exact value with the network registry team."
+    },
+    {
+      "key": "bpp_uri",
+      "value": "",
+      "enabled": true,
+      "description": "BPP base URL — Care Coordinator for T1, Referred Provider for T2."
+    },
+    {
+      "key": "bap_uri",
+      "value": "",
+      "enabled": true,
+      "description": "BAP callback base URL for on_* simulations."
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "enabled": true,
+      "description": "Network-issued JWT — set before running."
+    },
+    {
+      "key": "seeker_np_id",
+      "value": "referrer-np-specialist",
+      "enabled": true,
+      "description": "Referrer NP (BAP in T1)."
+    },
+    {
+      "key": "cc_np_id",
+      "value": "cc-np-specialist",
+      "enabled": true,
+      "description": "Care Coordinator NP (BPP in T1, BAP in T2)."
+    },
+    {
+      "key": "provider_np_id",
+      "value": "provider-np-specialist",
+      "enabled": true,
+      "description": "Referred Provider NP (BPP in T2)."
+    },
+    {
+      "key": "transaction_id_t1",
+      "value": "50dfee76-a049-402c-b859-fba346516375",
+      "enabled": true
+    },
+    {
+      "key": "transaction_id_t2",
+      "value": "46606856-ac21-4747-b52e-ec1a93b51d11",
+      "enabled": true
+    },
+    {
+      "key": "coordination_id",
+      "value": "f5640c39-fe13-4163-9ceb-bdef216f4b99",
+      "enabled": true,
+      "description": "T1 coordination contract id = Referral ID. Carried into T2 as coordinationRef."
+    },
+    {
+      "key": "appointment_id",
+      "value": "7e0bc6a6-d91c-498d-b5eb-9f042c4ce7cf",
+      "enabled": true,
+      "description": "T2 appointment contract id = T1 targetBookingRef."
+    },
+    {
+      "key": "referrer_participant_id",
+      "value": "participant-referrer-specialist",
+      "enabled": true
+    },
+    {
+      "key": "cc_participant_id",
+      "value": "participant-cc-specialist",
+      "enabled": true
+    },
+    {
+      "key": "patient_participant_id",
+      "value": "participant-patient-specialist",
+      "enabled": true
+    },
+    {
+      "key": "observer_participant_id",
+      "value": "participant-observer-specialist",
+      "enabled": true
+    },
+    {
+      "key": "provider_participant_id",
+      "value": "participant-provider-specialist",
+      "enabled": true
+    },
+    {
+      "key": "coord_resource_id",
+      "value": "res-coord-specialist",
+      "enabled": true
+    },
+    {
+      "key": "coord_offer_id",
+      "value": "offer-coord-specialist",
+      "enabled": true
+    },
+    {
+      "key": "coord_catalog_id",
+      "value": "catalog-coord-specialist",
+      "enabled": true
+    },
+    {
+      "key": "target_resource_id",
+      "value": "res-target-specialist",
+      "enabled": true
+    },
+    {
+      "key": "target_offer_id",
+      "value": "offer-target-specialist",
+      "enabled": true
+    },
+    {
+      "key": "target_catalog_id",
+      "value": "catalog-target-specialist",
+      "enabled": true
+    },
+    {
+      "key": "referralnote_doc_ref",
+      "value": "referralnote-specialist-001",
+      "enabled": true
+    },
+    {
+      "key": "outcomenote_doc_ref",
+      "value": "outcomenote-specialist-001",
+      "enabled": true
+    },
+    {
+      "key": "consent_id",
+      "value": "fdd4832d-9855-465d-813b-d95a07a361d3",
+      "enabled": true
+    },
+    {
+      "key": "consent_doc_ref",
+      "value": "consent-specialist-001",
+      "enabled": true
+    },
+    {
+      "key": "scheme_ref",
+      "value": "PMJAY",
+      "enabled": true
+    },
+    {
+      "key": "coord_consideration_id",
+      "value": "cons-coord-specialist-001",
+      "enabled": true
+    },
+    {
+      "key": "appt_consideration_id",
+      "value": "cons-appt-specialist-001",
+      "enabled": true
+    },
+    {
+      "key": "payment_ref",
+      "value": "NEFT-SPECIALIST-20260614",
+      "enabled": true
+    },
+    {
+      "key": "prescription_doc_ref",
+      "value": "prescription-specialist-001",
+      "enabled": true,
+      "description": "Pharmacy scenario only — prescription is the handover Document."
+    },
+    {
+      "key": "cds_url",
+      "value": "",
+      "enabled": true,
+      "description": "CDS endpoint"
+    },
+    {
+      "key": "cds_np_id",
+      "value": "cds-np-001",
+      "enabled": true
+    },
+    {
+      "key": "publish_transaction_id",
+      "value": "e0e0e0e0-0000-4000-8000-000000000004",
+      "enabled": true
+    },
+    {
+      "key": "cc_uri",
+      "value": "",
+      "enabled": true,
+      "description": "Care Coordinator BPP endpoint"
+    },
+    {
+      "key": "specialist_np_id",
+      "value": "provider-np-apollo-card-001",
+      "enabled": true
+    },
+    {
+      "key": "specialist_uri",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "specialist_catalog_id",
+      "value": "catalog-apollo-card-001",
+      "enabled": true
+    },
+    {
+      "key": "specialist_resource_id",
+      "value": "res-apollo-card-opd",
+      "enabled": true
+    },
+    {
+      "key": "specialist_offer_id",
+      "value": "offer-apollo-card-opd",
+      "enabled": true
+    },
+    {
+      "key": "lab_np_id",
+      "value": "provider-np-nashikpath-001",
+      "enabled": true
+    },
+    {
+      "key": "lab_uri",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "lab_catalog_id",
+      "value": "catalog-nashikpath-001",
+      "enabled": true
+    },
+    {
+      "key": "lab_resource_id",
+      "value": "res-nashikpath-lipid",
+      "enabled": true
+    },
+    {
+      "key": "lab_offer_id",
+      "value": "offer-nashikpath-lipid",
+      "enabled": true
+    },
+    {
+      "key": "pharmacy_np_id",
+      "value": "provider-np-medplus-001",
+      "enabled": true
+    },
+    {
+      "key": "pharmacy_uri",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "pharmacy_catalog_id",
+      "value": "catalog-medplus-001",
+      "enabled": true
+    },
+    {
+      "key": "pharmacy_resource_id",
+      "value": "res-medplus-dispense",
+      "enabled": true
+    },
+    {
+      "key": "pharmacy_offer_id",
+      "value": "offer-medplus-dispense",
+      "enabled": true
+    }
+  ]
+}

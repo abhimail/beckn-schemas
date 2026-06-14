@@ -9,6 +9,12 @@
     {"@id": "hpe:ROUTINE",   "@type": "hpe:FollowupRecommendationCode", "rdfs:label": "Routine — follow up at next scheduled visit"},
     {"@id": "hpe:SOON",      "@type": "hpe:FollowupRecommendationCode", "rdfs:label": "Soon — follow up within 1–4 weeks"},
     {"@id": "hpe:URGENT",    "@type": "hpe:FollowupRecommendationCode", "rdfs:label": "Urgent — follow up within 48–72 hours"},
-    {"@id": "hpe:EMERGENCY", "@type": "hpe:FollowupRecommendationCode", "rdfs:label": "Emergency — immediate referral required"}
+    {"@id": "hpe:EMERGENCY", "@type": "hpe:FollowupRecommendationCode", "rdfs:label": "Emergency — immediate referral required"},
+
+    {"@id": "hpe:AttendanceStatus", "@type": "rdfs:Class", "rdfs:label": "AttendanceStatus",
+     "rdfs:comment": "Attendance outcome of a health engagement — drives the T1 referral ATTENDED / NO_SHOW states"},
+    {"@id": "hpe:ATTENDED",                "@type": "hpe:AttendanceStatus", "rdfs:label": "Attended — the subject attended the service"},
+    {"@id": "hpe:NO_SHOW",                 "@type": "hpe:AttendanceStatus", "rdfs:label": "No Show — the subject did not attend"},
+    {"@id": "hpe:LEFT_WITHOUT_BEING_SEEN", "@type": "hpe:AttendanceStatus", "rdfs:label": "Left Without Being Seen — the subject left before being seen"}
   ]
 }

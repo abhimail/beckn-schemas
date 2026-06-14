@@ -1,0 +1,24 @@
+{
+  "id": "https://schema.beckn.io/HealthReferral/v2.1",
+  "name": "HealthReferral",
+  "version": "2.1.0",
+  "protocol_version": "2.0",
+  "semantic_model": "generalised",
+  "included_schemas": ["HealthReferral"],
+  "discovery_fields": ["lifecycleState", "clinicalUrgencyTier"],
+  "indexable_paths": ["lifecycleState", "clinicalUrgencyTier", "schemeRef"],
+  "filterable_paths": ["lifecycleState", "clinicalUrgencyTier", "schemeRef", "targetCriteria.consultationModality"],
+  "sortable_paths": [],
+  "list_fields": ["lifecycleState", "clinicalUrgencyTier"],
+  "detail_fields": [
+    "lifecycleState", "clinicalUrgencyTier", "schemeRef",
+    "targetCriteria", "consent", "referralNote", "deviation"
+  ],
+  "privacy_notes": [
+    "consent.patientParticipantId is a patient identifier — treat as PHI",
+    "consent.consentDocRef links to a signed consent artifact — restrict to referral parties and auditors",
+    "referralNote.credentialScope gates the clinical referral note — restrict to credentialed parties only",
+    "referralNote.priorResultRefs link to clinical results — treat as PHI",
+    "consent.clinicalJustification (class C) may contain clinical detail — treat as PHI"
+  ]
+}

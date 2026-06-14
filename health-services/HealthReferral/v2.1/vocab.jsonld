@@ -1,0 +1,300 @@
+{
+  "@context": {
+    "hrf": "https://schema.beckn.io/HealthReferral#",
+    "scoord": "https://schema.beckn.io/ServiceCoordination#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#"
+  },
+  "@graph": [
+    {
+      "@id": "hrf:LifecycleState",
+      "@type": "rdfs:Class",
+      "rdfs:label": "LifecycleState",
+      "rdfs:subClassOf": {
+        "@id": "scoord:LifecycleState"
+      },
+      "rdfs:comment": "Health referral lifecycle states \u2014 specialises scoord:LifecycleState, adds two health states. SLA_BREACHED, PROVIDER_CANCELLED, NO_SHOW are dual-typed as DeviationReasonCode (per the CodedValue convention \u2014 RFC-001, draft)."
+    },
+    {
+      "@id": "hrf:DRAFT",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Draft"
+    },
+    {
+      "@id": "hrf:ACTIVE",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Active"
+    },
+    {
+      "@id": "hrf:TARGET_SELECTED",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Target Selected"
+    },
+    {
+      "@id": "hrf:BOOKING_CONFIRMED",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Booking Confirmed"
+    },
+    {
+      "@id": "hrf:TARGET_NOTIFIED",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Target Notified"
+    },
+    {
+      "@id": "hrf:ATTENDED",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Attended"
+    },
+    {
+      "@id": "hrf:NO_SHOW",
+      "@type": [
+        "hrf:LifecycleState",
+        "hrf:DeviationReasonCode"
+      ],
+      "rdfs:label": "No Show",
+      "skos:exactMatch": {
+        "@id": "scoord:NO_SHOW"
+      }
+    },
+    {
+      "@id": "hrf:CANCELLED",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Cancelled"
+    },
+    {
+      "@id": "hrf:PROVIDER_CANCELLED",
+      "@type": [
+        "hrf:LifecycleState",
+        "hrf:DeviationReasonCode"
+      ],
+      "rdfs:label": "Provider Cancelled",
+      "skos:exactMatch": {
+        "@id": "scoord:PROVIDER_CANCELLED"
+      }
+    },
+    {
+      "@id": "hrf:OUTCOME_RECEIVED",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Outcome Received"
+    },
+    {
+      "@id": "hrf:SLA_BREACHED",
+      "@type": [
+        "hrf:LifecycleState",
+        "hrf:DeviationReasonCode"
+      ],
+      "rdfs:label": "SLA Breached",
+      "skos:exactMatch": {
+        "@id": "scoord:SLA_BREACHED"
+      }
+    },
+    {
+      "@id": "hrf:LAPSED",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Lapsed"
+    },
+    {
+      "@id": "hrf:REVOKED",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Revoked"
+    },
+    {
+      "@id": "hrf:WITHDRAWN",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Withdrawn"
+    },
+    {
+      "@id": "hrf:CLOSED",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Closed"
+    },
+    {
+      "@id": "hrf:SCHEME_PREAUTH_PENDING",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Scheme Pre-Auth Pending \u2014 awaiting government scheme pre-authorisation"
+    },
+    {
+      "@id": "hrf:POST_FACTO_CONSENT_PENDING",
+      "@type": "hrf:LifecycleState",
+      "rdfs:label": "Post-Facto Consent Pending \u2014 awaiting ratification of deemed (class C) consent"
+    },
+    {
+      "@id": "hrf:ConsentClass",
+      "@type": "rdfs:Class",
+      "rdfs:label": "ConsentClass",
+      "rdfs:comment": "Self-owned CodedValue class \u2014 consent basis classes (health-specific; no generic counterpart)."
+    },
+    {
+      "@id": "hrf:A",
+      "@type": "hrf:ConsentClass",
+      "rdfs:label": "Class A \u2014 explicit, mediated consent"
+    },
+    {
+      "@id": "hrf:B",
+      "@type": "hrf:ConsentClass",
+      "rdfs:label": "Class B \u2014 treatment-relationship consent"
+    },
+    {
+      "@id": "hrf:C",
+      "@type": "hrf:ConsentClass",
+      "rdfs:label": "Class C \u2014 deemed consent, post-facto ratified"
+    },
+    {
+      "@id": "hrf:DeviationReasonCode",
+      "@type": "rdfs:Class",
+      "rdfs:label": "DeviationReasonCode",
+      "rdfs:subClassOf": {
+        "@id": "scoord:DeviationReasonCode"
+      },
+      "rdfs:comment": "Self-owned, network-specific CodedValue class \u2014 referral-facing deviation codes; a health specialisation of scoord:DeviationReasonCode. SLA_BREACHED, PROVIDER_CANCELLED, NO_SHOW are dual-typed in the LifecycleState block above. Each non-health-only member carries skos:exactMatch to its generic counterpart. Registries store native codes; cross-network reconciliation is an analytics-layer concern."
+    },
+    {
+      "@id": "hrf:REFERRAL_LAPSED",
+      "@type": "hrf:DeviationReasonCode",
+      "rdfs:label": "Referral Lapsed",
+      "skos:exactMatch": {
+        "@id": "scoord:LAPSED"
+      }
+    },
+    {
+      "@id": "hrf:PATIENT_CANCELLED",
+      "@type": "hrf:DeviationReasonCode",
+      "rdfs:label": "Patient Cancelled",
+      "skos:exactMatch": {
+        "@id": "scoord:SUBJECT_CANCELLED"
+      }
+    },
+    {
+      "@id": "hrf:REFERRAL_REVOKED",
+      "@type": "hrf:DeviationReasonCode",
+      "rdfs:label": "Referral Revoked",
+      "skos:exactMatch": {
+        "@id": "scoord:REVOKED"
+      }
+    },
+    {
+      "@id": "hrf:REFERRAL_REFUSED",
+      "@type": "hrf:DeviationReasonCode",
+      "rdfs:label": "Referral Refused",
+      "skos:exactMatch": {
+        "@id": "scoord:TARGET_REFUSED"
+      }
+    },
+    {
+      "@id": "hrf:CC_UNAVAILABLE",
+      "@type": "hrf:DeviationReasonCode",
+      "rdfs:label": "Care Coordinator Unavailable",
+      "skos:exactMatch": {
+        "@id": "scoord:COORDINATOR_UNAVAILABLE"
+      }
+    },
+    {
+      "@id": "hrf:RESCHEDULED",
+      "@type": "hrf:DeviationReasonCode",
+      "rdfs:label": "Rescheduled",
+      "skos:exactMatch": {
+        "@id": "scoord:RESCHEDULED"
+      }
+    },
+    {
+      "@id": "hrf:SERVICE_FAILURE",
+      "@type": "hrf:DeviationReasonCode",
+      "rdfs:label": "Service Failure",
+      "skos:exactMatch": {
+        "@id": "scoord:SERVICE_FAILURE"
+      }
+    },
+    {
+      "@id": "hrf:CONSENT_WITHDRAWN",
+      "@type": "hrf:DeviationReasonCode",
+      "rdfs:label": "Consent Withdrawn \u2014 patient withdrew consent (health-specific; no generic counterpart)"
+    },
+    {
+      "@id": "hrf:ELIGIBILITY_EXPIRED",
+      "@type": "hrf:DeviationReasonCode",
+      "rdfs:label": "Eligibility Expired \u2014 scheme/programme eligibility lapsed (health-specific; no generic counterpart)"
+    },
+    {
+      "@id": "hrf:ConsultationModality",
+      "@type": "rdfs:Class",
+      "rdfs:label": "ConsultationModality"
+    },
+    {
+      "@id": "hrf:IN_PERSON",
+      "@type": "hrf:ConsultationModality",
+      "rdfs:label": "In Person"
+    },
+    {
+      "@id": "hrf:TELECONSULT",
+      "@type": "hrf:ConsultationModality",
+      "rdfs:label": "Teleconsult"
+    },
+    {
+      "@id": "hrf:ClinicalUrgencyTier",
+      "@type": "rdfs:Class",
+      "rdfs:label": "ClinicalUrgencyTier"
+    },
+    {
+      "@id": "hrf:ROUTINE",
+      "@type": "hrf:ClinicalUrgencyTier",
+      "rdfs:label": "Routine"
+    },
+    {
+      "@id": "hrf:URGENT",
+      "@type": "hrf:ClinicalUrgencyTier",
+      "rdfs:label": "Urgent"
+    },
+    {
+      "@id": "hrf:EMERGENCY",
+      "@type": "hrf:ClinicalUrgencyTier",
+      "rdfs:label": "Emergency"
+    },
+    {
+      "@id": "hrf:Specialty",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Specialty",
+      "rdfs:comment": "Self-owned CodedValue class \u2014 recommended clinical specialties for targetCriteria."
+    },
+    {
+      "@id": "hrf:CARDIOLOGY",
+      "@type": "hrf:Specialty",
+      "rdfs:label": "Cardiology"
+    },
+    {
+      "@id": "hrf:PULMONOLOGY",
+      "@type": "hrf:Specialty",
+      "rdfs:label": "Pulmonology"
+    },
+    {
+      "@id": "hrf:ONCOLOGY",
+      "@type": "hrf:Specialty",
+      "rdfs:label": "Oncology"
+    },
+    {
+      "@id": "hrf:NEPHROLOGY",
+      "@type": "hrf:Specialty",
+      "rdfs:label": "Nephrology"
+    },
+    {
+      "@id": "hrf:ORTHOPAEDICS",
+      "@type": "hrf:Specialty",
+      "rdfs:label": "Orthopaedics"
+    },
+    {
+      "@id": "hrf:SubSpecialty",
+      "@type": "rdfs:Class",
+      "rdfs:label": "SubSpecialty",
+      "rdfs:comment": "Self-owned CodedValue class \u2014 recommended clinical sub-specialties for targetCriteria."
+    },
+    {
+      "@id": "hrf:INTERVENTIONAL_CARDIOLOGY",
+      "@type": "hrf:SubSpecialty",
+      "rdfs:label": "Interventional Cardiology"
+    },
+    {
+      "@id": "hrf:ELECTROPHYSIOLOGY",
+      "@type": "hrf:SubSpecialty",
+      "rdfs:label": "Electrophysiology"
+    }
+  ]
+}

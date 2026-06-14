@@ -1,0 +1,38 @@
+{
+  "_comment": "T1 on_status carrying a deviation. The deviation.reasonCode reuses the SHARED ServiceCoordination DeviationReasonCode class (no redefinition in HealthReferral) and OVERRIDES @context from the scoord default to the HealthReferral vocabulary — demonstrating the federated, network-specific coded value. @type stays fixed ('DeviationReasonCode'); only @context and code vary. The health code PATIENT_CANCELLED maps to scoord:SUBJECT_CANCELLED via skos:exactMatch (vocab.jsonld).",
+  "context": {
+    "action": "on_status",
+    "schemaContext": ["https://schema.beckn.io/HealthReferral/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "referral-uc4-001",
+      "beckn:status": { "code": "CANCELLED" },
+      "beckn:contractAttributes": {
+        "@type": "hrf:HealthReferral",
+        "coordinationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        "lifecycleState": "CANCELLED",
+        "targetCriteria": {
+          "specialty": {
+            "@context": "https://schema.beckn.io/HealthReferral/v2.1/context.jsonld",
+            "@type": "Specialty",
+            "code": "CARDIOLOGY",
+            "display": "Cardiology"
+          }
+        },
+        "deviation": {
+          "reasonCode": {
+            "@context": "https://schema.beckn.io/HealthReferral/v2.1/context.jsonld",
+            "@type": "DeviationReasonCode",
+            "code": "PATIENT_CANCELLED",
+            "display": "Patient Cancelled"
+          },
+          "detectedBy": "did:example:cc:nashik-referral-desk",
+          "detectedAt": "2026-06-15T09:00:00+05:30",
+          "note": "Patient contacted the coordinator to cancel — transport unavailable."
+        }
+      }
+    }
+  }
+}

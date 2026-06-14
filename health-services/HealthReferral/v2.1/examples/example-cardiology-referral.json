@@ -1,0 +1,87 @@
+{
+  "_comment": "Complete on_confirm T1 referral contract — Dr. Priya Anand (GP, nominator) referring patient Ravi Kumar to Dr. Mehta (cardiology). Named-target mode (recommendedTargetRef present). The referralNote.artifactRef 'referralnote-001' resolves to the Document in descriptor.docs[] which carries the actual url + mimeType (per manifest §4).",
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/HealthReferral/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-referral-cardiology-001",
+      "beckn:status": {"code": "ACTIVE"},
+      "beckn:descriptor": {
+        "beckn:docs": [
+          {
+            "beckn:id": "referralnote-001",
+            "schema:name": "Cardiology Referral Note — Ravi Kumar",
+            "beckn:url": "https://docs.example.org/referral/referralnote-001.pdf",
+            "beckn:mimeType": "application/pdf",
+            "beckn:standard": "FHIR/ServiceRequest"
+          },
+          {
+            "beckn:id": "consent-referral-001",
+            "schema:name": "Patient Consent — Cardiology Referral",
+            "beckn:url": "https://docs.example.org/consent/consent-referral-001.pdf",
+            "beckn:mimeType": "application/pdf"
+          },
+          {
+            "beckn:id": "ecg-prior-001",
+            "schema:name": "Prior 12-lead ECG",
+            "beckn:url": "https://docs.example.org/results/ecg-prior-001.pdf",
+            "beckn:mimeType": "application/pdf"
+          }
+        ]
+      },
+      "beckn:parties": [
+        {"beckn:id": "participant-nominator-priya-001", "beckn:descriptor": {"schema:name": "Dr. Priya Anand", "schema:description": "General Practitioner (Nominator)"}},
+        {"beckn:id": "participant-subject-ravi-001", "beckn:descriptor": {"schema:name": "Ravi Kumar", "schema:description": "Patient (Subject)"}},
+        {"beckn:id": "participant-target-mehta-001", "beckn:descriptor": {"schema:name": "Dr. Mehta", "schema:description": "Cardiologist (Target)"}}
+      ],
+      "beckn:contractAttributes": {
+        "@type": "hrf:HealthReferral",
+        "coordinationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        "lifecycleState": "ACTIVE",
+        "bookingChannel": "APP",
+        "clinicalUrgencyTier": "URGENT",
+        "schemeRef": {"@context": "https://nha.gov.in", "@type": "Scheme", "code": "PMJAY", "display": "Ayushman Bharat PM-JAY"},
+        "targetCriteria": {
+          "specialty": {"@context": "https://schema.beckn.io/HealthReferral/v2.1/context.jsonld", "@type": "Specialty", "code": "CARDIOLOGY", "display": "Cardiology"},
+          "subSpecialty": {"@context": "https://schema.beckn.io/HealthReferral/v2.1/context.jsonld", "@type": "SubSpecialty", "code": "INTERVENTIONAL_CARDIOLOGY", "display": "Interventional Cardiology"},
+          "equipmentNeeds": ["ECHO", "CATH_LAB"],
+          "consultationModality": "IN_PERSON"
+        },
+        "recommendedTargetRef": {
+          "targetProviderId": "participant-target-mehta-001",
+          "targetResourceRef": "res-cardiology-mehta-001",
+          "targetOfferRef": "offer-cardiology-mehta-001",
+          "snapshotAt": "2026-06-14T10:30:00+05:30"
+        },
+        "consent": {
+          "consentClass": {"@context": "https://schema.beckn.io/HealthReferral/v2.1/context.jsonld", "@type": "ConsentClass", "code": "A", "display": "Explicit, mediated"},
+          "consentId": "b2c3d4e5-6f70-4a81-9b2c-3d4e5f607182",
+          "consentDocRef": "consent-referral-001",
+          "patientParticipantId": "participant-subject-ravi-001",
+          "consentStandard": "HealthConsent/v1",
+          "consentedAt": "2026-06-14T10:15:00+05:30",
+          "consentedBy": "participant-nominator-priya-001",
+          "purposeOfCollection": ["REFERRAL_CARE", "TREATMENT"],
+          "mediatorCredentialRef": "did:example:practitioner:priya-001"
+        },
+        "referralNote": {
+          "artifactRef": "referralnote-001",
+          "credentialScope": "did:example:practitioner:mehta-001",
+          "accessWindowStart": "2026-06-14T10:30:00+05:30",
+          "accessWindowEnd": "2026-07-14T10:30:00+05:30",
+          "revocationStatus": "ACTIVE",
+          "specialty": "Cardiology",
+          "urgency": "URGENT",
+          "priorResultRefs": ["ecg-prior-001"]
+        },
+        "notificationRoster": [
+          {"partyRef": "participant-nominator-priya-001", "partyRole": "NOMINATOR", "notificationScope": "FULL", "channelRef": "sms:+910000000010"},
+          {"partyRef": "participant-subject-ravi-001", "partyRole": "SUBJECT", "notificationScope": "LIFECYCLE_ONLY", "channelRef": "sms:+910000000011"}
+        ]
+      }
+    }
+  }
+}

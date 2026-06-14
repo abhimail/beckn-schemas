@@ -27,9 +27,24 @@ components:
         "@type": "hct:HealthContract"
       allOf:
         - $ref: "https://schema.beckn.io/ServiceContract/v2.1/attributes.yaml#/components/schemas/ServiceContract"
+        # Referral wiring: when this booking is the downstream (T2) leg of a referral
+        # (coordinationRef present), the declared consent must be carried so the
+        # referred provider sees the consent basis at booking. Enforced conditionally
+        # (never unconditional required) to keep non-referral UC0/1/2 contracts valid.
+        - if:
+            required: [coordinationRef]
+          then:
+            required: [consent]
       required:
         - healthServiceType
       properties:
+        coordinationRef:
+          type: string
+          description: >
+            Pointer to the T1 HealthReferral id (= Referral ID) this booking fulfils.
+            Present only on the downstream (T2) booking of a referral. A pointer only —
+            never the embedded T1 object (privacy / single source of truth).
+          x-jsonld-id: "hct:coordinationRef"
         healthServiceType:
           type: string
           enum:
@@ -38,6 +53,7 @@ components:
             - PHYSICAL_CONSULTATION
             - RADIOLOGY
             - LAB_TEST
+            - PHARMACY_DISPENSING
           description: >
             Discriminator identifying the category of health service being contracted.
             Drives conditional mandatory field rules across HealthResource, HealthPerformance,
@@ -97,6 +113,29 @@ components:
                 type: string
                 description: Expected MIME type of the artifact (e.g. "audio/wav", "image/dicom")
                 x-jsonld-id: "hct:mimeType"
+              sourceCoordinationRef:
+                type: string
+                description: >
+                  Referral (T1) id this artifact was handed over from. Present when the
+                  artifact is the receiving side of a referral handover — the T2 provider
+                  retrieves the referral note via this pointer. Optional.
+                x-jsonld-id: "hct:sourceCoordinationRef"
+              accessWindowEnd:
+                type: string
+                format: date-time
+                description: >
+                  End of the bounded access window during which the T2 provider may fetch
+                  this handed-over artifact (ISO 8601). Optional.
+                x-jsonld-id: "hct:artifactAccessWindowEnd"
+              revocationStatus:
+                type: string
+                enum:
+                  - ACTIVE
+                  - REVOKED
+                description: >
+                  Whether access to this handed-over artifact is currently active or
+                  revoked. Optional access metadata layered on the reference.
+                x-jsonld-id: "hct:artifactRevocationStatus"
         consent:
           type: object
           description: >
@@ -111,6 +150,13 @@ components:
             - consentedAt
             - purposeOfCollection
           properties:
+            consentClass:
+              $ref: "https://schema.beckn.io/CodedValue/v2.1/attributes.yaml#/components/schemas/CodedValue"
+              description: >
+                Declared consent basis class (self-owned CodedValue; members A / B / C as
+                defined by HealthReferral). Optional — carried on T2 so the referred
+                provider sees the consent basis declared at booking.
+              x-jsonld-id: "hct:consentClass"
             consentDocRef:
               type: string
               description: >

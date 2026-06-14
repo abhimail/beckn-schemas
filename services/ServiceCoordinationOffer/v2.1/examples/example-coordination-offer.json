@@ -1,0 +1,29 @@
+{
+  "_comment": "A coordinator's offer terms for accepting a coordination engagement (on_search response).",
+  "context": {
+    "action": "on_search",
+    "schemaContext": ["https://schema.beckn.io/ServiceCoordinationOffer/v2.1/context.jsonld"]
+  },
+  "message": {
+    "catalogs": [
+      {
+        "beckn:offers": [
+          {
+            "@type": "beckn:Offer",
+            "beckn:id": "offer-coordination-001",
+            "beckn:offerAttributes": {
+              "@type": "scoff:ServiceCoordinationOffer",
+              "coordinationSlaWindows": [
+                {"urgencyTier": "ROUTINE", "lapseWindowHours": 168, "slaBreachWindowHours": 240},
+                {"urgencyTier": "URGENT", "lapseWindowHours": 48, "slaBreachWindowHours": 72}
+              ],
+              "retryPolicy": "ONE_SILENT_RETRY",
+              "handoffSupported": true,
+              "maxActiveReferrals": 200
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

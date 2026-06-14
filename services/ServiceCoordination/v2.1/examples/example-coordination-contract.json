@@ -1,0 +1,56 @@
+{
+  "_comment": "T1 coordination contract — ACTIVE state, named-target (recommendedTargetRef present), with a credential-scoped handover document and notification roster.",
+  "context": {
+    "action": "on_confirm",
+    "schemaContext": ["https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld"]
+  },
+  "message": {
+    "contract": {
+      "@type": "beckn:Contract",
+      "beckn:id": "contract-coordination-001",
+      "beckn:status": {"code": "ACTIVE"},
+      "beckn:descriptor": {
+        "beckn:docs": [
+          {
+            "beckn:id": "handover-001",
+            "schema:name": "Handover Summary",
+            "beckn:url": "https://docs.example.org/handover/handover-001.pdf",
+            "beckn:mimeType": "application/pdf"
+          }
+        ]
+      },
+      "beckn:contractAttributes": {
+        "@type": "scoord:ServiceCoordination",
+        "coordinationId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+        "lifecycleState": "ACTIVE",
+        "bookingChannel": "APP",
+        "targetCriteria": {
+          "serviceCategory": {"@context": "https://schema.beckn.io/ServiceCoordination/v2.1/context.jsonld", "@type": "ServiceCategory", "code": "CONSULTATION", "display": "Consultation"},
+          "geographyConstraint": [
+            {"@context": "https://lgdirectory.gov.in", "@type": "LGDDistrict", "code": "507", "display": "Nashik"}
+          ],
+          "modality": "IN_PERSON",
+          "urgencyTier": "URGENT",
+          "timeWindow": {"start": "2026-06-15T09:00:00+05:30", "end": "2026-06-20T18:00:00+05:30"}
+        },
+        "recommendedTargetRef": {
+          "targetProviderId": "provider-target-001",
+          "targetResourceRef": "res-target-001",
+          "targetOfferRef": "offer-target-001",
+          "snapshotAt": "2026-06-14T10:00:00+05:30"
+        },
+        "handoverDocument": {
+          "artifactRef": "handover-001",
+          "credentialScope": "did:example:coordinator:cred-001",
+          "accessWindowStart": "2026-06-14T10:00:00+05:30",
+          "accessWindowEnd": "2026-07-14T10:00:00+05:30",
+          "revocationStatus": "ACTIVE"
+        },
+        "notificationRoster": [
+          {"partyRef": "participant-nominator-001", "partyRole": "NOMINATOR", "notificationScope": "FULL", "channelRef": "sms:+910000000001"},
+          {"partyRef": "participant-subject-001", "partyRole": "SUBJECT", "notificationScope": "LIFECYCLE_ONLY", "channelRef": "sms:+910000000002"}
+        ]
+      }
+    }
+  }
+}

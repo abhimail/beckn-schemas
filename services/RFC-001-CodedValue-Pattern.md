@@ -1,6 +1,6 @@
 # RFC-001: CodedValue Pattern for Typed Codes in Beckn v2.1 Generalised Schema Extensions
 
-**Status:** Accepted
+**Status:** Draft — local working copy; not yet submitted to the Beckn repositories
 **Author:** UAI Schema Working Group
 **Created:** March 2026
 **Applies to:** All Beckn v2.1 generalised schema packs; canonical type resides at `generic-service/generic-common/CodedValue/`
@@ -202,3 +202,36 @@ meeting the CodedValue criteria in §3 should be migrated. Fields already using
   uses `CodedValue[]` with WMO/CF alignment
 - `AgriCropAdvisoryResource.advisoryTypes` — advisory type codes;
   uses `CodedValue[]` with FAO AGROVOC alignment path
+
+---
+
+## 7. Resolving a CodedValue to its Value Set (and Extending It)
+
+*(Added June 2026.)* §2 defines the `CodedValue` shape and §3 when to use it. This section specifies, normatively, **how a consumer resolves a `CodedValue` to its valid `code` set**, and **how a network extends that set without forking a schema**.
+
+### 7.1 Resolution rules
+
+- **R1 — `@type` names the class.** It resolves, via the `@context` document, to a class IRI (e.g. `DeviationReasonCode` → `scoord:DeviationReasonCode`).
+- **R2 — The value set is the co-located `vocab.jsonld`.** The authoritative members are the entries in the `vocab.jsonld` co-located with the `context.jsonld` named by `@context` (siblings in a pack `/<version>/` folder) whose `@type` is that class. `context.jsonld` carries term→IRI maps; `vocab.jsonld` carries the values.
+- **R3 — `code` equals the member's `@id` local name** within that class (`"LAPSED"` ↔ `scoord:LAPSED`) — never the full IRI, never a disambiguating suffix (see §7.4).
+- **R4 — Enforcement is layered.** OpenAPI checks `@type` (`const`) and that `@context` is a URI; JSON-LD expands `@type`/keys to IRIs; only a **vocab-aware validator / registry / network edge** checks `code` membership.
+- **R5 — Admitting a code or code system is an edge rule**, not a schema constraint.
+
+### 7.2 Self-owned vs. externally-governed
+
+Self-owned values use a supporting class with **`const @type`** + an **open, defaulted `@context`** (default → the owning pack's `context.jsonld`); the value set is that pack's `vocab.jsonld`. Externally-governed values (LGD, PIN, ICD, SNOMED, …) use a **bare `CodedValue`** with open `@context`; membership is the receiver's responsibility. **Pin what you own; leave external authorities open.**
+
+### 7.3 Extending a value set without forking
+
+A network wanting its **own codes for an existing class** publishes only a **`context.jsonld` + `vocab.jsonld` pair** — declaring its prefix, aliasing the class name → `theirprefix:ClassName`, and declaring its members with `skos:exactMatch` to the base class's members where equivalents exist. It **reuses the schema structure unchanged** and emits its own `@context`. Registries store **native** codes; cross-network reconciliation is an **analytics-layer** task using the published `skos:exactMatch` maps. **Change the class → fork/extend the pack; change only the codes → publish a `context.jsonld` + `vocab.jsonld` pair.**
+
+### 7.4 Member identity (no suffix leakage)
+
+A value shared by two classes MUST be a **single node typed as both** — e.g. `{ "@id": "scoord:LAPSED", "@type": ["scoord:LifecycleState", "scoord:DeviationReasonCode"] }` — not two suffixed `@id`s. This preserves R3 (`code == @id` local name).
+
+### 7.5 Anti-patterns
+
+- Do **not** point `@context` at `vocab.jsonld` (it must be a JSON-LD context, not a value graph).
+- Do **not** use the JSON-LD keyword `@vocab` as a node property (it is valid only inside a `@context`).
+- Do **not** inline the value list as an OpenAPI `enum` on `code` unless you intend to **close** the set.
+- Do **not** put a member `@id` / IRI on the wire as `code`; the wire value is the `@id` local name (R3).

@@ -11,6 +11,7 @@
     {"@id": "hpa:FIELD_WORKER",         "@type": "hpa:ParticipantRole", "rdfs:label": "Field Worker — ASHA or community health worker facilitating engagement"},
     {"@id": "hpa:PAYER",                "@type": "hpa:ParticipantRole", "rdfs:label": "Payer — entity bearing the cost"},
     {"@id": "hpa:IMPLEMENTING_AGENCY",  "@type": "hpa:ParticipantRole", "rdfs:label": "Implementing Agency — organisation that procured the capacity"},
+    {"@id": "hpa:CARE_COORDINATOR",     "@type": "hpa:ParticipantRole", "rdfs:label": "Care Coordinator — coordinator addressing the referral-coordination transaction (T1)"},
 
     {"@id": "hpa:Gender", "@type": "rdfs:Class", "rdfs:label": "Gender"},
     {"@id": "hpa:MALE",              "@type": "hpa:Gender", "rdfs:label": "Male"},

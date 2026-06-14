@@ -39,6 +39,7 @@ components:
             - PHYSICAL_CONSULTATION
             - RADIOLOGY
             - LAB_TEST
+            - PHARMACY_DISPENSING
           description: >
             Health service type this resource delivers. Acts as discriminator —
             drives conditional mandatory field rules for clinicalValidation and
@@ -62,6 +63,16 @@ components:
             SESSION: time-bounded service session.
             TEST: laboratory or pathology test (LAB_TEST).
           x-jsonld-id: "hr:clinicalDeliveryUnit"
+        acceptedSchemes:
+          type: array
+          description: >
+            Government / insurance schemes this resource accepts (externally governed
+            CodedValue, e.g. PMJAY / state scheme authority). Filterable at Discover 1
+            so a referrer or coordinator can target providers honouring the patient's scheme.
+            Optional.
+          x-jsonld-id: "hr:acceptedSchemes"
+          items:
+            $ref: "https://schema.beckn.io/CodedValue/v2.1/attributes.yaml#/components/schemas/CodedValue"
         clinicalValidation:
           type: object
           description: >

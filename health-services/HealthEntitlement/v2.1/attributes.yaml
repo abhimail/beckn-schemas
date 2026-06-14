@@ -40,6 +40,7 @@ components:
             - PHYSICAL_CONSULTATION
             - RADIOLOGY
             - LAB_TEST
+            - PHARMACY_DISPENSING
           description: Health service type this entitlement is scoped to
           x-jsonld-id: "he:healthServiceType"
         campCommitment:

@@ -11,6 +11,7 @@
     {"@id": "hct:PHYSICAL_CONSULTATION",  "@type": "hct:HealthServiceType", "rdfs:label": "Physical Consultation — in-person consultation (direct or referred)"},
     {"@id": "hct:RADIOLOGY",              "@type": "hct:HealthServiceType", "rdfs:label": "Radiology — imaging and radiology report interpretation"},
     {"@id": "hct:LAB_TEST",               "@type": "hct:HealthServiceType", "rdfs:label": "Lab Test — pathology or laboratory diagnostic test"},
+    {"@id": "hct:PHARMACY_DISPENSING",    "@type": "hct:HealthServiceType", "rdfs:label": "Pharmacy Dispensing — dispensing of a prescribed medication by a pharmacy (fulfilment; outcome is a dispensing confirmation, not a clinical note)"},
 
     {"@id": "hct:CollectionPurpose", "@type": "rdfs:Class", "rdfs:label": "CollectionPurpose",
      "rdfs:comment": "Purposes for which patient data and samples may be collected and used"},
@@ -26,6 +27,17 @@
     {"@id": "hct:PRESCRIPTION",    "@type": "hct:ArtifactType", "rdfs:label": "Prescription — prior prescription or medication record"},
     {"@id": "hct:REFERRAL",        "@type": "hct:ArtifactType", "rdfs:label": "Referral — referral letter or document from a treating or referring physician"},
     {"@id": "hct:PHOTO",           "@type": "hct:ArtifactType", "rdfs:label": "Photo — clinical photograph"},
-    {"@id": "hct:OTHER",           "@type": "hct:ArtifactType", "rdfs:label": "Other — any other clinical input artifact"}
+    {"@id": "hct:OTHER",           "@type": "hct:ArtifactType", "rdfs:label": "Other — any other clinical input artifact"},
+
+    {"@id": "hct:ArtifactRevocationStatus", "@type": "rdfs:Class", "rdfs:label": "ArtifactRevocationStatus",
+     "rdfs:comment": "Access status of a handed-over input artifact"},
+    {"@id": "hct:ACTIVE",  "@type": "hct:ArtifactRevocationStatus", "rdfs:label": "Active — access currently active"},
+    {"@id": "hct:REVOKED", "@type": "hct:ArtifactRevocationStatus", "rdfs:label": "Revoked — access revoked"},
+
+    {"@id": "hct:ConsentClass", "@type": "rdfs:Class", "rdfs:label": "ConsentClass",
+     "rdfs:comment": "Declared consent basis class carried on a referral booking (A/B/C as defined by HealthReferral). Self-owned CodedValue; networks may extend."},
+    {"@id": "hct:A", "@type": "hct:ConsentClass", "rdfs:label": "Class A — explicit, mediated consent"},
+    {"@id": "hct:B", "@type": "hct:ConsentClass", "rdfs:label": "Class B — treatment-relationship consent"},
+    {"@id": "hct:C", "@type": "hct:ConsentClass", "rdfs:label": "Class C — deemed consent, post-facto ratified"}
   ]
 }

@@ -1,0 +1,42 @@
+{
+  "_comment": "Discover 2 — a care coordinator advertising its standing coordination capability as a discoverable resource (on_search response).",
+  "context": {
+    "action": "on_search",
+    "schemaContext": ["https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld"]
+  },
+  "message": {
+    "catalogs": [
+      {
+        "beckn:resources": [
+          {
+            "@type": "beckn:Resource",
+            "beckn:id": "res-coordinator-001",
+            "beckn:descriptor": {
+              "schema:name": "District Care Coordination Cell",
+              "schema:description": "Coordinates clinical referrals across the district"
+            },
+            "beckn:resourceAttributes": {
+              "@type": "scres:ServiceCoordinationResource",
+              "coordinationScope": {
+                "referralCategories": [
+                  {"@context": "https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld", "@type": "ReferralCategory", "code": "CLINICAL", "display": "Clinical referral"}
+                ],
+                "targetServiceTypes": [
+                  {"@context": "https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld", "@type": "TargetServiceType", "code": "CONSULTATION", "display": "Practitioner consultation"}
+                ],
+                "programmeScope": [
+                  {"@context": "https://nha.gov.in", "@type": "Programme", "code": "PMJAY", "display": "Ayushman Bharat PM-JAY"}
+                ],
+                "geographyScope": [
+                  {"@context": "https://lgdirectory.gov.in", "@type": "LGDDistrict", "code": "507", "display": "Nashik"}
+                ]
+              },
+              "acceptanceMode": "MANUAL_REVIEW",
+              "supportedUrgencyTiers": ["ROUTINE", "URGENT"]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -9,11 +9,16 @@
     "HealthPerformance": "hpe:HealthPerformance",
     "HealthServiceType": "hpe:HealthServiceType",
     "FollowupRecommendationCode": "hpe:FollowupRecommendationCode",
+    "AttendanceStatus": "hpe:AttendanceStatus",
 
     "ServicePerformance": "spm:ServicePerformance",
     "ServiceLocation": "spm:ServiceLocation",
 
     "healthServiceType": {"@id": "hpe:healthServiceType"},
+    "attendanceStatus": {"@id": "hpe:attendanceStatus"},
+    "outcomeNoteRef": {"@id": "hpe:outcomeNoteRef"},
+    "outcomeDeliveredAt": {"@id": "hpe:outcomeDeliveredAt"},
+    "outcomeSlaBreached": {"@id": "hpe:outcomeSlaBreached"},
     "followupRecommendationCode": {"@id": "hpe:followupRecommendationCode"},
     "provisionalDiagnosis": {"@id": "hpe:provisionalDiagnosis"},
     "artifactsGenerated": {"@id": "hpe:artifactsGenerated", "@container": "@list"},

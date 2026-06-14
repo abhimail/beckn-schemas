@@ -38,6 +38,7 @@ components:
                 - FIELD_WORKER
                 - PAYER
                 - IMPLEMENTING_AGENCY
+                - CARE_COORDINATOR
               description: >
                 Role of this participant in the health service engagement.
                 PATIENT: the individual receiving the service.
@@ -46,6 +47,8 @@ components:
                 FIELD_WORKER: community health worker or field facilitator.
                 PAYER: entity bearing the cost (individual or organisational).
                 IMPLEMENTING_AGENCY: organisation that procured the service capacity.
+                CARE_COORDINATOR: care coordinator addressing the referral-coordination
+                transaction (T1). Observers ride the existing FIELD_WORKER role.
               x-jsonld-id: "hpa:participantRole"
             healthIds:
               type: array

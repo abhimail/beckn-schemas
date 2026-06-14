@@ -1,0 +1,422 @@
+{
+  "info": {
+    "name": "Referral — Catalog Publish (BPP → CDS)",
+    "_postman_id": "f4f4f4f4-0000-4000-8000-000000000004",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "## Referral — Catalog Publish (network-management flow)\n\nPrerequisite for the four referral transaction collections: each provider must publish its catalog to the CDS before any BAP can discover it. BPP → CDS only (no BAP).\n\n**Catalogs published here**\n1. **Coordination catalog** — the Care Coordinator's `ServiceCoordinationResource`/`ServiceCoordinationOffer` (so a Referrer can Discover 2).\n2. **Specialist** — `PHYSICAL_CONSULTATION` HealthResource/Offer (outcomeCommitment 72h).\n3. **Diagnostic lab** — `LAB_TEST` (report SLA 24h).\n4. **Pharmacy** — `PHARMACY_DISPENSING` (dispensing confirmation; outcome non-mandatory).\n\n**Conventions:** `catalog/publish` carries `message.catalogs[]` (plural) + `message.publishDirectives[]`; context has `bppId`/`bppUri` only (no `bapId`); each Catalog body repeats `bppId`/`bppUri`; `catalog/on_publish` returns `message.results[]`. version `2.0.0`; plain field names; no `schemaContext` (attribute blocks self-describe via `@context`).\n\n**Mapping to transaction collections:** set the transaction collection's `target_resource_id`/`target_offer_id` to the provider you are exercising (specialist_* / lab_* / pharmacy_*), and `coord_resource_id`/`coord_offer_id` for the CC.\n\n### Quick-start\n1. Import `Referral_Dev_Environment.json`. 2. Set `cds_url`, the four `*_uri` endpoints, and `auth_token`. 3. `network_id` is a placeholder — confirm with the registry team."
+  },
+  "variable": [
+    {
+      "key": "domain",
+      "value": "health",
+      "type": "string"
+    },
+    {
+      "key": "network_id",
+      "value": "example.net/health",
+      "type": "string",
+      "description": "Confirm with registry team"
+    },
+    {
+      "key": "cds_url",
+      "value": "",
+      "type": "string",
+      "description": "Catalog Discovery Service endpoint"
+    },
+    {
+      "key": "bpp_uri",
+      "value": "",
+      "type": "string",
+      "description": "Publisher BPP callback base (for on_publish)"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "publish_transaction_id",
+      "value": "e0e0e0e0-0000-4000-8000-000000000004",
+      "type": "string"
+    },
+    {
+      "key": "cds_np_id",
+      "value": "cds-np-001",
+      "type": "string"
+    },
+    {
+      "key": "cc_np_id",
+      "value": "cc-np-nashik-001",
+      "type": "string"
+    },
+    {
+      "key": "cc_uri",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "coord_catalog_id",
+      "value": "catalog-coord-nashik-001",
+      "type": "string"
+    },
+    {
+      "key": "coord_resource_id",
+      "value": "res-coord-nashik-001",
+      "type": "string"
+    },
+    {
+      "key": "coord_offer_id",
+      "value": "offer-coord-standard-001",
+      "type": "string"
+    },
+    {
+      "key": "specialist_np_id",
+      "value": "provider-np-apollo-card-001",
+      "type": "string"
+    },
+    {
+      "key": "specialist_uri",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "specialist_catalog_id",
+      "value": "catalog-apollo-card-001",
+      "type": "string"
+    },
+    {
+      "key": "specialist_resource_id",
+      "value": "res-apollo-card-opd",
+      "type": "string"
+    },
+    {
+      "key": "specialist_offer_id",
+      "value": "offer-apollo-card-opd",
+      "type": "string"
+    },
+    {
+      "key": "lab_np_id",
+      "value": "provider-np-nashikpath-001",
+      "type": "string"
+    },
+    {
+      "key": "lab_uri",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "lab_catalog_id",
+      "value": "catalog-nashikpath-001",
+      "type": "string"
+    },
+    {
+      "key": "lab_resource_id",
+      "value": "res-nashikpath-lipid",
+      "type": "string"
+    },
+    {
+      "key": "lab_offer_id",
+      "value": "offer-nashikpath-lipid",
+      "type": "string"
+    },
+    {
+      "key": "pharmacy_np_id",
+      "value": "provider-np-medplus-001",
+      "type": "string"
+    },
+    {
+      "key": "pharmacy_uri",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pharmacy_catalog_id",
+      "value": "catalog-medplus-001",
+      "type": "string"
+    },
+    {
+      "key": "pharmacy_resource_id",
+      "value": "res-medplus-dispense",
+      "type": "string"
+    },
+    {
+      "key": "pharmacy_offer_id",
+      "value": "offer-medplus-dispense",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — Coordination catalog",
+      "description": "Care Coordinator publishes its coordination service so Referrers can Discover 2.",
+      "item": [
+        {
+          "name": "catalog/publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/publish\",\n    \"version\": \"2.0.0\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{cc_uri}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"a1111111-1111-4111-8111-111111111111\",\n    \"timestamp\": \"2026-06-14T09:00:00+05:30\"\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"{{coord_catalog_id}}\",\n        \"bppId\": \"{{cc_np_id}}\",\n        \"bppUri\": \"{{cc_uri}}\",\n        \"descriptor\": {\n          \"name\": \"Nashik District Referral Desk\"\n        },\n        \"provider\": {\n          \"id\": \"{{cc_np_id}}\",\n          \"descriptor\": {\n            \"name\": \"Nashik District Referral Desk\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"{{coord_resource_id}}\",\n            \"descriptor\": {\n              \"name\": \"Nashik District Referral Coordination\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n              \"@type\": \"scres:ServiceCoordinationResource\",\n              \"coordinationScope\": {\n                \"referralCategories\": [\n                  {\n                    \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                    \"@type\": \"ReferralCategory\",\n                    \"code\": \"CLINICAL\",\n                    \"display\": \"Clinical referral\"\n                  }\n                ],\n                \"targetServiceTypes\": [\n                  {\n                    \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                    \"@type\": \"TargetServiceType\",\n                    \"code\": \"CONSULTATION\"\n                  },\n                  {\n                    \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                    \"@type\": \"TargetServiceType\",\n                    \"code\": \"INVESTIGATION\"\n                  },\n                  {\n                    \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                    \"@type\": \"TargetServiceType\",\n                    \"code\": \"DISPENSING\"\n                  }\n                ],\n                \"programmeScope\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\"\n                  }\n                ],\n                \"geographyScope\": [\n                  {\n                    \"@context\": \"https://lgdirectory.gov.in\",\n                    \"@type\": \"LGDDistrict\",\n                    \"code\": \"507\",\n                    \"display\": \"Nashik\"\n                  }\n                ]\n              },\n              \"acceptanceMode\": \"MANUAL_REVIEW\",\n              \"supportedUrgencyTiers\": [\n                \"ROUTINE\",\n                \"URGENT\",\n                \"EMERGENCY\"\n              ]\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Coordination service — standard\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/ServiceCoordinationOffer/v2.1/context.jsonld\",\n              \"@type\": \"scoff:ServiceCoordinationOffer\",\n              \"coordinationSlaWindows\": [\n                {\n                  \"urgencyTier\": \"ROUTINE\",\n                  \"lapseWindowHours\": 168,\n                  \"slaBreachWindowHours\": 168\n                },\n                {\n                  \"urgencyTier\": \"URGENT\",\n                  \"lapseWindowHours\": 48,\n                  \"slaBreachWindowHours\": 48\n                },\n                {\n                  \"urgencyTier\": \"EMERGENCY\",\n                  \"lapseWindowHours\": 1,\n                  \"slaBreachWindowHours\": 1\n                }\n              ],\n              \"retryPolicy\": \"ONE_SILENT_RETRY\",\n              \"handoffSupported\": true,\n              \"maxActiveReferrals\": 500\n            }\n          }\n        ]\n      }\n    ],\n    \"publishDirectives\": [\n      {\n        \"catalogId\": \"{{coord_catalog_id}}\",\n        \"catalogType\": \"REGULAR\",\n        \"updateMode\": \"FULL\"\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{cds_url}}/catalog/publish"
+            },
+            "description": "01 — Coordination catalog → CDS. message.catalogs[] + publishDirectives[]; bppId/bppUri = publisher; no bapId."
+          },
+          "response": []
+        },
+        {
+          "name": "catalog/on_publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/on_publish\",\n    \"version\": \"2.0.0\",\n    \"bppId\": \"{{cds_np_id}}\",\n    \"bppUri\": \"{{cds_url}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"a2222222-2222-4222-8222-222222222222\",\n    \"timestamp\": \"2026-06-14T09:00:00+05:30\"\n  },\n  \"message\": {\n    \"results\": [\n      {\n        \"catalogId\": \"{{coord_catalog_id}}\",\n        \"status\": \"ACCEPTED\",\n        \"stats\": {\n          \"itemCount\": 1\n        }\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/catalog/on_publish"
+            },
+            "description": "CDS → BPP async callback. message.results[] with status ACCEPTED."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 — Specialist catalog",
+      "description": "Cardiology provider publishes (PHYSICAL_CONSULTATION).",
+      "item": [
+        {
+          "name": "catalog/publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/publish\",\n    \"version\": \"2.0.0\",\n    \"bppId\": \"{{specialist_np_id}}\",\n    \"bppUri\": \"{{specialist_uri}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"b1111111-1111-4111-8111-111111111111\",\n    \"timestamp\": \"2026-06-14T09:00:00+05:30\"\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"{{specialist_catalog_id}}\",\n        \"bppId\": \"{{specialist_np_id}}\",\n        \"bppUri\": \"{{specialist_uri}}\",\n        \"descriptor\": {\n          \"name\": \"Apollo Cardiology\"\n        },\n        \"provider\": {\n          \"id\": \"{{specialist_np_id}}\",\n          \"descriptor\": {\n            \"name\": \"Apollo Cardiology\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"{{specialist_resource_id}}\",\n            \"descriptor\": {\n              \"name\": \"Apollo Cardiology — Dr. Mehta\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n              \"@type\": \"hr:HealthResource\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"clinicalDeliveryUnit\": \"CONSULTATION\",\n              \"acceptedSchemes\": [\n                {\n                  \"@context\": \"https://nha.gov.in\",\n                  \"@type\": \"Scheme\",\n                  \"code\": \"PMJAY\"\n                }\n              ],\n              \"clinicalValidation\": {\n                \"accreditationBody\": \"NMC\",\n                \"registrationNumber\": \"NMC-MH-2009-44521\",\n                \"specialty\": \"Cardiology\"\n              }\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"{{specialist_offer_id}}\",\n            \"resourceIds\": [\n              \"{{specialist_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Cardiology OPD consultation\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 72,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            }\n          }\n        ]\n      }\n    ],\n    \"publishDirectives\": [\n      {\n        \"catalogId\": \"{{specialist_catalog_id}}\",\n        \"catalogType\": \"REGULAR\",\n        \"updateMode\": \"FULL\"\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{cds_url}}/catalog/publish"
+            },
+            "description": "02 — Specialist catalog → CDS. message.catalogs[] + publishDirectives[]; bppId/bppUri = publisher; no bapId."
+          },
+          "response": []
+        },
+        {
+          "name": "catalog/on_publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/on_publish\",\n    \"version\": \"2.0.0\",\n    \"bppId\": \"{{cds_np_id}}\",\n    \"bppUri\": \"{{cds_url}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"b2222222-2222-4222-8222-222222222222\",\n    \"timestamp\": \"2026-06-14T09:00:00+05:30\"\n  },\n  \"message\": {\n    \"results\": [\n      {\n        \"catalogId\": \"{{specialist_catalog_id}}\",\n        \"status\": \"ACCEPTED\",\n        \"stats\": {\n          \"itemCount\": 1\n        }\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/catalog/on_publish"
+            },
+            "description": "CDS → BPP async callback. message.results[] with status ACCEPTED."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 — Diagnostic lab catalog",
+      "description": "Lab publishes (LAB_TEST) — discovered by the CC in the scoped Diagnostic-Test scenario.",
+      "item": [
+        {
+          "name": "catalog/publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/publish\",\n    \"version\": \"2.0.0\",\n    \"bppId\": \"{{lab_np_id}}\",\n    \"bppUri\": \"{{lab_uri}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"c1111111-1111-4111-8111-111111111111\",\n    \"timestamp\": \"2026-06-14T09:00:00+05:30\"\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"{{lab_catalog_id}}\",\n        \"bppId\": \"{{lab_np_id}}\",\n        \"bppUri\": \"{{lab_uri}}\",\n        \"descriptor\": {\n          \"name\": \"Nashik Path Labs\"\n        },\n        \"provider\": {\n          \"id\": \"{{lab_np_id}}\",\n          \"descriptor\": {\n            \"name\": \"Nashik Path Labs\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"{{lab_resource_id}}\",\n            \"descriptor\": {\n              \"name\": \"Nashik Path Labs\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n              \"@type\": \"hr:HealthResource\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"clinicalDeliveryUnit\": \"TEST\",\n              \"acceptedSchemes\": [\n                {\n                  \"@context\": \"https://nha.gov.in\",\n                  \"@type\": \"Scheme\",\n                  \"code\": \"PMJAY\"\n                }\n              ]\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"{{lab_offer_id}}\",\n            \"resourceIds\": [\n              \"{{lab_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Lipid panel — fasting\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"LAB_TEST\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 24,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            }\n          }\n        ]\n      }\n    ],\n    \"publishDirectives\": [\n      {\n        \"catalogId\": \"{{lab_catalog_id}}\",\n        \"catalogType\": \"REGULAR\",\n        \"updateMode\": \"FULL\"\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{cds_url}}/catalog/publish"
+            },
+            "description": "03 — Diagnostic lab catalog → CDS. message.catalogs[] + publishDirectives[]; bppId/bppUri = publisher; no bapId."
+          },
+          "response": []
+        },
+        {
+          "name": "catalog/on_publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/on_publish\",\n    \"version\": \"2.0.0\",\n    \"bppId\": \"{{cds_np_id}}\",\n    \"bppUri\": \"{{cds_url}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"c2222222-2222-4222-8222-222222222222\",\n    \"timestamp\": \"2026-06-14T09:00:00+05:30\"\n  },\n  \"message\": {\n    \"results\": [\n      {\n        \"catalogId\": \"{{lab_catalog_id}}\",\n        \"status\": \"ACCEPTED\",\n        \"stats\": {\n          \"itemCount\": 1\n        }\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/catalog/on_publish"
+            },
+            "description": "CDS → BPP async callback. message.results[] with status ACCEPTED."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 — Pharmacy catalog",
+      "description": "Pharmacy publishes (PHARMACY_DISPENSING).",
+      "item": [
+        {
+          "name": "catalog/publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/publish\",\n    \"version\": \"2.0.0\",\n    \"bppId\": \"{{pharmacy_np_id}}\",\n    \"bppUri\": \"{{pharmacy_uri}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"d1111111-1111-4111-8111-111111111111\",\n    \"timestamp\": \"2026-06-14T09:00:00+05:30\"\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"{{pharmacy_catalog_id}}\",\n        \"bppId\": \"{{pharmacy_np_id}}\",\n        \"bppUri\": \"{{pharmacy_uri}}\",\n        \"descriptor\": {\n          \"name\": \"MedPlus Specialty Pharmacy\"\n        },\n        \"provider\": {\n          \"id\": \"{{pharmacy_np_id}}\",\n          \"descriptor\": {\n            \"name\": \"MedPlus Specialty Pharmacy\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"{{pharmacy_resource_id}}\",\n            \"descriptor\": {\n              \"name\": \"MedPlus Specialty Pharmacy\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n              \"@type\": \"hr:HealthResource\",\n              \"healthServiceType\": \"PHARMACY_DISPENSING\",\n              \"clinicalDeliveryUnit\": \"SESSION\",\n              \"acceptedSchemes\": [\n                {\n                  \"@context\": \"https://nha.gov.in\",\n                  \"@type\": \"Scheme\",\n                  \"code\": \"PMJAY\"\n                }\n              ]\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"{{pharmacy_offer_id}}\",\n            \"resourceIds\": [\n              \"{{pharmacy_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Specialty drug dispensing\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHARMACY_DISPENSING\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 12,\n                \"outcomeNoteFormatStandard\": \"FHIR/MedicationDispense\",\n                \"mandatory\": false\n              }\n            }\n          }\n        ]\n      }\n    ],\n    \"publishDirectives\": [\n      {\n        \"catalogId\": \"{{pharmacy_catalog_id}}\",\n        \"catalogType\": \"REGULAR\",\n        \"updateMode\": \"FULL\"\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{cds_url}}/catalog/publish"
+            },
+            "description": "04 — Pharmacy catalog → CDS. message.catalogs[] + publishDirectives[]; bppId/bppUri = publisher; no bapId."
+          },
+          "response": []
+        },
+        {
+          "name": "catalog/on_publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"catalog/on_publish\",\n    \"version\": \"2.0.0\",\n    \"bppId\": \"{{cds_np_id}}\",\n    \"bppUri\": \"{{cds_url}}\",\n    \"transactionId\": \"{{publish_transaction_id}}\",\n    \"messageId\": \"d2222222-2222-4222-8222-222222222222\",\n    \"timestamp\": \"2026-06-14T09:00:00+05:30\"\n  },\n  \"message\": {\n    \"results\": [\n      {\n        \"catalogId\": \"{{pharmacy_catalog_id}}\",\n        \"status\": \"ACCEPTED\",\n        \"stats\": {\n          \"itemCount\": 1\n        }\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/catalog/on_publish"
+            },
+            "description": "CDS → BPP async callback. message.results[] with status ACCEPTED."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

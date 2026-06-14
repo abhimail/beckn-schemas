@@ -1,0 +1,876 @@
+{
+  "info": {
+    "_postman_id": "f2b3cef5-e6c7-5336-9dd6-5a806d4282bc",
+    "name": "Referral — Doctor / Specialist (Named, Targeted)",
+    "description": "### Quick-start: environment setup\n\n1. Import **Referral_Dev_Environment.json** into Postman (Environments -> Import).\n2. Select the **Referral Dev** environment from the environment picker.\n3. Set `bpp_uri`, `bap_uri`, and `auth_token` for your sandbox. `bpp_uri` points at the\n   Care Coordinator for the T1 folder and at the Referred Provider for the T2 folder —\n   switch it between the two transactions.\n4. `network_id` is currently `example.net/health` (placeholder) — confirm with the registry team.\n5. UUID variable defaults are pre-filled; `coordination_id` is the load-bearing link\n   (T1 issues it, T2 carries it as `coordinationRef`). Keep it identical across both folders.\n\n## Referral — Doctor / Specialist (Named, Targeted)\n\n**Scenario:** A GP (Dr. Priya Anand) refers patient Ravi Kumar to a named cardiologist\n(Dr. Mehta) via a Care Coordinator. Fully targeted: the referral names the provider.\n\n**Two-transaction model**\n- **T1 — Referral Coordination:** BAP = Referrer (GP NP), BPP = Care Coordinator (CC).\n  `contract.contractAttributes` = **HealthReferral**. coordinationId issued at on_confirm = the Referral ID.\n- **T2 — Appointment / Booking:** BAP = the SAME CC (now Seeker NP), BPP = Referred Provider.\n  `contract.contractAttributes` = **HealthContract** with `coordinationRef = {{coordination_id}}`.\n\n**Targeting mode:** Named / targeted — `recommendedTargetRef` PRESENT (Dr. Mehta snapshot).\nT2 **skips discover** and selects the named provider directly.\n\n**Consent class:** B (treatment-relationship) — precondition for T1 on_confirm.\n\n**healthServiceType:** PHYSICAL_CONSULTATION. Outcome note delivered at T2 on_status.\n\n**Deviation shown:** NO_SHOW — T2 `update` (attendanceStatus NO_SHOW) then T1 `update`\nlifecycleState=NO_SHOW + deviation.reasonCode NO_SHOW.\n\n**T1 -> T2 link:** `coordination_id` (T1 on_confirm) is carried into T2 as\n`contractAttributes.coordinationRef` and back-linked as T1 `targetBookingRef = {{appointment_id}}`.\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "T1 · Referral Coordination  (BAP Referrer → BPP Care Coordinator)",
+      "description": "Named/targeted referral. recommendedTargetRef carries the Dr. Mehta provider+offer snapshot from Discover 1. Consent Class B (treatment-relationship). coordinationId issued at on_confirm = Referral ID.",
+      "item": [
+        {
+          "name": "01 — discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"5c86aeb3-9f5d-52db-864d-06a801e13a8a\",\n    \"timestamp\": \"2026-06-14T09:00:00+05:30\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"intent\": {\n      \"textSearch\": \"care coordinator clinical Nashik referral\",\n      \"filters\": {\n        \"type\": \"jsonpath\",\n        \"expression\": \"$.catalogs[*].resources[*] ? (@.resourceAttributes.acceptanceMode == \\\"MANUAL_REVIEW\\\")\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/discover"
+            },
+            "description": "Referrer discovers a Care Coordinator able to handle this referral category."
+          },
+          "response": []
+        },
+        {
+          "name": "02 — on_discover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_discover\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"ecab1eac-06b0-5a4a-af93-676f1470e6d7\",\n    \"timestamp\": \"2026-06-14T09:01:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\",\n    \"schemaContext\": [\n      \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n      \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\"\n    ]\n  },\n  \"message\": {\n    \"catalogs\": [\n      {\n        \"id\": \"{{coord_catalog_id}}\",\n        \"bppId\": \"{{cc_np_id}}\",\n        \"bppUri\": \"{{bpp_uri}}\",\n        \"descriptor\": {\n          \"name\": \"Nashik Referral Coordination Desk — Catalogue\"\n        },\n        \"provider\": {\n          \"id\": \"{{cc_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Nashik Referral Coordination Desk\"\n          }\n        },\n        \"resources\": [\n          {\n            \"id\": \"{{coord_resource_id}}\",\n            \"descriptor\": {\n              \"name\": \"Nashik Referral Coordination Desk\",\n              \"shortDesc\": \"Care coordination desk — referral handling\",\n              \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n            },\n            \"resourceAttributes\": {\n              \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n              \"@type\": \"scres:ServiceCoordinationResource\",\n              \"coordinationScope\": {\n                \"referralCategories\": [\n                  {\n                    \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                    \"@type\": \"ReferralCategory\",\n                    \"code\": \"CLINICAL\",\n                    \"display\": \"Clinical\"\n                  }\n                ],\n                \"targetServiceTypes\": [\n                  {\n                    \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                    \"@type\": \"TargetServiceType\",\n                    \"code\": \"CONSULTATION\",\n                    \"display\": \"Consultation\"\n                  }\n                ],\n                \"geographyScope\": [\n                  {\n                    \"@context\": \"https://lgd.gov.in\",\n                    \"@type\": \"District\",\n                    \"code\": \"LGD-423\",\n                    \"display\": \"Nashik\"\n                  }\n                ]\n              },\n              \"acceptanceMode\": \"MANUAL_REVIEW\",\n              \"supportedUrgencyTiers\": [\n                \"ROUTINE\",\n                \"URGENT\",\n                \"EMERGENCY\"\n              ]\n            }\n          }\n        ],\n        \"offers\": [\n          {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 200,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_discover"
+            },
+            "description": "Care Coordinator returns its coordination catalogue entry."
+          },
+          "response": []
+        },
+        {
+          "name": "03 — select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"8c420015-e8b5-580b-850a-a2bb6f5b272b\",\n    \"timestamp\": \"2026-06-14T09:05:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{referrer_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"NOMINATOR\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-GP-0001\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 200,\n            \"currency\": \"INR\",\n            \"totalAmount\": 200,\n            \"netAmount\": 200,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"DRAFT\",\n        \"clinicalUrgencyTier\": \"URGENT\",\n        \"targetCriteria\": {\n          \"specialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"Specialty\",\n            \"code\": \"CARDIOLOGY\",\n            \"display\": \"Cardiology\"\n          },\n          \"subSpecialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"SubSpecialty\",\n            \"code\": \"INTERVENTIONAL_CARDIOLOGY\",\n            \"display\": \"Interventional Cardiology\"\n          },\n          \"equipmentNeeds\": [\n            \"ECHO\",\n            \"CATH_LAB\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/select"
+            },
+            "description": "Referrer originates DRAFT coordination contract (no id; CC assigns at on_select)."
+          },
+          "response": []
+        },
+        {
+          "name": "04 — on_select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"ea5971d0-71c7-5ebb-b816-1ac4c4493d3f\",\n    \"timestamp\": \"2026-06-14T09:06:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Nashik Referral Coordination Desk\",\n                \"shortDesc\": \"Care coordination desk — referral handling\",\n                \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                \"@type\": \"scres:ServiceCoordinationResource\",\n                \"coordinationScope\": {\n                  \"referralCategories\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"ReferralCategory\",\n                      \"code\": \"CLINICAL\",\n                      \"display\": \"Clinical\"\n                    }\n                  ],\n                  \"targetServiceTypes\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"TargetServiceType\",\n                      \"code\": \"CONSULTATION\",\n                      \"display\": \"Consultation\"\n                    }\n                  ],\n                  \"geographyScope\": [\n                    {\n                      \"@context\": \"https://lgd.gov.in\",\n                      \"@type\": \"District\",\n                      \"code\": \"LGD-423\",\n                      \"display\": \"Nashik\"\n                    }\n                  ]\n                },\n                \"acceptanceMode\": \"MANUAL_REVIEW\",\n                \"supportedUrgencyTiers\": [\n                  \"ROUTINE\",\n                  \"URGENT\",\n                  \"EMERGENCY\"\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 200,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 200,\n            \"currency\": \"INR\",\n            \"totalAmount\": 200,\n            \"netAmount\": 200,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"DRAFT\",\n        \"clinicalUrgencyTier\": \"URGENT\",\n        \"targetCriteria\": {\n          \"specialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"Specialty\",\n            \"code\": \"CARDIOLOGY\",\n            \"display\": \"Cardiology\"\n          },\n          \"subSpecialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"SubSpecialty\",\n            \"code\": \"INTERVENTIONAL_CARDIOLOGY\",\n            \"display\": \"Interventional Cardiology\"\n          },\n          \"equipmentNeeds\": [\n            \"ECHO\",\n            \"CATH_LAB\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_select"
+            },
+            "description": "CC accepts; assigns coordination contract id. (= the Referral ID at on_confirm.)"
+          },
+          "response": []
+        },
+        {
+          "name": "05 — init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"00bb3e16-0d78-53fb-bcb1-0b65042e362e\",\n    \"timestamp\": \"2026-06-14T09:10:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{referrer_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Dr. Priya Anand\",\n            \"shortDesc\": \"General Practitioner (Nominator)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"NOMINATOR\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-GP-0001\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Ravi Kumar\",\n            \"shortDesc\": \"Patient (Subject)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{observer_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Dr. Priya Anand — Front Desk\",\n            \"shortDesc\": \"Observer\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"OBSERVER\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-GP-0001\"\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 200,\n            \"currency\": \"INR\",\n            \"totalAmount\": 200,\n            \"netAmount\": 200,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"DRAFT\",\n        \"clinicalUrgencyTier\": \"URGENT\",\n        \"targetCriteria\": {\n          \"specialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"Specialty\",\n            \"code\": \"CARDIOLOGY\",\n            \"display\": \"Cardiology\"\n          },\n          \"subSpecialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"SubSpecialty\",\n            \"code\": \"INTERVENTIONAL_CARDIOLOGY\",\n            \"display\": \"Interventional Cardiology\"\n          },\n          \"equipmentNeeds\": [\n            \"ECHO\",\n            \"CATH_LAB\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/init"
+            },
+            "description": "Referrer confirms binding intent; full participant detail supplied."
+          },
+          "response": []
+        },
+        {
+          "name": "06 — on_init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"18ad6f42-85fe-50e8-a487-a513b3123efa\",\n    \"timestamp\": \"2026-06-14T09:11:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Nashik Referral Coordination Desk\",\n                \"shortDesc\": \"Care coordination desk — referral handling\",\n                \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                \"@type\": \"scres:ServiceCoordinationResource\",\n                \"coordinationScope\": {\n                  \"referralCategories\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"ReferralCategory\",\n                      \"code\": \"CLINICAL\",\n                      \"display\": \"Clinical\"\n                    }\n                  ],\n                  \"targetServiceTypes\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"TargetServiceType\",\n                      \"code\": \"CONSULTATION\",\n                      \"display\": \"Consultation\"\n                    }\n                  ],\n                  \"geographyScope\": [\n                    {\n                      \"@context\": \"https://lgd.gov.in\",\n                      \"@type\": \"District\",\n                      \"code\": \"LGD-423\",\n                      \"display\": \"Nashik\"\n                    }\n                  ]\n                },\n                \"acceptanceMode\": \"MANUAL_REVIEW\",\n                \"supportedUrgencyTiers\": [\n                  \"ROUTINE\",\n                  \"URGENT\",\n                  \"EMERGENCY\"\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 200,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"QUOTED\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 200,\n            \"currency\": \"INR\",\n            \"totalAmount\": 200,\n            \"netAmount\": 200,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"paymentSchedule\": \"UPFRONT\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"DRAFT\",\n        \"clinicalUrgencyTier\": \"URGENT\",\n        \"targetCriteria\": {\n          \"specialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"Specialty\",\n            \"code\": \"CARDIOLOGY\",\n            \"display\": \"Cardiology\"\n          },\n          \"subSpecialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"SubSpecialty\",\n            \"code\": \"INTERVENTIONAL_CARDIOLOGY\",\n            \"display\": \"Interventional Cardiology\"\n          },\n          \"equipmentNeeds\": [\n            \"ECHO\",\n            \"CATH_LAB\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_init"
+            },
+            "description": "CC returns binding quote for the coordination fee."
+          },
+          "response": []
+        },
+        {
+          "name": "07 — confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"1589b5a5-f384-5edd-bf08-fc641239b78d\",\n    \"timestamp\": \"2026-06-14T09:15:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"descriptor\": {\n        \"name\": \"Referral — GP -> Cardiologist\",\n        \"docs\": [\n          {\n            \"id\": \"{{referralnote_doc_ref}}\",\n            \"name\": \"Referral Note — Ravi Kumar\",\n            \"url\": \"https://docs.example.org/referral/{{referralnote_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\",\n            \"standard\": \"FHIR/ServiceRequest\"\n          },\n          {\n            \"id\": \"{{consent_doc_ref}}\",\n            \"name\": \"Patient Consent — Referral\",\n            \"url\": \"https://docs.example.org/consent/{{consent_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\"\n          }\n        ]\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 200,\n            \"currency\": \"INR\",\n            \"totalAmount\": 200,\n            \"netAmount\": 200,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"ACTIVE\",\n        \"clinicalUrgencyTier\": \"URGENT\",\n        \"targetCriteria\": {\n          \"specialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"Specialty\",\n            \"code\": \"CARDIOLOGY\",\n            \"display\": \"Cardiology\"\n          },\n          \"subSpecialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"SubSpecialty\",\n            \"code\": \"INTERVENTIONAL_CARDIOLOGY\",\n            \"display\": \"Interventional Cardiology\"\n          },\n          \"equipmentNeeds\": [\n            \"ECHO\",\n            \"CATH_LAB\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"coordinationId\": \"{{coordination_id}}\",\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        },\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"consentedBy\": \"{{referrer_participant_id}}\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ],\n          \"originatingConsentRef\": \"treatment-rel-{{referrer_participant_id}}\"\n        },\n        \"referralNote\": {\n          \"artifactRef\": \"{{referralnote_doc_ref}}\",\n          \"credentialScope\": \"did:example:provider:{{provider_participant_id}}\",\n          \"accessWindowStart\": \"2026-06-14T09:15:00+05:30\",\n          \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n          \"revocationStatus\": \"ACTIVE\",\n          \"specialty\": \"Cardiology\",\n          \"urgency\": \"URGENT\",\n          \"priorResultRefs\": []\n        },\n        \"notificationRoster\": [\n          {\n            \"partyRef\": \"{{referrer_participant_id}}\",\n            \"partyRole\": \"NOMINATOR\",\n            \"notificationScope\": \"FULL\",\n            \"channelRef\": \"sms:+910000000010\"\n          },\n          {\n            \"partyRef\": \"{{patient_participant_id}}\",\n            \"partyRole\": \"SUBJECT\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000011\"\n          },\n          {\n            \"partyRef\": \"{{observer_participant_id}}\",\n            \"partyRole\": \"OBSERVER\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000012\"\n          }\n        ],\n        \"recommendedTargetRef\": {\n          \"targetProviderId\": \"{{provider_participant_id}}\",\n          \"targetResourceRef\": \"{{target_resource_id}}\",\n          \"targetOfferRef\": \"{{target_offer_id}}\",\n          \"termsSnapshot\": {\n            \"outcomeCommitment\": {\n              \"attendanceToOutcomeSlaHours\": 48,\n              \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n              \"mandatory\": true\n            }\n          },\n          \"snapshotAt\": \"2026-06-14T09:06:00+05:30\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/confirm"
+            },
+            "description": "Referrer confirms. CONSENT (class B) is the precondition for issuance."
+          },
+          "response": []
+        },
+        {
+          "name": "08 — on_confirm  ★ Referral issued (coordinationId)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"d26bc205-8582-5220-a119-1f12582a9e2c\",\n    \"timestamp\": \"2026-06-14T09:16:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"descriptor\": {\n        \"name\": \"Referral — GP -> Cardiologist\",\n        \"docs\": [\n          {\n            \"id\": \"{{referralnote_doc_ref}}\",\n            \"name\": \"Referral Note — Ravi Kumar\",\n            \"url\": \"https://docs.example.org/referral/{{referralnote_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\",\n            \"standard\": \"FHIR/ServiceRequest\"\n          },\n          {\n            \"id\": \"{{consent_doc_ref}}\",\n            \"name\": \"Patient Consent — Referral\",\n            \"url\": \"https://docs.example.org/consent/{{consent_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\"\n          }\n        ]\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Nashik Referral Coordination Desk\",\n                \"shortDesc\": \"Care coordination desk — referral handling\",\n                \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                \"@type\": \"scres:ServiceCoordinationResource\",\n                \"coordinationScope\": {\n                  \"referralCategories\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"ReferralCategory\",\n                      \"code\": \"CLINICAL\",\n                      \"display\": \"Clinical\"\n                    }\n                  ],\n                  \"targetServiceTypes\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"TargetServiceType\",\n                      \"code\": \"CONSULTATION\",\n                      \"display\": \"Consultation\"\n                    }\n                  ],\n                  \"geographyScope\": [\n                    {\n                      \"@context\": \"https://lgd.gov.in\",\n                      \"@type\": \"District\",\n                      \"code\": \"LGD-423\",\n                      \"display\": \"Nashik\"\n                    }\n                  ]\n                },\n                \"acceptanceMode\": \"MANUAL_REVIEW\",\n                \"supportedUrgencyTiers\": [\n                  \"ROUTINE\",\n                  \"URGENT\",\n                  \"EMERGENCY\"\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 200,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{coord_consideration_id}}\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 200,\n            \"currency\": \"INR\",\n            \"totalAmount\": 200,\n            \"netAmount\": 200,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{referrer_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Dr. Priya Anand\",\n            \"shortDesc\": \"General Practitioner (Nominator)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"NOMINATOR\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-GP-0001\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Ravi Kumar\",\n            \"shortDesc\": \"Patient (Subject)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"ACTIVE\",\n        \"clinicalUrgencyTier\": \"URGENT\",\n        \"targetCriteria\": {\n          \"specialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"Specialty\",\n            \"code\": \"CARDIOLOGY\",\n            \"display\": \"Cardiology\"\n          },\n          \"subSpecialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"SubSpecialty\",\n            \"code\": \"INTERVENTIONAL_CARDIOLOGY\",\n            \"display\": \"Interventional Cardiology\"\n          },\n          \"equipmentNeeds\": [\n            \"ECHO\",\n            \"CATH_LAB\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"coordinationId\": \"{{coordination_id}}\",\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        },\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"consentedBy\": \"{{referrer_participant_id}}\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ],\n          \"originatingConsentRef\": \"treatment-rel-{{referrer_participant_id}}\"\n        },\n        \"referralNote\": {\n          \"artifactRef\": \"{{referralnote_doc_ref}}\",\n          \"credentialScope\": \"did:example:provider:{{provider_participant_id}}\",\n          \"accessWindowStart\": \"2026-06-14T09:15:00+05:30\",\n          \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n          \"revocationStatus\": \"ACTIVE\",\n          \"specialty\": \"Cardiology\",\n          \"urgency\": \"URGENT\",\n          \"priorResultRefs\": []\n        },\n        \"notificationRoster\": [\n          {\n            \"partyRef\": \"{{referrer_participant_id}}\",\n            \"partyRole\": \"NOMINATOR\",\n            \"notificationScope\": \"FULL\",\n            \"channelRef\": \"sms:+910000000010\"\n          },\n          {\n            \"partyRef\": \"{{patient_participant_id}}\",\n            \"partyRole\": \"SUBJECT\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000011\"\n          },\n          {\n            \"partyRef\": \"{{observer_participant_id}}\",\n            \"partyRole\": \"OBSERVER\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000012\"\n          }\n        ],\n        \"recommendedTargetRef\": {\n          \"targetProviderId\": \"{{provider_participant_id}}\",\n          \"targetResourceRef\": \"{{target_resource_id}}\",\n          \"targetOfferRef\": \"{{target_offer_id}}\",\n          \"termsSnapshot\": {\n            \"outcomeCommitment\": {\n              \"attendanceToOutcomeSlaHours\": 48,\n              \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n              \"mandatory\": true\n            }\n          },\n          \"snapshotAt\": \"2026-06-14T09:06:00+05:30\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_confirm"
+            },
+            "description": "★ CC issues the Referral. coordinationId = {{coordination_id}} is the persistent Referral ID, consumed by T2 as coordinationRef."
+          },
+          "response": []
+        },
+        {
+          "name": "09 — status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"902385ac-e3f4-5df2-80c5-ffa98ecea99f\",\n    \"timestamp\": \"2026-06-14T09:20:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/status"
+            },
+            "description": "Referrer polls coordination state."
+          },
+          "response": []
+        },
+        {
+          "name": "10 — on_status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"73961b0d-beb4-5cc2-984a-f9ef882dd446\",\n    \"timestamp\": \"2026-06-14T11:30:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Nashik Referral Coordination Desk\",\n                \"shortDesc\": \"Care coordination desk — referral handling\",\n                \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                \"@type\": \"scres:ServiceCoordinationResource\",\n                \"coordinationScope\": {\n                  \"referralCategories\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"ReferralCategory\",\n                      \"code\": \"CLINICAL\",\n                      \"display\": \"Clinical\"\n                    }\n                  ],\n                  \"targetServiceTypes\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"TargetServiceType\",\n                      \"code\": \"CONSULTATION\",\n                      \"display\": \"Consultation\"\n                    }\n                  ],\n                  \"geographyScope\": [\n                    {\n                      \"@context\": \"https://lgd.gov.in\",\n                      \"@type\": \"District\",\n                      \"code\": \"LGD-423\",\n                      \"display\": \"Nashik\"\n                    }\n                  ]\n                },\n                \"acceptanceMode\": \"MANUAL_REVIEW\",\n                \"supportedUrgencyTiers\": [\n                  \"ROUTINE\",\n                  \"URGENT\",\n                  \"EMERGENCY\"\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 200,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"BOOKING_CONFIRMED\",\n        \"clinicalUrgencyTier\": \"URGENT\",\n        \"targetCriteria\": {\n          \"specialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"Specialty\",\n            \"code\": \"CARDIOLOGY\",\n            \"display\": \"Cardiology\"\n          },\n          \"subSpecialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"SubSpecialty\",\n            \"code\": \"INTERVENTIONAL_CARDIOLOGY\",\n            \"display\": \"Interventional Cardiology\"\n          },\n          \"equipmentNeeds\": [\n            \"ECHO\",\n            \"CATH_LAB\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"coordinationId\": \"{{coordination_id}}\",\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        },\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"consentedBy\": \"{{referrer_participant_id}}\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ],\n          \"originatingConsentRef\": \"treatment-rel-{{referrer_participant_id}}\"\n        },\n        \"referralNote\": {\n          \"artifactRef\": \"{{referralnote_doc_ref}}\",\n          \"credentialScope\": \"did:example:provider:{{provider_participant_id}}\",\n          \"accessWindowStart\": \"2026-06-14T09:15:00+05:30\",\n          \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n          \"revocationStatus\": \"ACTIVE\",\n          \"specialty\": \"Cardiology\",\n          \"urgency\": \"URGENT\",\n          \"priorResultRefs\": []\n        },\n        \"notificationRoster\": [\n          {\n            \"partyRef\": \"{{referrer_participant_id}}\",\n            \"partyRole\": \"NOMINATOR\",\n            \"notificationScope\": \"FULL\",\n            \"channelRef\": \"sms:+910000000010\"\n          },\n          {\n            \"partyRef\": \"{{patient_participant_id}}\",\n            \"partyRole\": \"SUBJECT\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000011\"\n          },\n          {\n            \"partyRef\": \"{{observer_participant_id}}\",\n            \"partyRole\": \"OBSERVER\",\n            \"notificationScope\": \"LIFECYCLE_ONLY\",\n            \"channelRef\": \"sms:+910000000012\"\n          }\n        ],\n        \"recommendedTargetRef\": {\n          \"targetProviderId\": \"{{provider_participant_id}}\",\n          \"targetResourceRef\": \"{{target_resource_id}}\",\n          \"targetOfferRef\": \"{{target_offer_id}}\",\n          \"termsSnapshot\": {\n            \"outcomeCommitment\": {\n              \"attendanceToOutcomeSlaHours\": 48,\n              \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n              \"mandatory\": true\n            }\n          },\n          \"snapshotAt\": \"2026-06-14T09:06:00+05:30\"\n        },\n        \"targetBookingRef\": \"{{appointment_id}}\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_status"
+            },
+            "description": "CC reports lifecycleState BOOKING_CONFIRMED; targetBookingRef = {{appointment_id}}."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "T2 · Appointment / Booking  (BAP Care Coordinator → BPP Referred Provider)",
+      "description": "CC books the NAMED provider directly — **discover is skipped** (select straight to Dr. Mehta). coordinationRef links to T1. Consultation outcome note returned at on_status.",
+      "item": [
+        {
+          "name": "01 — select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"99031e92-c077-5f7d-9d01-e4c0fb543b17\",\n    \"timestamp\": \"2026-06-14T09:30:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 800,\n            \"currency\": \"INR\",\n            \"totalAmount\": 800,\n            \"netAmount\": 800,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/select"
+            },
+            "description": "CC books the NAMED provider directly via select (discover skipped). coordinationRef = {{coordination_id}} links this booking to T1."
+          },
+          "response": []
+        },
+        {
+          "name": "02 — on_select",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_select\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"7da60766-c445-5480-9f36-3920815512aa\",\n    \"timestamp\": \"2026-06-14T09:31:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Cardiology consultation — Dr. Mehta\",\n                \"shortDesc\": \"In-person interventional cardiology consult\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n                \"@type\": \"hr:HealthResource\",\n                \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n                \"acceptedSchemes\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\",\n                    \"display\": \"Ayushman Bharat PM-JAY\"\n                  }\n                ],\n                \"specialty\": \"Cardiology\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Specialist consultation (named)\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 800,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 800,\n            \"currency\": \"INR\",\n            \"totalAmount\": 800,\n            \"netAmount\": 800,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_select"
+            },
+            "description": "Provider accepts; assigns appointment contract id."
+          },
+          "response": []
+        },
+        {
+          "name": "03 — init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"59375345-676b-5fb8-9b89-140365e6cffc\",\n    \"timestamp\": \"2026-06-14T09:35:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Ravi Kumar\",\n            \"shortDesc\": \"Patient (Subject)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{cc_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Nashik Referral Coordination Desk\",\n            \"shortDesc\": \"Care Coordinator (Seeker NP for T2)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"REFERRER\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-CC-0001\"\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"PENDING\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 800,\n            \"currency\": \"INR\",\n            \"totalAmount\": 800,\n            \"netAmount\": 800,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ]\n          }\n        }\n      ],\n      \"descriptor\": {\n        \"docs\": [\n          {\n            \"id\": \"{{referralnote_doc_ref}}\",\n            \"name\": \"Referral Note (handed over from T1)\",\n            \"url\": \"https://docs.example.org/referral/{{referralnote_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\",\n            \"standard\": \"FHIR/ServiceRequest\"\n          }\n        ]\n      },\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/init"
+            },
+            "description": "CC confirms binding intent; referral note handed over via descriptor.docs[] + inputArtifacts."
+          },
+          "response": []
+        },
+        {
+          "name": "04 — on_init",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_init\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"15c9c41a-19d2-5f6d-a28d-8abc92fba524\",\n    \"timestamp\": \"2026-06-14T09:36:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"DRAFT\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"DRAFT\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Cardiology consultation — Dr. Mehta\",\n                \"shortDesc\": \"In-person interventional cardiology consult\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n                \"@type\": \"hr:HealthResource\",\n                \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n                \"acceptedSchemes\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\",\n                    \"display\": \"Ayushman Bharat PM-JAY\"\n                  }\n                ],\n                \"specialty\": \"Cardiology\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Specialist consultation (named)\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 800,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"QUOTED\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 800,\n            \"currency\": \"INR\",\n            \"totalAmount\": 800,\n            \"netAmount\": 800,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"paymentSchedule\": \"UPFRONT\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_init"
+            },
+            "description": "Provider returns binding quote and confirmed appointment slot."
+          },
+          "response": []
+        },
+        {
+          "name": "05 — confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"b066c477-e9cd-5341-b052-178a4ecc32ca\",\n    \"timestamp\": \"2026-06-14T09:40:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 800,\n            \"currency\": \"INR\",\n            \"totalAmount\": 800,\n            \"netAmount\": 800,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"descriptor\": {\n        \"docs\": [\n          {\n            \"id\": \"{{referralnote_doc_ref}}\",\n            \"name\": \"Referral Note (handed over from T1)\",\n            \"url\": \"https://docs.example.org/referral/{{referralnote_doc_ref}}.pdf\",\n            \"mimeType\": \"application/pdf\",\n            \"standard\": \"FHIR/ServiceRequest\"\n          }\n        ]\n      },\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/confirm"
+            },
+            "description": "CC confirms the appointment."
+          },
+          "response": []
+        },
+        {
+          "name": "06 — on_confirm  ★ Appointment booked",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_confirm\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"50bbc46d-0f20-55f2-8539-880b2d7cce60\",\n    \"timestamp\": \"2026-06-14T09:41:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Cardiology consultation — Dr. Mehta\",\n                \"shortDesc\": \"In-person interventional cardiology consult\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n                \"@type\": \"hr:HealthResource\",\n                \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n                \"acceptedSchemes\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\",\n                    \"display\": \"Ayushman Bharat PM-JAY\"\n                  }\n                ],\n                \"specialty\": \"Cardiology\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Specialist consultation (named)\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 800,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"consideration\": [\n        {\n          \"id\": \"{{appt_consideration_id}}\",\n          \"status\": {\n            \"code\": \"ACTIVE\"\n          },\n          \"considerationAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n            \"@type\": \"hcn:HealthConsideration\",\n            \"pricePerUnit\": 800,\n            \"currency\": \"INR\",\n            \"totalAmount\": 800,\n            \"netAmount\": 800,\n            \"payerArchetype\": \"GOVERNMENT\",\n            \"paymentMethodsAccepted\": [\n              \"BANK_TRANSFER\",\n              \"NEFT\"\n            ],\n            \"selectedPaymentMethod\": \"NEFT\",\n            \"transactionRef\": \"{{payment_ref}}\"\n          }\n        }\n      ],\n      \"participants\": [\n        {\n          \"id\": \"{{patient_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Ravi Kumar\",\n            \"shortDesc\": \"Patient (Subject)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"SUBJECT\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"ABHA\",\n                \"value\": \"91-1234-5678-9012\"\n              }\n            ]\n          }\n        },\n        {\n          \"id\": \"{{cc_participant_id}}\",\n          \"descriptor\": {\n            \"name\": \"Nashik Referral Coordination Desk\",\n            \"shortDesc\": \"Care Coordinator (Seeker NP for T2)\"\n          },\n          \"participantAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthParticipant/v2.1/context.jsonld\",\n            \"@type\": \"hpa:HealthParticipant\",\n            \"participantRole\": \"REFERRER\",\n            \"primaryLanguage\": \"en\",\n            \"healthIds\": [\n              {\n                \"system\": \"HFR\",\n                \"value\": \"HFR-CC-0001\"\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_confirm"
+            },
+            "description": "★ Provider confirms appointment {{appointment_id}}. CC then sets T1 lifecycleState BOOKING_CONFIRMED."
+          },
+          "response": []
+        },
+        {
+          "name": "07 — status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"fdc86e44-1d26-5f5a-8dcf-c69bca5cdf6b\",\n    \"timestamp\": \"2026-06-14T10:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/status"
+            },
+            "description": "CC polls the appointment / awaits outcome."
+          },
+          "response": []
+        },
+        {
+          "name": "08 — on_status  ★ Outcome delivered",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_status\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"80a31cd6-4d73-58cb-9d46-11da86325e2b\",\n    \"timestamp\": \"2026-06-15T17:00:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"COMPLETE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Cardiology consultation — Dr. Mehta\",\n                \"shortDesc\": \"In-person interventional cardiology consult\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n                \"@type\": \"hr:HealthResource\",\n                \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n                \"acceptedSchemes\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\",\n                    \"display\": \"Ayushman Bharat PM-JAY\"\n                  }\n                ],\n                \"specialty\": \"Cardiology\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Specialist consultation (named)\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 800,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"performance-t2-001\",\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthPerformance/v2.1/context.jsonld\",\n            \"@type\": \"hpe:HealthPerformance\",\n            \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n            \"attendanceStatus\": \"ATTENDED\",\n            \"serviceLocation\": {\n              \"gps\": \"19.9975,73.7898\",\n              \"address\": \"MG Road, Nashik\"\n            },\n            \"providerConfirmedCompletion\": true,\n            \"outcomeNoteRef\": \"{{outcomenote_doc_ref}}\",\n            \"outcomeDeliveredAt\": \"2026-06-15T17:00:00+05:30\",\n            \"artifactsGenerated\": [\n              \"{{outcomenote_doc_ref}}\"\n            ],\n            \"followupRecommendationCode\": \"ROUTINE\"\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_status"
+            },
+            "description": "★ Provider reports ATTENDED and delivers the consultation outcome note (outcomeNoteRef). CC projects outcome onto T1 (OUTCOME_RECEIVED)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Deviation — NO_SHOW",
+      "description": "**Deviation: NO_SHOW.** Provider records NO_SHOW on the T2 appointment via `update`; the CC mirrors it onto T1 with lifecycleState=NO_SHOW and deviation.reasonCode=NO_SHOW.",
+      "item": [
+        {
+          "name": "01 — T2 update — NO_SHOW",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"38311392-4e95-5bac-b9aa-1ac1b6e3e13f\",\n    \"timestamp\": \"2026-06-15T09:30:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"performance\": [\n        {\n          \"id\": \"performance-t2-001\",\n          \"performanceAttributes\": {\n            \"@context\": \"https://schema.beckn.io/HealthPerformance/v2.1/context.jsonld\",\n            \"@type\": \"hpe:HealthPerformance\",\n            \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n            \"attendanceStatus\": \"NO_SHOW\",\n            \"serviceLocation\": {\n              \"gps\": \"19.9975,73.7898\",\n              \"address\": \"MG Road, Nashik\"\n            },\n            \"providerConfirmedCompletion\": false\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/update"
+            },
+            "description": "Patient No-Show on the T2 appointment."
+          },
+          "response": []
+        },
+        {
+          "name": "02 — T2 on_update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{cc_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t2}}\",\n    \"messageId\": \"cb6f9a1c-07ae-50e2-9d7a-33e8ff5a7e35\",\n    \"timestamp\": \"2026-06-15T09:31:00+05:30\",\n    \"bppId\": \"{{provider_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{appointment_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t2-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{target_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Cardiology consultation — Dr. Mehta\",\n                \"shortDesc\": \"In-person interventional cardiology consult\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/HealthResource/v2.1/context.jsonld\",\n                \"@type\": \"hr:HealthResource\",\n                \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n                \"acceptedSchemes\": [\n                  {\n                    \"@context\": \"https://nha.gov.in\",\n                    \"@type\": \"Scheme\",\n                    \"code\": \"PMJAY\",\n                    \"display\": \"Ayushman Bharat PM-JAY\"\n                  }\n                ],\n                \"specialty\": \"Cardiology\"\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{target_offer_id}}\",\n            \"resourceIds\": [\n              \"{{target_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Specialist consultation (named)\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{appt_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 800,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthContract/v2.1/context.jsonld\",\n        \"@type\": \"hct:HealthContract\",\n        \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n        \"coordinationRef\": \"{{coordination_id}}\",\n        \"consent\": {\n          \"consentClass\": {\n            \"@context\": \"https://schema.beckn.io/CodedValue/v2.1/attributes.yaml\",\n            \"@type\": \"ConsentClass\",\n            \"code\": \"B\",\n            \"display\": \"Treatment-relationship\"\n          },\n          \"consentId\": \"{{consent_id}}\",\n          \"consentDocRef\": \"{{consent_doc_ref}}\",\n          \"patientParticipantId\": \"{{patient_participant_id}}\",\n          \"consentStandard\": \"HealthConsent/v1\",\n          \"consentedAt\": \"2026-06-14T09:15:00+05:30\",\n          \"purposeOfCollection\": [\n            \"REFERRAL_CARE\",\n            \"TREATMENT\"\n          ]\n        },\n        \"inputArtifacts\": [\n          {\n            \"artifactRef\": \"{{referralnote_doc_ref}}\",\n            \"artifactType\": \"REFERRAL\",\n            \"mimeType\": \"application/pdf\",\n            \"sourceCoordinationRef\": \"{{coordination_id}}\",\n            \"accessWindowEnd\": \"2026-07-14T09:00:00+05:30\",\n            \"revocationStatus\": \"ACTIVE\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_update"
+            },
+            "description": "Provider acknowledges the T2 deviation."
+          },
+          "response": []
+        },
+        {
+          "name": "03 — T1 update — lifecycleState NO_SHOW + deviation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"9dcae8a2-4966-5978-8030-d807ecdd57a6\",\n    \"timestamp\": \"2026-06-15T10:00:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"NO_SHOW\",\n        \"clinicalUrgencyTier\": \"URGENT\",\n        \"targetCriteria\": {\n          \"specialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"Specialty\",\n            \"code\": \"CARDIOLOGY\",\n            \"display\": \"Cardiology\"\n          },\n          \"subSpecialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"SubSpecialty\",\n            \"code\": \"INTERVENTIONAL_CARDIOLOGY\",\n            \"display\": \"Interventional Cardiology\"\n          },\n          \"equipmentNeeds\": [\n            \"ECHO\",\n            \"CATH_LAB\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"coordinationId\": \"{{coordination_id}}\",\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        },\n        \"deviation\": {\n          \"reasonCode\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"DeviationReasonCode\",\n            \"code\": \"NO_SHOW\",\n            \"display\": \"Patient No-Show\"\n          },\n          \"detectedBy\": \"{{cc_np_id}}\",\n          \"detectedAt\": \"2026-06-15T10:00:00+05:30\",\n          \"note\": \"Patient did not attend the booked cardiology appointment.\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bpp_uri}}/update"
+            },
+            "description": "CC mirrors the deviation onto T1: lifecycleState=NO_SHOW, deviation.reasonCode=NO_SHOW."
+          },
+          "response": []
+        },
+        {
+          "name": "04 — T1 on_update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "Network-issued JWT."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"{{domain}}\",\n    \"networkId\": \"{{network_id}}\",\n    \"action\": \"on_update\",\n    \"version\": \"2.0.0\",\n    \"bapId\": \"{{seeker_np_id}}\",\n    \"bapUri\": \"{{bap_uri}}\",\n    \"transactionId\": \"{{transaction_id_t1}}\",\n    \"messageId\": \"46bea265-1c7b-5a35-9680-ebf23feb3c46\",\n    \"timestamp\": \"2026-06-15T10:01:00+05:30\",\n    \"bppId\": \"{{cc_np_id}}\",\n    \"bppUri\": \"{{bpp_uri}}\"\n  },\n  \"message\": {\n    \"contract\": {\n      \"id\": \"{{coordination_id}}\",\n      \"status\": {\n        \"code\": \"ACTIVE\"\n      },\n      \"commitments\": [\n        {\n          \"id\": \"commitment-t1-001\",\n          \"status\": {\n            \"descriptor\": {\n              \"code\": \"ACTIVE\"\n            }\n          },\n          \"resources\": [\n            {\n              \"id\": \"{{coord_resource_id}}\",\n              \"descriptor\": {\n                \"name\": \"Nashik Referral Coordination Desk\",\n                \"shortDesc\": \"Care coordination desk — referral handling\",\n                \"longDesc\": \"Standing care-coordination capability: discovers and books downstream targets, manages referral lifecycle and handover.\"\n              },\n              \"resourceAttributes\": {\n                \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                \"@type\": \"scres:ServiceCoordinationResource\",\n                \"coordinationScope\": {\n                  \"referralCategories\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"ReferralCategory\",\n                      \"code\": \"CLINICAL\",\n                      \"display\": \"Clinical\"\n                    }\n                  ],\n                  \"targetServiceTypes\": [\n                    {\n                      \"@context\": \"https://schema.beckn.io/ServiceCoordinationResource/v2.1/context.jsonld\",\n                      \"@type\": \"TargetServiceType\",\n                      \"code\": \"CONSULTATION\",\n                      \"display\": \"Consultation\"\n                    }\n                  ],\n                  \"geographyScope\": [\n                    {\n                      \"@context\": \"https://lgd.gov.in\",\n                      \"@type\": \"District\",\n                      \"code\": \"LGD-423\",\n                      \"display\": \"Nashik\"\n                    }\n                  ]\n                },\n                \"acceptanceMode\": \"MANUAL_REVIEW\",\n                \"supportedUrgencyTiers\": [\n                  \"ROUTINE\",\n                  \"URGENT\",\n                  \"EMERGENCY\"\n                ]\n              },\n              \"quantity\": {\n                \"count\": 1\n              }\n            }\n          ],\n          \"offer\": {\n            \"id\": \"{{coord_offer_id}}\",\n            \"resourceIds\": [\n              \"{{coord_resource_id}}\"\n            ],\n            \"descriptor\": {\n              \"name\": \"Referral coordination engagement\",\n              \"shortDesc\": \"Per-referral coordination service\"\n            },\n            \"offerAttributes\": {\n              \"@context\": \"https://schema.beckn.io/HealthOffer/v2.1/context.jsonld\",\n              \"@type\": \"hof:HealthOffer\",\n              \"healthServiceType\": \"PHYSICAL_CONSULTATION\",\n              \"offerType\": \"SINGLE_EVENT\",\n              \"outcomeCommitment\": {\n                \"attendanceToOutcomeSlaHours\": 48,\n                \"outcomeNoteFormatStandard\": \"FHIR/DiagnosticReport\",\n                \"mandatory\": true\n              }\n            },\n            \"considerations\": [\n              {\n                \"id\": \"{{coord_consideration_id}}\",\n                \"considerationAttributes\": {\n                  \"@context\": \"https://schema.beckn.io/HealthConsideration/v2.1/context.jsonld\",\n                  \"@type\": \"hcn:HealthConsideration\",\n                  \"pricePerUnit\": 200,\n                  \"currency\": \"INR\",\n                  \"payerArchetype\": \"GOVERNMENT\",\n                  \"paymentMethodsAccepted\": [\n                    \"BANK_TRANSFER\",\n                    \"NEFT\"\n                  ]\n                }\n              }\n            ]\n          }\n        }\n      ],\n      \"contractAttributes\": {\n        \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n        \"@type\": \"hrf:HealthReferral\",\n        \"lifecycleState\": \"NO_SHOW\",\n        \"clinicalUrgencyTier\": \"URGENT\",\n        \"targetCriteria\": {\n          \"specialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"Specialty\",\n            \"code\": \"CARDIOLOGY\",\n            \"display\": \"Cardiology\"\n          },\n          \"subSpecialty\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"SubSpecialty\",\n            \"code\": \"INTERVENTIONAL_CARDIOLOGY\",\n            \"display\": \"Interventional Cardiology\"\n          },\n          \"equipmentNeeds\": [\n            \"ECHO\",\n            \"CATH_LAB\"\n          ],\n          \"consultationModality\": \"IN_PERSON\"\n        },\n        \"coordinationId\": \"{{coordination_id}}\",\n        \"schemeRef\": {\n          \"@context\": \"https://nha.gov.in\",\n          \"@type\": \"Scheme\",\n          \"code\": \"PMJAY\",\n          \"display\": \"Ayushman Bharat PM-JAY\"\n        },\n        \"deviation\": {\n          \"reasonCode\": {\n            \"@context\": \"https://schema.beckn.io/HealthReferral/v2.1/context.jsonld\",\n            \"@type\": \"DeviationReasonCode\",\n            \"code\": \"NO_SHOW\",\n            \"display\": \"Patient No-Show\"\n          },\n          \"detectedBy\": \"{{cc_np_id}}\",\n          \"detectedAt\": \"2026-06-15T10:00:00+05:30\",\n          \"note\": \"Patient did not attend the booked cardiology appointment.\"\n        }\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{bap_uri}}/on_update"
+            },
+            "description": "Referrer acknowledges the updated referral lifecycle."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "domain",
+      "value": "health",
+      "type": "string"
+    },
+    {
+      "key": "network_id",
+      "value": "example.net/health",
+      "type": "string",
+      "description": "Confirm exact value with the network registry team."
+    },
+    {
+      "key": "bpp_uri",
+      "value": "",
+      "type": "string",
+      "description": "Target BPP base URL for the active transaction (CC for T1, Provider for T2)."
+    },
+    {
+      "key": "bap_uri",
+      "value": "",
+      "type": "string",
+      "description": "BAP callback base URL for on_* simulations."
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Network-issued JWT — set before running."
+    },
+    {
+      "key": "seeker_np_id",
+      "value": "referrer-np-specialist",
+      "type": "string",
+      "description": "Referrer NP (BAP in T1)."
+    },
+    {
+      "key": "cc_np_id",
+      "value": "cc-np-specialist",
+      "type": "string",
+      "description": "Care Coordinator NP (BPP in T1, BAP in T2)."
+    },
+    {
+      "key": "provider_np_id",
+      "value": "provider-np-specialist",
+      "type": "string",
+      "description": "Referred Provider NP (BPP in T2)."
+    },
+    {
+      "key": "transaction_id_t1",
+      "value": "a6929fe7-b003-43c8-9c6c-41dc81360ec6",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id_t2",
+      "value": "408a016f-eccc-44af-b763-03cd757e3b87",
+      "type": "string"
+    },
+    {
+      "key": "coordination_id",
+      "value": "8fab86de-cf27-4fb3-924e-be332346000f",
+      "type": "string",
+      "description": "T1 coordination contract id = Referral ID. Consumed by T2 as coordinationRef."
+    },
+    {
+      "key": "appointment_id",
+      "value": "ba58571a-cfb7-4dae-ba98-56c65a094499",
+      "type": "string",
+      "description": "T2 appointment contract id = T1.targetBookingRef."
+    },
+    {
+      "key": "referrer_participant_id",
+      "value": "participant-referrer-specialist",
+      "type": "string"
+    },
+    {
+      "key": "cc_participant_id",
+      "value": "participant-cc-specialist",
+      "type": "string"
+    },
+    {
+      "key": "patient_participant_id",
+      "value": "participant-patient-specialist",
+      "type": "string"
+    },
+    {
+      "key": "observer_participant_id",
+      "value": "participant-observer-specialist",
+      "type": "string"
+    },
+    {
+      "key": "provider_participant_id",
+      "value": "participant-provider-specialist",
+      "type": "string"
+    },
+    {
+      "key": "coord_resource_id",
+      "value": "res-coord-specialist",
+      "type": "string"
+    },
+    {
+      "key": "coord_offer_id",
+      "value": "offer-coord-specialist",
+      "type": "string"
+    },
+    {
+      "key": "coord_catalog_id",
+      "value": "catalog-coord-specialist",
+      "type": "string"
+    },
+    {
+      "key": "target_resource_id",
+      "value": "res-target-specialist",
+      "type": "string"
+    },
+    {
+      "key": "target_offer_id",
+      "value": "offer-target-specialist",
+      "type": "string"
+    },
+    {
+      "key": "target_catalog_id",
+      "value": "catalog-target-specialist",
+      "type": "string"
+    },
+    {
+      "key": "referralnote_doc_ref",
+      "value": "referralnote-specialist-001",
+      "type": "string"
+    },
+    {
+      "key": "outcomenote_doc_ref",
+      "value": "outcomenote-specialist-001",
+      "type": "string"
+    },
+    {
+      "key": "consent_id",
+      "value": "c3f84391-eb8d-4ae5-9e03-6e066859cfa8",
+      "type": "string"
+    },
+    {
+      "key": "consent_doc_ref",
+      "value": "consent-specialist-001",
+      "type": "string"
+    },
+    {
+      "key": "scheme_ref",
+      "value": "PMJAY",
+      "type": "string"
+    },
+    {
+      "key": "coord_consideration_id",
+      "value": "cons-coord-specialist-001",
+      "type": "string"
+    },
+    {
+      "key": "appt_consideration_id",
+      "value": "cons-appt-specialist-001",
+      "type": "string"
+    },
+    {
+      "key": "payment_ref",
+      "value": "NEFT-SPECIALIST-20260614",
+      "type": "string"
+    }
+  ]
+}
