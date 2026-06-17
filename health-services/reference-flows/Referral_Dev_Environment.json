@@ -269,6 +269,11 @@
       "key": "pharmacy_offer_id",
       "value": "offer-medplus-dispense",
       "enabled": true
+    },
+    {
+      "key": "codedvalue_ctx",
+      "value": "https://raw.githubusercontent.com/beckn/DHP-Specs/main/devkit/stub/context.jsonld",
+      "enabled": true
     }
   ]
 }
