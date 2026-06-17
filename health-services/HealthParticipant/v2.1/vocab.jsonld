@@ -8,6 +8,7 @@
     {"@id": "hpa:PATIENT",              "@type": "hpa:ParticipantRole", "rdfs:label": "Patient — individual receiving the service"},
     {"@id": "hpa:CARE_GIVER",           "@type": "hpa:ParticipantRole", "rdfs:label": "Care Giver — guardian or carer acting for the patient"},
     {"@id": "hpa:SPECIALIST",           "@type": "hpa:ParticipantRole", "rdfs:label": "Specialist — licensed health practitioner delivering the service"},
+    {"@id": "hpa:GENERAL_PRACTITIONER", "@type": "hpa:ParticipantRole", "rdfs:label": "General Practitioner — general / primary-care physician (e.g. referring practitioner)"},
     {"@id": "hpa:FIELD_WORKER",         "@type": "hpa:ParticipantRole", "rdfs:label": "Field Worker — ASHA or community health worker facilitating engagement"},
     {"@id": "hpa:PAYER",                "@type": "hpa:ParticipantRole", "rdfs:label": "Payer — entity bearing the cost"},
     {"@id": "hpa:IMPLEMENTING_AGENCY",  "@type": "hpa:ParticipantRole", "rdfs:label": "Implementing Agency — organisation that procured the capacity"},
