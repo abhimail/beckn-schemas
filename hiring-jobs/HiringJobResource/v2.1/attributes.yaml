@@ -91,11 +91,11 @@ components:
         requirements:
           type: array
           items:
-            $ref: "../../../../common/CredentialRequirement/v2.1/attributes.yaml#/components/schemas/CredentialRequirement"
+            $ref: "../../../common/CredentialRequirement/v2.1/attributes.yaml#/components/schemas/CredentialRequirement"
           description: Credential or certification prerequisites.
           x-jsonld-id: "hjra:requirements"
         industry_type:
-          $ref: "../../../../common/CodedValue/v2.1/attributes.yaml#/components/schemas/CodedValue"
+          $ref: "../../../common/CodedValue/v2.1/attributes.yaml#/components/schemas/CodedValue"
           description: Industry classification (e.g. ISIC authority code).
           x-jsonld-id: "hjra:industry_type"
         functional_area:
