@@ -1,5 +1,5 @@
 openapi: 3.1.1
-$id: "https://raw.githubusercontent.com/abhimail/beckn-schemas/refs/heads/main/transport-hiring/DriverJobResource/v2.1/attributes.yaml"
+$id: "https://raw.githubusercontent.com/riteshkparouha-cyber/beckn-schemas/refs/heads/fix/hiring-schema/transport-hiring/DriverJobResource/v2.1/attributes.yaml"
 info:
   title: DriverJobResource
   version: "2.1.0"
@@ -15,7 +15,7 @@ components:
   schemas:
     DriverJobResource:
       allOf:
-        - $ref: "https://raw.githubusercontent.com/abhimail/beckn-schemas/refs/heads/main/hiring-jobs/HiringJobResource/v2.1/attributes.yaml#/components/schemas/HiringJobResource"
+        - $ref: "https://raw.githubusercontent.com/riteshkparouha-cyber/beckn-schemas/refs/heads/fix/hiring-schema/hiring-jobs/HiringJobResource/v2.1/attributes.yaml#/components/schemas/HiringJobResource"
       type: object
       x-beckn-container: resourceAttributes
       x-status: under-review

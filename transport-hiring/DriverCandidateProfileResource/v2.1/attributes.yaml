@@ -1,5 +1,5 @@
 openapi: 3.1.1
-$id: "https://raw.githubusercontent.com/abhimail/beckn-schemas/refs/heads/main/transport-hiring/DriverCandidateProfileResource/v2.1/attributes.yaml"
+$id: "https://raw.githubusercontent.com/riteshkparouha-cyber/beckn-schemas/refs/heads/fix/hiring-schema/transport-hiring/DriverCandidateProfileResource/v2.1/attributes.yaml"
 info:
   title: DriverCandidateProfileResource
   version: "2.1.0"
@@ -16,7 +16,7 @@ components:
   schemas:
     DriverCandidateProfileResource:
       allOf:
-        - $ref: "https://raw.githubusercontent.com/abhimail/beckn-schemas/refs/heads/main/hiring-candidates/CandidateProfileResource/v2.1/attributes.yaml#/components/schemas/CandidateProfileResource"
+        - $ref: "https://raw.githubusercontent.com/riteshkparouha-cyber/beckn-schemas/refs/heads/fix/hiring-schema/hiring-candidates/CandidateProfileResource/v2.1/attributes.yaml#/components/schemas/CandidateProfileResource"
       type: object
       x-beckn-container: resourceAttributes
       x-status: under-review
@@ -51,7 +51,7 @@ components:
           description: Vehicle categories the candidate is licensed for.
           x-jsonld-id: "dcpra:vehicle_categories"
         home_location:
-          $ref: "https://raw.githubusercontent.com/abhimail/beckn-schemas/refs/heads/main/hiring-common/JobLocation/v2.1/attributes.yaml#/components/schemas/JobLocation"
+          $ref: "https://raw.githubusercontent.com/riteshkparouha-cyber/beckn-schemas/refs/heads/fix/hiring-schema/hiring-common/JobLocation/v2.1/attributes.yaml#/components/schemas/JobLocation"
           description: >
             Candidate's home location at locality level only at discovery stage.
             Uses hiring-common JobLocation (GPS + address fields, anyOf constraint).
